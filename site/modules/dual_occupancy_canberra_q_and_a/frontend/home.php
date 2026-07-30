@@ -434,7 +434,7 @@ $fwViewData['filter_hidden_count'] = $data_hidden_count['hidden_count'];
 
 $matsql = "SELECT ".$TABLE.".* FROM ".$TABLE." ".$where." ".$where2." ORDER BY CASE WHEN ".$TABLE.".docqa_public_rank = 0 THEN 1 ELSE 0 END, ".$TABLE.".docqa_public_rank ASC, ".$TABLE.".".$ID." DESC"; 
 
-echo $matsql;
+//echo $matsql;
 
 //echo "<pre>";print_r($_REQUEST);exit;
 
