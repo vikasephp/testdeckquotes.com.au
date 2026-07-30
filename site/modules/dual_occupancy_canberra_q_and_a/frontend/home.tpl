@@ -217,7 +217,7 @@ $(document).ready(function(){
 	}
 </style>
 
-<h3 class="page-title">{{$title}}</h3>
+<h3 class="page-title">{{$title}} - Testing the Push via github</h3>
 
 
  <div style="float:left; text-align:left;">
