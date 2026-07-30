@@ -1,0 +1,230 @@
+<?php
+$pagenum = $fwRequest->getparamget('pagenum',0);
+
+//$submit = $fwRequest->getParam('print', '');
+//if(!empty($submit))
+//{
+//	$heading = "Questions ans Answer";
+//
+//	$qasql = "SELECT ".$TABLE.".* FROM ".$TABLE ;	
+//
+//    if($qasql){$qaData = $fwDb->query($qasql);}
+//	
+//	$html = '';	
+//	foreach($qaData as $m)
+//	{
+//	$html .=  "<b>" .$m['qa_question'] ."</b>";
+//	$html .= $m['qa_answer'] ."<br>";
+//	}
+//	create_open_PDF($heading,$html,$fname);
+//}
+
+$listdata = $fwRequest->getParam($TABLE, array());
+
+$keyword = $listdata['keyword'];
+$where = "WHERE 1=1 ";
+
+if($keyword) {
+$_SESSION['keyword'] = $keyword;
+$fwViewData['keyword']=$_SESSION['keyword'];
+}
+else { unset($_SESSION['keyword']); }
+
+	
+if($keyword):
+$where .= "AND ".$TABLE.".cl_what LIKE '%".$keyword."%' OR ".$TABLE.".cl_company_name LIKE '%".$keyword."%' OR 
+               ".$TABLE.".cl_contact_name LIKE '%".$keyword."%' OR ".$TABLE.".cl_position LIKE '%".$keyword."%' OR
+			   ".$TABLE.".cl_address LIKE '%".$keyword."%' OR ".$TABLE.".cl_phone LIKE '%".$keyword."%' OR 
+			   ".$TABLE.".cl_mobile LIKE '%".$keyword."%' OR ".$TABLE.".cl_email LIKE '%".$keyword."%' OR
+			   ".$TABLE.".cl_website LIKE '%".$keyword."%' OR ".$TABLE.".cl_notes LIKE '%".$keyword."%' OR ".$TABLE.".cl_calendar_ref LIKE '%".$keyword."%' ";
+	
+	$_SESSION['keyword'] = $keyword;
+	$fwViewData['keyword']=$_SESSION['keyword'];
+
+elseif($_SESSION['keyword'] && $pagenum > 0):
+
+	$where .= "AND ".$TABLE.".cl_what LIKE '%".$_SESSION['keyword']."%' OR ".$TABLE.".cl_company_name LIKE '%".$_SESSION['keyword']."%'
+	            OR ".$TABLE.".cl_contact_name LIKE '%".$_SESSION['keyword']."%' OR ".$TABLE.".cl_phone LIKE '%".$_SESSION['keyword']."%' 
+			    OR ".$TABLE.".cl_address LIKE '%".$_SESSION['keyword']."%' OR ".$TABLE.".cl_position LIKE '%".$_SESSION['keyword']."%' 
+				OR ".$TABLE.".cl_mobile LIKE '%".$_SESSION['keyword']."%' OR ".$TABLE.".cl_email LIKE '%".$_SESSION['keyword']."%'
+				OR ".$TABLE.".cl_website LIKE '%".$_SESSION['keyword']."%' OR ".$TABLE.".cl_notes LIKE '%".$_SESSION['keyword']."%' OR ".$TABLE.".cl_calendar_ref LIKE '%".$_SESSION['keyword']."%'
+				";	
+	
+	$fwViewData['keyword']=$_SESSION['keyword'];
+endif;
+   
+$matsql = "SELECT ".$TABLE.".* FROM ".$TABLE." ".$where." ORDER BY ".$TABLE.".".$ID." ASC";	
+
+if($matsql){$userData = $fwDb->query($matsql);}
+
+
+if(!empty($userData))
+{
+if (!(isset($pagenum))){ $pagenum = 1; } 
+    $rows = count($userData);
+    $page_rows = 100;
+    $last = ceil($rows/$page_rows);    
+    if ($pagenum <= 1)
+    {
+        $pagenum = 1;
+    }
+    elseif ($pagenum > $last)
+    {
+        $pagenum = $last;
+    }
+    $fwViewData['last'] = $last;
+    $fwViewData['lastone'] = $last-1;
+	$fwViewData['lasttow'] = $last-2;
+    $fwViewData['pagenum'] = $pagenum;
+	$pagenatedatanext = $pagenum;
+	$pagenatedataprev = $pagenum;
+	for($i=0; $i<9; $i++)
+		{
+		$paginate[$pagenatedatanext] = $pagenatedatanext;
+		$pagenatedatanext ++;
+		}
+		$fwViewData['paginatenext'] = $paginate;
+	$pagenatedataprev = $pagenum;	
+	for($i=0; $i<9; $i++)
+		{
+		$paginateprev[$pagenatedataprev] = $pagenatedataprev;
+		$pagenatedataprev --;
+		}
+	$fwViewData['paginateprev'] = array_reverse($paginateprev);
+	
+    $max = 'limit ' .($pagenum - 1) * $page_rows .',' .$page_rows;
+    
+    $sql2 =  $matsql." ".$max;
+    if($sql2){$lists= $fwDb->query($sql2);
+
+	foreach($lists as $list):
+
+		$listsnew[] = $list;
+	endforeach;
+	
+	$fwViewData['list'] = $listsnew;
+  }
+}
+
+$fwViewData['title'] = $MODULE_PLURAL;
+
+$export = $fwRequest->getParam('export', 0);
+
+if($export > 0)
+	{
+
+	$contactsql = "SELECT * FROM contact_list";	
+
+    if($contactsql){$contactData = $fwDb->query($contactsql);}
+	
+	
+require BASE_DIR . "PHPExcel/Classes/PHPExcel.php";
+//require BASE_DIR . "PHPExcel/Classes/PHPExcel/Writer/Excel2007.php";
+
+
+// Create new PHPExcel object
+$objPHPExcel = new PHPExcel();
+
+// Set document properties
+$objPHPExcel->getProperties()->setCreator("Deckquotes")
+							 ->setLastModifiedBy("Nick C")
+							 ->setTitle("Office 2007 XLSX Test Document")
+							 ->setSubject("Office 2007 XLSX Test Document")
+							 ->setDescription("Contact list exported to Office 2007 XLSX.")
+							 ->setKeywords("office 2007 openxml php")
+							 ->setCategory("Contact list file");
+
+
+$objPHPExcel->getActiveSheet()->getColumnDimension('K')->setWidth(50);
+
+$objPHPExcel->getActiveSheet()->getColumnDimension('B')->setAutoSize(true);
+$objPHPExcel->getActiveSheet()->getColumnDimension('C')->setAutoSize(true);
+$objPHPExcel->getActiveSheet()->getColumnDimension('D')->setAutoSize(true);
+$objPHPExcel->getActiveSheet()->getColumnDimension('E')->setAutoSize(true);
+$objPHPExcel->getActiveSheet()->getColumnDimension('F')->setAutoSize(true);
+$objPHPExcel->getActiveSheet()->getColumnDimension('G')->setAutoSize(true);
+$objPHPExcel->getActiveSheet()->getColumnDimension('H')->setAutoSize(true);
+$objPHPExcel->getActiveSheet()->getColumnDimension('I')->setAutoSize(true);
+$objPHPExcel->getActiveSheet()->getColumnDimension('J')->setAutoSize(true);
+$objPHPExcel->getActiveSheet()->getColumnDimension('L')->setAutoSize(true);
+	
+	
+
+
+// Add some data
+$objPHPExcel->setActiveSheetIndex(0)
+            ->setCellValue('A1', 'SrNo')
+            ->setCellValue('B1', 'What')
+            ->setCellValue('C1', 'Company Name')
+            ->setCellValue('D1', 'Contact Name')
+			->setCellValue('E1', 'Position')
+			->setCellValue('F1', 'Address')
+			->setCellValue('G1', 'Phone')
+			->setCellValue('H1', 'Mobile')
+			->setCellValue('I1', 'Email')
+			->setCellValue('J1', 'Website')
+			->setCellValue('K1', 'Notes')
+			->setCellValue('L1', 'Calendar Reference')
+			;
+
+$from = "A1"; // or any value
+$to = "L1"; // or any value
+$objPHPExcel->getActiveSheet()->getStyle("$from:$to")->getFont()->setBold( true );
+
+// Miscellaneous glyphs, UTF-8
+//$objPHPExcel->setActiveSheetIndex(0)
+//            ->setCellValue('A4', 'Miscellaneous glyphs')
+//            ->setCellValue('A5', 'éàèùâêîôûëïüÿäöüç');
+$row=2;
+$sr=1;
+foreach($contactData as $k=>$v)
+{
+	$objPHPExcel->getActiveSheet()
+				->setCellValue('A'.$row, $sr)
+				->setCellValue('B'.$row, $v['cl_what'])
+				->setCellValue('C'.$row, $v['cl_company_name'])
+				->setCellValue('D'.$row, $v['cl_contact_name'])
+				->setCellValue('E'.$row, $v['cl_position'])
+				->setCellValue('F'.$row, $v['cl_address'])
+				->setCellValue('G'.$row, $v['cl_phone'])
+				->setCellValue('H'.$row, $v['cl_mobile'])
+				->setCellValue('I'.$row, $v['cl_email'])
+				->setCellValue('J'.$row, $v['cl_website'])
+				->setCellValue('K'.$row, strip_tags($v['cl_notes']))
+				->setCellValue('L'.$row, $v['cl_calendar_ref'])
+				;	
+	$row= $row+1;			
+	$sr=$sr+1;
+}
+
+// Rename worksheet
+$objPHPExcel->getActiveSheet()->setTitle('Contact List');
+
+
+// Set active sheet index to the first sheet, so Excel opens this as the first sheet
+$objPHPExcel->setActiveSheetIndex(0);
+
+
+// Redirect output to a client’s web browser (Excel2007)
+//header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+
+// Redirect output to a client’s web browser (Excel5)
+header('Content-Type: application/vnd.ms-excel');
+header('Content-Disposition: attachment;filename="contact_list.xls"');
+header('Cache-Control: max-age=0');
+// If you're serving to IE 9, then the following may be needed
+header('Cache-Control: max-age=1');
+
+// If you're serving to IE over SSL, then the following may be needed
+header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
+header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+header ('Pragma: public'); // HTTP/1.0
+
+$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+$objWriter->save('php://output');
+exit;
+
+	}
+
+

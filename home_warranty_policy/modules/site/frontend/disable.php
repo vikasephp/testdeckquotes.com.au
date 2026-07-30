@@ -1,0 +1,3 @@
+<?php
+$fwViewData['title'] = "Oops!";
+

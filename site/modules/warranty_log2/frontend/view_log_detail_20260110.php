@@ -1,0 +1,403 @@
+<?php
+
+$fwMainView = 'file:' . getcwd() . '/view_log_detail.tpl';
+$table = new Fw_Db_Table('warranty_log');
+$serviceClass = new ServiceClass;
+require_once(MODULES_DIR . 'inspection_warranty_log/frontend/InspectionServiceClass.php');
+$inspectionServiceClass = new InspectionServiceClass;
+
+$id = $fwRequest->getParam('wa_id', '');
+
+$update_elsn_notes = $fwRequest->getParam('update_elsn_notes', '');
+$elsn_notes = $fwRequest->getParam('elsn_notes', '');
+if($update_elsn_notes && !empty($elsn_notes) && $id) {
+	$user_id = $_SESSION['user']['user_id'];
+	$insertData = [
+		'elsn_wa_id' => $id,
+		'elsn_notes' => $elsn_notes,
+		'elsn_created_by' => $user_id,
+	];
+	$warranty_log_escalation_notes_table = new Fw_Db_Table('warranty_log_escalation_notes');
+	$warranty_log_escalation_notes_table->insertRow($insertData);
+}
+
+
+$query = 'SELECT * FROM users';
+$result = $fwDb->query($query);
+$users_array = [];
+foreach ($result as $row) {
+	$users_array[$row['user_id']] = $row['user_name'];
+}
+
+$query = $inspectionServiceClass->getInspectionStatusLogsQuery($id, 'asc');
+$result = $fwDb->query($query);
+$inspection_status_logs = [];
+foreach($result as $row) {
+	// if(!isset($inspection_status_logs[$row['wlisl_wlis_id']])) {
+	// 	$inspection_status_logs[$row['wlisl_wlis_id']] = [
+	// 		'status' => $row['status_name'],
+	// 		'date' => date('d-M-Y', strtotime($row['wlisl_created_at'])),
+	// 		'raw_date' =>$row['wlisl_created_at'],
+	// 	];
+	// }
+	$inspection_status_logs[] = [
+		'status' => $row['status_name'],
+		'date' => date('d-M-Y', strtotime($row['wlisl_created_at'])),
+		'raw_date' =>$row['wlisl_created_at'],
+	];
+}
+$fwViewData['inspection_status_logs'] = $inspection_status_logs;
+
+$query = "SELECT * FROM warranty_log_escalation_notes WHERE elsn_wa_id = $id ORDER BY elsn_created_at DESC";
+$result = $fwDb->queryOne($query);
+if(!empty($result)) {
+	$result['user'] = $users_array[$result['elsn_created_by']];
+	$result['date'] = date('d-M-Y', strtotime($result['elsn_created_at']));
+}
+$fwViewData['warranty_log_escalation_notes'] = $result;
+
+$query = 'SELECT * FROM warranty_inspectors WHERE wi_is_active = 1 ORDER BY wi_name';
+$result = $fwDb->query($query);
+$fwViewData['warranty_inspectors'] = $result;
+
+$query = 'SELECT * FROM warranty_log_inspectors WHERE wli_wa_id = ' . $id . ';';
+$result = $fwDb->query($query);
+$warranty_log_inspectors = [];
+foreach($result as $row) {
+	$warranty_log_inspectors[$row['wli_wi_id']] = true;
+}
+$fwViewData['warranty_log_inspectors'] = $warranty_log_inspectors;
+
+$paid_inspection = $fwRequest->getParam('paid_inspection', []);
+$complimentary_inspection = $fwRequest->getParam('complimentary_inspection', []);
+$wi_id_array = $fwRequest->getParam('wi_id_array', []);
+if ((!empty($paid_inspection) || !empty($complimentary_inspection)) && $id != '') {
+	$table->setWhere('wa_id = ' . $id);
+	if ($table->rowExists()) {
+		$row = $table->getRow();
+
+		if (/* $row['wa_is_inspection_fee_required_accepted'] == 0 && $row['wa_is_inspection_fee_required_scheduled'] == 0 &&  */$row['wa_is_inspection_fee_required_inspection_completed'] == 0) {
+			if (!empty($paid_inspection) && !empty($paid_inspection['insepection_fee'])) {
+				$data = $paid_inspection;
+			} elseif (!empty($complimentary_inspection) && !empty($complimentary_inspection['insepection_fee'])) {
+				$data = $complimentary_inspection;
+			}
+			// db($data);
+			// db($paid_inspection);
+			// db($complimentary_inspection);
+			$wa_wlis_id = $data['wa_wlis_id'];
+			$wa_inspection_proposed_fees = $data['wa_inspection_proposed_fees'];
+			$wa_is_inspection_fee_required = $data['wa_is_inspection_fee_required'];
+
+			$insertData = [
+				'wa_is_inspection_fee_required' => $wa_is_inspection_fee_required,
+				'wa_is_inspection_fee_required_by' => $_SESSION['user']['user_id'],
+				'wa_is_inspection_fee_required_at' => date('Y-m-d'),
+				'wa_inspection_proposed_fees' => $wa_inspection_proposed_fees,
+				'wa_wlis_id' => $wa_wlis_id,
+			];
+			if ($wa_is_inspection_fee_required == 1) {
+				$insertData['wa_is_inspection_fee_required_accepted'] = 0;
+				$insertData['wa_is_inspection_fee_required_cancelled'] = 0;
+				$insertData['wa_inspection_required'] = 'Yes';
+			}
+
+			// db($insertData);
+
+			$table->updateRow($insertData);
+
+			// delete all related inspectors
+			$query = 'DELETE FROM warranty_log_inspectors WHERE wli_wa_id = ' . $id . ';';
+			$fwDb->queryOne($query);
+
+			if ($wa_is_inspection_fee_required == 1) {
+				// send email
+				// send sms
+				$serviceClass->sendImmediateEmailAndSms($row);
+
+				// insert related inspectors
+				foreach ($wi_id_array as $wi_id) {
+					$query = 'INSERT INTO warranty_log_inspectors(wli_wa_id, wli_wi_id) VALUES(' . $id . ', ' . $wi_id . ');';
+					$fwDb->queryOne($query);
+				}
+			}
+
+			$query = 'INSERT INTO warranty_log_inspection_status_log(wlisl_wa_id,wlisl_wlis_id,wlisl_created_by,wlisl_created_table) VALUES(' . $id . ',' . $wa_wlis_id . ',' . $_SESSION['user']['user_id'] . ', "users")';
+			$fwDb->queryOne($query);
+		}
+	}
+	Location(BASE_URL . 'warranty_log2.view_log_detail/wa_id/' . $id);
+	exit;
+}
+
+$photos = $serviceClass->setLogPhotosIdWise($id);
+$fwViewData['photos'] = $photos;
+$videos = $serviceClass->setLogVideosIdWise($id);
+$fwViewData['videos'] = $videos;
+$inspection_photos = $serviceClass->setLogInspectionPhotoIdWise($id);
+$fwViewData['inspection_photos'] = $inspection_photos;
+
+
+
+$sql_log = "Select * from warranty_log where wa_id = $id";
+$data_log = $fwDb->queryOne($sql_log);
+
+$wa_is_inspection_fee_required_user = $wa_is_inspection_fee_required_date = '';
+if (isset($users_array[$data_log['wa_is_inspection_fee_required_by']])) {
+	$wa_is_inspection_fee_required_user = $users_array[$data_log['wa_is_inspection_fee_required_by']];
+	$wa_is_inspection_fee_required_date = date('d-M-Y', strtotime($data_log['wa_is_inspection_fee_required_at']));
+}
+$data_log['wa_is_inspection_fee_required_user'] = $wa_is_inspection_fee_required_user;
+$data_log['wa_is_inspection_fee_required_date'] = $wa_is_inspection_fee_required_date;
+
+$wa_is_inspection_fee_required_accepted_date = '';
+if ($data_log['wa_is_inspection_fee_required_accepted']) {
+	$wa_is_inspection_fee_required_accepted_date = date('d-M-Y', strtotime($data_log['wa_is_inspection_fee_required_accepted_at']));
+}
+$data_log['wa_is_inspection_fee_required_accepted_date'] = $wa_is_inspection_fee_required_accepted_date;
+
+$wa_is_inspection_fee_required_cancelled_date = '';
+if ($data_log['wa_is_inspection_fee_required_cancelled']) {
+	$wa_is_inspection_fee_required_cancelled_date = date('d-M-Y', strtotime($data_log['wa_is_inspection_fee_required_cancelled_at']));
+}
+$data_log['wa_is_inspection_fee_required_cancelled_date'] = $wa_is_inspection_fee_required_cancelled_date;
+
+$wa_is_inspection_fee_required_scheduled_at = '';
+if ($data_log['wa_is_inspection_fee_required_scheduled']) {
+	$wa_is_inspection_fee_required_scheduled_at = date('d-M-Y', strtotime($data_log['wa_is_inspection_fee_required_scheduled_at']));
+}
+$data_log['wa_is_inspection_fee_required_scheduled_at'] = $wa_is_inspection_fee_required_scheduled_at;
+
+require_once(MODULES_DIR . 'inspection_warranty_log/frontend/InspectionServiceClass.php');
+$inspectionServiceClass = new InspectionServiceClass;
+// db(MODULES_DIR . 'inspection_warranty_log/frontend/ServiceClass');
+
+$query = 'SELECT wlis_option FROM warranty_log_inspection_status WHERE wlis_id = ' . $data_log['wa_wlis_id'] . ';';
+$result = $fwDb->queryOne($query);
+$data_log['inspection_status'] = $result['wlis_option'];
+
+$data_log['status_history_table'] = $inspectionServiceClass->createStatusHistoryTable($data_log);
+
+$fwViewData['data_log'] = $data_log;
+
+$sq1_bsn = "SELECT business_sellers.bs_business_id, business_sellers.bs_customers_id, bus_customers.bcust_fname, bus_customers.bcust_lname, bus_customers.bcust_misc_moble from business_sellers 
+Inner Join bus_customers ON business_sellers.bs_customers_id = bus_customers.bcust_id 
+Inner Join business ON business_sellers.bs_business_id = business.bsn_id where business.bsn_name Like '%" . $data_log['wa_project'] . "%'";
+$data_bsn = $fwDb->queryOne($sq1_bsn);
+$fwViewData['bs_business_id'] = $data_bsn['bs_business_id'];
+$fwViewData['bs_customers_id'] = $data_bsn['bs_customers_id'];
+
+$projectLink = '<a target="_blank" href="' . BASE_URL . 'business.detail/bsn_id/' . $data_bsn['bs_business_id'] . '">' . $data_log['wa_project'] . '</a>';
+$fwViewData['projectLink'] = $projectLink;
+
+$contact_info = $data_bsn['bcust_fname'] . "&nbsp;" . $data_bsn['bcust_lname'] . "<br />" . $data_bsn['bcust_misc_moble'];
+$fwViewData['contact_info'] = $contact_info;
+
+$sql_walkthrough_date = "Select business_tasks.bt_completed_date from business_tasks where business_tasks.bt_bsn_id = " . $data_bsn['bs_business_id'] . " And business_tasks.bt_task_id = 254 ";
+$data_walkthrough_date = $fwDb->queryOne($sql_walkthrough_date);
+if ($data_walkthrough_date['bt_completed_date'] == "0000-00-00 00:00:00" || empty($data_walkthrough_date['bt_completed_date'])) {
+	$fwViewData['walkthrough_date'] = '';
+} else {
+	$fwViewData['walkthrough_date'] = $data_walkthrough_date['bt_completed_date'];
+}
+
+$sql_491 = "SELECT dcl.doc_name_id, dcl.doc_file_name, adcl.admin_doc_name FROM `document_check_list` as dcl left join admin_document_check_list as adcl on adcl.admin_doc_id = dcl.doc_name_id where dcl.doc_bsn_id = " . $data_bsn['bs_business_id'] . " and dcl.doc_name_id = 491";
+$data_491 = $fwDb->queryOne($sql_491);
+$fwViewData['file_491'] = $data_491['doc_file_name'];
+$fwViewData['doc_name_491'] = $data_491['admin_doc_name'];
+
+$sql_65 = "SELECT dcl.doc_name_id, dcl.doc_file_name, adcl.admin_doc_name FROM `document_check_list` as dcl left join admin_document_check_list as adcl on adcl.admin_doc_id = dcl.doc_name_id where dcl.doc_bsn_id = " . $data_bsn['bs_business_id'] . " and dcl.doc_name_id = 65";
+$data_65 = $fwDb->queryOne($sql_65);
+$fwViewData['file_65'] = $data_65['doc_file_name'];
+$fwViewData['doc_name_65'] = $data_65['admin_doc_name'];
+
+$sql_440 = "SELECT dcl.doc_name_id, dcl.doc_file_name, adcl.admin_doc_name FROM `document_check_list` as dcl left join admin_document_check_list as adcl on adcl.admin_doc_id = dcl.doc_name_id where dcl.doc_bsn_id = " . $data_bsn['bs_business_id'] . " and dcl.doc_name_id = 440";
+$data_440 = $fwDb->queryOne($sql_440);
+$fwViewData['file_440'] = $data_440['doc_file_name'];
+$fwViewData['doc_name_440'] = $data_440['admin_doc_name'];
+
+$sql_142 = "SELECT dcl.doc_name_id, dcl.doc_file_name, adcl.admin_doc_name FROM `document_check_list` as dcl left join admin_document_check_list as adcl on adcl.admin_doc_id = dcl.doc_name_id where dcl.doc_bsn_id = " . $data_bsn['bs_business_id'] . " and dcl.doc_name_id = 142";
+$data_142 = $fwDb->queryOne($sql_142);
+$fwViewData['file_142'] = $data_142['doc_file_name'];
+$fwViewData['doc_name_142'] = $data_142['admin_doc_name'];
+
+$sql_615 = "SELECT dcl.doc_name_id, dcl.doc_file_name, adcl.admin_doc_name FROM `document_check_list` as dcl left join admin_document_check_list as adcl on adcl.admin_doc_id = dcl.doc_name_id where dcl.doc_bsn_id = " . $data_bsn['bs_business_id'] . " and dcl.doc_name_id = 615";
+$data_615 = $fwDb->queryOne($sql_615);
+$fwViewData['file_615'] = $data_615['doc_file_name'];
+$fwViewData['doc_name_615'] = $data_615['admin_doc_name'];
+
+$sql_527 = "SELECT dcl.doc_name_id, dcl.doc_file_name, adcl.admin_doc_name FROM `document_check_list` as dcl left join admin_document_check_list as adcl on adcl.admin_doc_id = dcl.doc_name_id where dcl.doc_bsn_id = " . $data_bsn['bs_business_id'] . " and dcl.doc_name_id = 527";
+$data_527 = $fwDb->queryOne($sql_527);
+$fwViewData['file_527'] = $data_527['doc_file_name'];
+$fwViewData['doc_name_527'] = $data_527['admin_doc_name'];
+
+$sql_778 = "SELECT dcl.doc_name_id, dcl.doc_live_link, dcl.doc_date_uploaded, adcl.admin_doc_name FROM `document_check_list` as dcl left join admin_document_check_list as adcl on adcl.admin_doc_id = dcl.doc_name_id where dcl.doc_bsn_id = " . $data_bsn['bs_business_id'] . " and dcl.doc_name_id = 778";
+$data_778 = $fwDb->queryOne($sql_778);
+$fwViewData['file_778'] = $data_778['doc_live_link'];
+$fwViewData['date_uploaded_778'] = $data_778['doc_date_uploaded'];
+
+$sql_779 = "SELECT dcl.doc_name_id, dcl.doc_file_name, dcl.doc_date_uploaded, adcl.admin_doc_name FROM `document_check_list` as dcl left join admin_document_check_list as adcl on adcl.admin_doc_id = dcl.doc_name_id where dcl.doc_bsn_id = " . $data_bsn['bs_business_id'] . " and dcl.doc_name_id = 779";
+$data_779 = $fwDb->queryOne($sql_779);
+$fwViewData['file_779'] = $data_779['doc_file_name'];
+$fwViewData['date_uploaded_779'] = $data_779['doc_date_uploaded'];
+
+$sqlpr = "Select * from warranty_log_priority";
+$fwViewData['prdetail'] = $fwDb->query($sqlpr);
+
+$thisTable = new Fw_Db_Table("warranty_log_type");
+$fwViewData['typedetail'] = $thisTable->getAllRows();
+
+$areaTable = new Fw_Db_Table("warranty_log_cgfb");
+$fwViewData['cgfbdetail'] = $areaTable->getAllRows();
+
+$whynotTable = new Fw_Db_Table("warranty_log_why_not");
+$fwViewData['whynotdetail'] = $whynotTable->getAllRows();
+
+$thisLT = new Fw_Db_Table("warranty_log_liability");
+$fwViewData['liadetail'] = $thisLT->getAllRows();
+
+$sqlcc = "select count(*) as tot_chk from warranty_checklist_admin";
+$datacc = $fwDb->queryOne($sqlcc);
+$fwViewData['tot_chk'] =  $datacc['tot_chk'];
+
+$sql_totcd = "Select count(*) as tot_cd from warranty_checklist where ch_wa_id = $id and ch_status IN ('Complete')";
+$cd_data = $fwDb->queryOne($sql_totcd);
+$fwViewData['tot_cd'] = $cd_data['tot_cd'];
+
+$sql_su_update = "select count(*) as tot from warranty_supplier_update where ws_wa_id = $id";
+$cudata = $fwDb->queryOne($sql_su_update);
+if ($cudata['tot'] > 0) {
+	$fwViewData['supplier_upadate'] = true;
+}
+
+$sql_ud = "Select max(ws_date) as update_date from warranty_supplier_update where ws_wa_id = $id";
+$udData = $fwDb->queryOne($sql_ud);
+$fwViewData['update_date'] = $udData['update_date'];
+
+$fwViewData['dayscount'] = '';
+$ccdate = $data_log['wa_date'];
+if (!empty($ccdate)) {
+	$Statusdate = changedate_y_m_d($ccdate);
+	$curdate_y_m_d = date('Y-m-d');
+
+	$date1 = new DateTime($curdate_y_m_d);
+	$date2 = new DateTime($Statusdate);
+
+	$interval = $date1->diff($date2);
+	$dayscount = $interval->days - 1;
+
+	$fwViewData['dayscount'] = daysDifference($curdate_y_m_d, $Statusdate);
+	//$fwViewData['dayscount'] = $dayscount;
+}
+
+$amount_owed = 0;
+if ($data_bsn['bs_business_id']) {
+	$bsn_id = $data_bsn['bs_business_id'];
+
+	$sqlSum = "SELECT SUM( CASE WHEN TRIM(ppd_hia_value) <> '' THEN CAST(REPLACE(REPLACE(ppd_hia_value, '$', ''), ',', '') AS DECIMAL(10,2)) ELSE 0 END ) AS total_hia, SUM( CASE WHEN TRIM(ppd_value) <> '' THEN CAST(REPLACE(REPLACE(ppd_value, '$', ''), ',', '') AS DECIMAL(10,2)) ELSE 0 END ) AS total_ppd FROM progress_payment_detail WHERE ppd_bsn_id =" . $bsn_id;
+	$sumRow = $fwDb->queryOne($sqlSum);
+
+	$total_hia = isset($sumRow['total_hia']) ? (float)$sumRow['total_hia'] : 0;
+	$total_ppd = isset($sumRow['total_ppd']) ? (float)$sumRow['total_ppd'] : 0;
+	$amount_owed = $total_hia - ($total_ppd);
+}
+$fwViewData['bsn_id'] = $data_bsn['bs_business_id'];
+$fwViewData['amount_owed'] = ($amount_owed >= 0 ? '$' : '-$') . number_format(abs($amount_owed), 2);
+
+
+$sql_nt = "SELECT MAX(wn_created_at) as notes_date from warranty_log_notes where wn_wa_id = $id";
+$ntdata = $fwDb->queryOne($sql_nt);
+
+$sql_nt2 = "SELECT MAX(ws_date) as notes_date2 from warranty_supplier_update where ws_wa_id = $id";
+$ntdata2 = $fwDb->queryOne($sql_nt2);
+
+$lnsql_1 = "select wn_notes from warranty_log_notes where wn_created_at = '" . $ntdata['notes_date'] . "' and wn_wa_id = $id";
+$nd_1 = $fwDb->queryOne($lnsql_1);
+
+$lnsql_2 = "select ws_update_text from warranty_supplier_update where ws_date = '" . $ntdata2['ws_date'] . "' and ws_wa_id = $id";
+$nd_2 = $fwDb->queryOne($lnsql_2);
+
+$query = 'SELECT wn_created_at, wn_notes FROM warranty_log_notes WHERE wn_wa_id = ' . $id . ' ORDER BY wn_created_at DESC';
+$note1Data = $fwDb->queryOne($query);
+
+$query = 'SELECT ws_date, ws_update_text FROM warranty_supplier_update WHERE ws_wa_id = ' . $id . ' ORDER BY ws_date DESC';
+$note2Data = $fwDb->queryOne($query);
+
+if(strtotime($note1Data['wn_created_at']) > strtotime($note2Data['ws_date'])) {
+	$fwViewData['notes_date'] = date('d-M-Y', strtotime($note1Data['wn_created_at']));
+	$fwViewData['notes_text'] = $note1Data['wn_notes'];
+}
+else {
+	$fwViewData['notes_date'] = date('d-M-Y', strtotime($note2Data['ws_date']));
+	$fwViewData['notes_text'] = $note2Data['ws_update_text'];
+}
+
+// if (strtotime($ntdata['notes_date']) > strtotime($ntdata2['notes_date2'])) {
+// 	$ndate =  $ntdata['notes_date'];
+// 	$fwViewData['notes_date'] = changedate_d_m_y($ndate);
+// 	$fwViewData['notes_text'] = $nd_1['wn_notes'];
+// } else {
+// 	$ndate =  $ntdata2['notes_date2'];
+// 	$fwViewData['notes_date'] = changedate_d_m_y($ndate);
+// 	$fwViewData['notes_text'] = $nd_2['ws_update_text'];
+// }
+
+$sql100 = "select sa_co_id from supplier_warranty where sa_wa_id = $id";
+$data100 = $fwDb->query($sql100);
+
+$red = 0;
+foreach ($data100 as $k10 => $v10) {
+	$sql101 = "Select se_co_id from supplier_email_warranty where se_co_id = " . $v10['sa_co_id'] . " and se_wa_id = $id";
+	$found = $fwDb->query($sql101);
+	if (empty($found)) {
+		$red = 1;
+	}
+}
+$fwViewData['wa_selected'] = $red;
+
+
+$sql_11 = "Select  DATEDIFF(STR_TO_date(wn_due_date, '%d-%m-%Y'), CURDATE()) as diff_wn from warranty_log_notes where wn_wa_id = $id and DATEDIFF(STR_TO_date(wn_due_date, '%d-%m-%Y'), CURDATE()) < 0 and wn_resolved = 0 ";
+$data11 = $fwDb->query($sql_11);
+
+$sql_22 = "Select DATEDIFF(STR_TO_date(ws_due_date, '%d-%m-%Y'), CURDATE()) as diff_ws from warranty_supplier_update where ws_wa_id = $id and DATEDIFF(STR_TO_date(ws_due_date, '%d-%m-%Y'), CURDATE()) < 0 and ws_resolved = 0 ";
+$data22 = $fwDb->query($sql_22);
+
+if (!empty($data11) || !empty($data22)) {
+	$fwViewData['cell_red'] = 1;
+} else {
+	$fwViewData['cell_red'] = 0;
+}
+
+$sqlenq = "Select we_answer from warranty_enquiry where we_wa_id = $id";
+$ansdata = $fwDb->query($sqlenq);
+$fwViewData['enquiry_pen'] = 0;
+foreach ($ansdata as $k4 => $v4) {
+	if (strlen(trim($v4['we_answer'])) == 0 || $v4['we_answer'] == NULL) {
+		$fwViewData['enquiry_pen'] = 1;
+		break;
+	}
+}
+
+//Count Unanswered
+$query_unanswered = "SELECT COUNT(*) AS count_unanswered FROM warranty_enquiry WHERE we_wa_id = $id AND ( we_answer IS NULL OR TRIM(we_answer) = '' )";
+$result_unanswered = $fwDb->queryOne($query_unanswered);
+$fwViewData['count_unanswered'] = $result_unanswered['count_unanswered'];
+
+$query = 'SELECT COUNT(*) AS total FROM warranty_log WHERE wa_project = "' . $data_log['wa_project'] . '" AND wa_status IN ("Open", "Pending")';
+$result = $fwDb->queryOne($query);
+$fwViewData['total_open_logs'] = $result['total'] ?? 0;
+
+//echo "<pre>"; print_r($data_log); exit();
+//echo "<pre>"; print_r($data_bsn); exit();
+
+$query = 'SELECT * FROM `warranty_log_workmanship_defect` ORDER BY wlwd_name ASC';
+$result = $fwDb->query($query);
+$fwViewData['warranty_log_workmanship_defect'] = $result;
+
+$query = 'SELECT * FROM procedure_panel_warranty WHERE pr_id = 30';
+$result = $fwDb->queryOne($query);
+$fwViewData['zoho_link'] = isset($result['pr_link']) ? $result['pr_link'] : '';
+
+$sql_review = "Select bsn_google_review from business where bsn_id = " . $data_bsn['bs_business_id'];
+$result_review = $fwDb->queryOne($sql_review);
+$fwViewData['google_review'] = $result_review['bsn_google_review'];

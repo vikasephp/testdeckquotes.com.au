@@ -1,0 +1,63 @@
+
+body {
+	background-color: #FFF;
+	background-image: url(white_background_watermark.gif);
+	background-position: right bottom;
+	background-repeat: no-repeat;
+	margin: 20px 60px 20px 60px;
+}
+
+a {
+	color: #369;
+}
+a:hover {
+	color: #69C;
+}
+
+blockquote, label, li, dd, div, dt, p, td, th {
+	font-family: Tahoma, Verdana, Helvetica, sans-serif;
+	font-size: 10pt;
+}
+
+blockquote {
+	font-style: italic;
+}
+
+dt {
+	color: #F63;
+	font-size: 10pt;
+	font-weight: lighter;
+}
+
+dd {
+	padding-bottom: 10px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	color: #F63;
+	font-family: Verdana, Helvetica, sans-serif;
+	font-weight: lighter;
+}
+
+h1 {
+	font-size: 14pt;
+	text-align: center;
+}
+
+h2 {
+	font-size: 14pt;
+}
+
+h3 {
+	font-size: 11pt;
+}
+
+h4 {
+	font-size: 10pt;
+}
+
+pre, xmp {
+	background: #EEE;
+	font-family: "Courier New", Courier, monospace;
+	padding: 10px;
+}

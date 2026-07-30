@@ -1,0 +1,72 @@
+<script type="text/javascript" language="javascript" src="{{$BASE_URL}}js/form_validator/gen_validatorv31.js"></script>
+<script type="text/javascript" src="{{$BASE_URL}}css/default/load.js"></script>
+<script type="text/javascript" src="{{$BASE_URL}}js/calendar/datepicker.js"></script>
+<link type="text/css" rel="stylesheet" href="{{$BASE_URL}}js/calendar/datepicker.css">
+<link rel="stylesheet" type="text/css" href="{{$BASE_URL}}css/default/cis-styles2.css" />
+<script type="text/javascript" src="{{$BASE_URL}}js/calendar/datepicker.js"></script>
+<script>
+	!window.jQuery && document.write('<script src="{{$BASE_URL}}js/fancybox/jquery-1.4.3.min.js"><\/script>');
+</script>
+<script type="text/javascript" src="{{$BASE_URL}}js/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+<link rel="stylesheet" type="text/css" href="{{$BASE_URL}}js/fancybox/jquery.fancybox-1.3.4.css" media="screen" />
+{{if $opr}}
+<script type="text/javascript">
+	setTimeout('parent.close_win();', 500);
+</script>
+{{/if}}
+<div align="center" style="min-height:350px; z-index:9999999;">
+	<h3 class="page-title"><br />{{ $page_title }}</h3>
+	<form name="detail" method="post" action="" enctype="multipart/form-data">
+		<div
+			style="float:right; margin-right:10px; background: #09F; color:#FFF !important; padding:6px; margin-bottom:5px;">
+			<a href="{{$BASE_URL}}{{ $BASEFOLDER }}.{{ $ATTRIBUTES.mistake_log_category.add_fle_name }}" class="various" title="Add" style="color:#FFF; text-decoration:none; font-size:14px;">
+				Add New {{ $ATTRIBUTES.mistake_log_category.name }}
+			</a>
+		</div>
+		<table id="list-table" width="99%">
+			<tr>
+				<th width="10%">Sr. No.</th>
+				<th width="75%">Option</th>
+				<th width="15%">Action</th>
+            </tr>
+			{{if $resultdata}}
+			{{assign var=catcount value=1}}
+            {{foreach from=$resultdata key="key" item="item"}}
+			<tr>
+				<td>{{$catcount}}</td>
+				<td>
+					{{ assign var=mistake_log_category value=$ATTRIBUTES.mistake_log_category.option_col }}
+					{{$item.$mistake_log_category}}
+				</td>
+				<td>
+                    <a href="{{ $BASE_URL }}{{ $BASEFOLDER }}.{{ $ATTRIBUTES.mistake_log_category.add_fle_name }}/{{ $primary_id }}/{{ $item.$primary_id }}" class="various" title="Edit"><img style="height:20px; width:20px;" src="{{ $BASE_URL }}css/admin/images/edit.png" alt="" /></a>
+					<a href="{{ $BASE_URL }}{{ $BASEFOLDER }}.{{ $ATTRIBUTES.mistake_log_category.delete_fle_name }}/{{ $primary_id }}/{{ $item.$primary_id }}" onclick="javascript:if(!confirm('Are you sure you want to delete the record?')) return false;" title="Delete"><img style="height: 16px;; width:16px" src="{{ $BASE_URL }}css/admin/images/deletecross.png" alt="" /></a>
+				</td>
+			</tr>
+			{{assign var=catcount value=$catcount+1}}
+			{{/foreach}}
+			{{else}}
+			<tr>
+				<td colspan="3" style="text-align:center;">No Data</td>
+			</tr>
+			{{/if}}
+		</table>
+        <br />
+        <br />
+		<input type="button" name="btnCancelDetail" value="Close" onclick="javascript:closepop();" class="vsml" />
+	</form>
+	<script type="text/javascript">
+		function closepop() {
+			setTimeout(function() {
+				parent.$.fancybox.close();
+			}, 500);
+		}
+	</script>
+	<script type="text/javascript" language="javascript">
+		var frmvalidator = new Validator("detail");
+		frmvalidator.EnableMsgsTogether();
+	</script>
+</div>
+<script>
+	initSample();
+</script>

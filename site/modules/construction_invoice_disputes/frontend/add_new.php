@@ -1,0 +1,60 @@
+<?php
+$fwMainView = 'file:' . getcwd() . '/add_new.tpl';
+
+$fwViewData['primary_id'] = $primary_id = 'ldd_id';
+$tableTask = new Fw_Db_Table($TABLE);
+
+$user_id = $_SESSION['user']['user_id'];
+$submit = $fwRequest->getParam('subAddDetail', '');
+if (!empty($submit)) {
+	$detail = $fwRequest->getParam($TABLE, array());
+	$this_id = (int)$detail[$primary_id];
+	unset($detail[$primary_id]);
+	
+	if (!empty($_FILES[$TABLE]['name']['ldd_invoice_file'])) {		
+		$file = $_FILES[$TABLE];
+		$docfile_1 = $file['name']['ldd_invoice_file'];
+		//echo "<pre>"; print_r($docfile_1); exit('Checking');
+		$docfile_1 = preg_replace('/[^A-Z0-9._]/i', '_', $docfile_1);
+
+		$temp_name_1 = $file['tmp_name']['ldd_invoice_file'];
+
+		$fileUploaded = upload($docfile_1, $temp_name_1);
+		$detail['ldd_invoice_file'] = $docfile_1;
+	}
+
+    $sql = "SELECT bsn_id, bsn_name, bsn_address from business where (bsn_sub_status = 'Open' or bsn_sub_status = 'Lost') AND bsn_name = '" . $detail['ldd_bsn_id'] . "'";
+    $res = $fwDb->queryOne($sql);
+    $detail['ldd_bsn_id'] = $res['bsn_id'];
+    $detail['ldd_type_id'] = $DEFAULT_TYPE_ID;
+	if ($this_id > 0) {
+		unset($detail[$primary_id]);
+		$tableTask->setWhere("$primary_id = $this_id");
+		$opr = $tableTask->updateRow($detail);
+	} else {
+		$opr = $tableTask->insertRow($detail);
+	}
+	$fwViewData['opr'] = $opr;
+}
+$this_id = (int)$fwRequest->getParam($primary_id, 0);
+if ($this_id > 0) {
+	$tableTask = new Fw_Db_Table($TABLE);
+	$tableTask->setWhere("$primary_id = $this_id");
+	$detail = $tableTask->getRow();
+	$sql = "SELECT bsn_id, bsn_name, bsn_address from business where (bsn_sub_status = 'Open' or bsn_sub_status = 'Lost') AND bsn_id = '" . $detail['ldd_bsn_id'] . "'";
+    $res = $fwDb->queryOne($sql);
+	$detail['ldd_bsn_id'] = $res['bsn_name'];
+	$fwViewData['detail'] = $detail;
+	$fwViewData['title'] = 'Edit ' . $MODULE_SINGULAR;
+} else {
+	$fwViewData['title'] = 'Add ' . $MODULE_SINGULAR;
+}
+
+$thisTable = new Fw_Db_Table('construction_invoice_disputes_type');
+$fwViewData['typedata'] = $thisTable->getAllRows();
+
+$thisTable = new Fw_Db_Table('construction_invoice_disputes_status');
+$fwViewData['statusdata'] = $thisTable->getAllRows();
+
+$sql = "SELECT bsn_id, bsn_name, bsn_address from business where bsn_sub_status = 'Open' or bsn_sub_status = 'Lost'";
+$fwViewData['projdetail'] = $fwDb->query($sql);

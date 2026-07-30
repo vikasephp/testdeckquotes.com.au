@@ -1,0 +1,11 @@
+<?php
+$this_id = (int)$fwRequest->getparamget('dhd_id', 0);
+
+if($this_id > 0)
+	{
+		$thisTable = new Fw_Db_Table('document_ohs_docs');
+		$thisTable->setWhere("dhd_id = $this_id");
+		$thisTable->deleteRow();
+echo "delete.";				
+	}
+exit;

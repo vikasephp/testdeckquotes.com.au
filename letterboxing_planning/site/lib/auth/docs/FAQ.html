@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Frequently Asked Questions.</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <link href="../styles/styles.css" rel="stylesheet" type="text/css" />
+    <meta name="author" content="Julio César Carrascal Urquijo" />
+    <link rev="made" href="mailto:jcesar@phreaker.net" />
+  </head>
+
+  <body>
+    <h1>Frequently Asked Questions.</h1>
+
+    <ul>
+      <li><a href="#installation">Installation.</a></li>
+
+      <li><a href="#working">Working with Auth Suite.</a></li>
+
+      <li><a href="#question">I have a question.</a></li>
+    </ul>
+
+    <h2 id="installation">Installation.</h2>
+
+    <dl>
+      <dt>What version of X is supported?</dt>
+
+      <dd>We have tested <strong>Auth Suite</strong> with PHP 4.0.4pl1, PHP 4.0.5, PHP
+      4.0.6, PHP 4.1.0, PHP 4.1.1, PHP 4.2.0, PHP 4.2.1 with Apache 1.3.23 and MySQL
+      3.23.49 on Windows 98 SE and Windows XP. Other versions and platforms should work
+      but we haven't test it.</dd>
+
+      <dt>What is ADOdb or the adodb.inc.php?</dt>
+
+      <dd>ADOdb is a Database Abstraction Layer. What that means is that with a little
+      luck every software written with ADOdb will work with MySQL or Oracle or MS-SQL
+      Server. Even if you only use one database server at a time, ADOdb lets you learn
+      one commont syntax to access every server API. ADOdb also has some neat features
+      that you will be interested in like "Storing Sessions in the Database", "Error
+      Handling" and "Database Proxy Servers". You can download ADOdb from <a
+      href="http://php.weblogs.com/">PHP Everywere</a>.</dd>
+
+      <dt>What do I need to run Auth Suite in my server?</dt>
+
+      <dd>A working Web Server (obviusly) with a recent PHP module. Version PHP 4.0.4 and
+      up will be fine. A Database Server is needed to store the database accounts. And
+      ADOdb wich you can download from <a href="http://php.weblogs.com/">PHP
+      Everywere</a>.</dd>
+
+      <dt>The first page makes the login, but subsequents request don't.</dt>
+
+      <dd>Use the <a href="../check.php">check.php</a> script to see if your sessions are
+      working. Also check the directory pointed by the session.save_path parameter in
+      your PHP.INI file.</dd>
+
+      <dt>Nothing is written in the session file on the server, just user|N;</dt>
+
+      <dd>Your sessions are broken. Version 4.1.2 of PHP makes the session read only so
+      you can't save anything. Upgrade to a newer verion of PHP.</dd>
+
+      <dt>Wich files do I need to upload to my server?</dt>
+
+      <dd>You always need the files Auth.php and authCallback.php. If you are using
+      groups then you also need GroupAuth.php. If you are using roles you'll need
+      RoleAuth.php. Just remember that RoleAuth.php doesn't depends on GroupAuth.php nor
+      the other way.</dd>
+    </dl>
+
+    <h2 id="working">Working with Auth Suite.</h2>
+
+    <dl>
+      <dt>What are the newAuth(), newGroupAuth() and newRoleAuth() functions in your
+      examples?</dt>
+
+      <dd>Those are some utility functions so I don't have to write the same
+      initialization code over and over again. You can use those same functions if you
+      don't want to modify the Auth.php file to set the database connection
+      information.</dd>
+
+      <dt>I've added a new account in the database but auth tells me that the account is
+      invalid</dt>
+
+      <dd>Remember that Auth Suite uses md5() encripted passwords so in the database the
+      account should look like: <code>username=adnoctum,
+      password=0d39755ef41510da4a95cb6c9d63b92a</code>. to generate this password I've
+      used this script: <code>&lt;?php echo md5('adnoctum'); ?&gt;</code></dd>
+
+      <dt>Wich class should I use?</dt>
+
+      <dd>That depends on your needs. If you only need to allow/disallow access to your
+      users in some of your pages, then the simple Auth class will be anything you need.
+      For more complicated systems where your users have access to some areas of your
+      website deppending on to wich group they belong then the AuthGroup is the best
+      choice for you; but if your system is in need of a more flexible configuration
+      where new groups will be created and mantained w/o modifyng source code, then use
+      the more complex but flexible RoleAuth. The complexity here, though, is in the
+      database.</dd>
+
+      <dt>Can I use Auth in some scripts, GroupAuth in another and RoleAuth in
+      others?</dt>
+
+      <dd>Yes, they all share the same session as long as they use the same database
+      squema. So if, for example, a user identifies in a script using Auth he is
+      identified in all scripts. You can verify this by navigating betwen Example 2 and
+      Example 3. Example 1 uses a diferent squema so you will have to identify
+      again.</dd>
+
+      <dt>How do I do a LostPassword.php script?</dt>
+
+      <dd>Since we only store a Hash of the password (Ex: if a password is "secret" we
+      store "5ebe2294ecd0e0f08eab7690d2a6ee69") then there is no posible way to obtain
+      the password except brute force. A better way is to generate a random password,
+      send it by email to your user and ask him to change it as soon as posible. This
+      aproach is more secure any way.</dd>
+
+      <dt>How do I retrieve the user_id, username and other information of the user?</dt>
+
+      <dd>Auth Suite mantains an associative array with the information of the user. You
+      can access that information using <code>$auth-&gt;user['username']</code> or
+      <code>$auth-&gt;user['user_id']</code></dd>
+
+      <dt>How do I know to wich groups/roles the user has access to?</dt>
+
+      <dd>When using GroupAuth there is an extra field in the "user" array where the
+      groups the user belongs to are stored. You can access this information like
+      this:</dd>
+
+      <dd>
+<pre>
+if ($auth-&gt;user['::groups::']['admin']) {
+    // do something for admins only
+}
+</pre>
+      </dd>
+
+      <dd>RoleAuth has a corresponding <code>$auth-&gt;user['::roles::']</code> array
+      that you can use to know wich roles a user has. <strong>NOTE:</strong> When using
+      RoleAuth there isn't a <code>'::groups::'</code> array nor there is a
+      <code>'::roles::'</code> array when using GroupAuth.</dd>
+    </dl>
+
+    <h2>I have a question.</h2>
+
+    <p>Can't find what you are looking for? As you see this FAQ is still too short so
+    just drop me an email to <a
+    href="mailto:jcesar@phreaker.net?subject=[Auth%20Suite]%20FAQ.">jcesar@phreaker.net</a>,
+    I'll be glad to read your questions and comments.</p>
+  </body>
+</html>
+

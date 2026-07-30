@@ -1,0 +1,109 @@
+<?php
+/**
+ * Smarty plugin
+ * @category VaselinEngine
+ * @package Smarty
+ * @subpackage plugins
+ 
+
+
+*
+ * Smarty {tinymce} function plugin
+ *
+ * Type:     function<br>
+ * Name:     tinymce<br>
+ * Purpose:  print out a tinymce WYSIWYG editor. Used by Bel_Forms_Builder but could be used everywhere
+ * @author Konstantin Shamko <konstantin.shamko@gmail.com>
+ * @param array parameters
+ * @param Smarty
+ * @return string|null
+ */
+function smarty_function_tinymce($params, &$smarty) {
+
+        $Cols  = isset($params['Cols']) ? (int) $params['Cols'] : 100;
+        $Rows = isset($params['Rows']) ? (int) $params['Rows'] : 30;
+        $text   = isset($params['Value']) ? stripslashes(trim($params['Value'])) : '';
+        $name   = isset($params['InstanceName']) ? trim($params['InstanceName']) : 'editor';    
+		$Class   = isset($params['Class']) ? trim($params['Class']) : 'tinymce'; 
+        print '<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+<script type="text/javascript">
+	google.load("jquery", "1");
+</script>
+
+<script type="text/javascript" src="'.BASE_URL.'js/tiny_mce/jquery.tinymce.js"></script>
+<script type="text/javascript">
+	$().ready(function() {
+		$("textarea.'.$Class.'").tinymce({
+
+			script_url : "'.BASE_URL.'js/tiny_mce/tiny_mce.js",
+			theme : "advanced",
+			plugins : "autolink,lists,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,advlist",
+			theme_advanced_buttons1 : "save,newdocument,|,bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,styleselect,formatselect,fontselect,fontsizeselect",
+			theme_advanced_buttons2 : "cut,copy,paste,pastetext,pasteword,|,search,replace,|,bullist,numlist,|,outdent,indent,blockquote,|,undo,redo,|,link,unlink,anchor,image,cleanup,help,code,|,insertdate,inserttime,preview,|,forecolor,backcolor",
+			theme_advanced_buttons3 : "tablecontrols,|,hr,removeformat,visualaid,|,sub,sup,|,charmap,emotions,iespell,media,advhr,|,print,|,ltr,rtl,|,fullscreen",
+			theme_advanced_buttons4 : "insertlayer,moveforward,movebackward,absolute,|,styleprops,|,cite,abbr,acronym,del,ins,attribs,|,visualchars,nonbreaking,template,pagebreak",
+			theme_advanced_toolbar_location : "top",
+			theme_advanced_toolbar_align : "left",
+			theme_advanced_statusbar_location : "bottom",
+			theme_advanced_resizing : true,
+			file_browser_callback : "ajaxfilemanager",
+			template_external_list_url : "lists/template_list.js",
+			external_link_list_url : "lists/link_list.js",
+			external_image_list_url : "lists/image_list.js",
+			media_external_list_url : "lists/media_list.js",
+			 relative_urls : false,
+       		 remove_script_host : false,
+			template_replace_values : {
+				username : "Some User",
+				staffid : "991234"
+			}
+		});
+	});
+	
+function ajaxfilemanager(field_name, url, type, win) {
+			var ajaxfilemanagerurl = "'.BASE_URL.'js/tiny_mce/plugins/ajaxfilemanager/ajaxfilemanager.php";
+			var view = "detail";
+			switch (type) {
+				case "image":
+				view = "thumbnail";
+					break;
+				case "media":
+					break;
+				case "flash": 
+					break;
+				case "file":
+					break;
+				default:
+					return false;
+			}
+            tinyMCE.activeEditor.windowManager.open({
+                url: "'.BASE_URL.'js/tiny_mce/plugins/ajaxfilemanager/ajaxfilemanager.php?view=" + view,
+                width: 782,
+                height: 440,
+                inline : "yes",
+                close_previous : "no"
+            },{
+                window : win,
+                input : field_name
+            });
+			            return false;			
+			var fileBrowserWindow = new Array();
+			fileBrowserWindow["file"] = ajaxfilemanagerurl;
+			fileBrowserWindow["title"] = "Ajax File Manager";
+			fileBrowserWindow["width"] = "782";
+			fileBrowserWindow["height"] = "440";
+			fileBrowserWindow["close_previous"] = "yes";
+			tinyMCE.openWindow(fileBrowserWindow, {
+			  window : win,
+			  input : field_name,
+			  resizable : "yes",
+			  inline : "yes",
+			  editor_id : tinyMCE.getWindowArg("tinymce")
+			});
+			
+			return false;
+
+			}
+</script>
+<textarea name="'.$name.'" id="'.$name.'" class="'.$Class.'" rows="'.$Rows.'" cols="'.$Cols.'">'.$text.'</textarea>';
+}

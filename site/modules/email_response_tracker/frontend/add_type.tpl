@@ -1,0 +1,47 @@
+<script type="text/javascript" src="{{$BASE_URL}}css/default/load.js"></script>
+<link rel="stylesheet" type="text/css" href="{{$BASE_URL}}css/default/cis-styles.css" />
+
+{{if $opr}}
+<script type="text/javascript">
+//setTimeout('parent.close_win();', 500);
+window.location.href = "{{$BASE_URL}}email_response_tracker.view_type";
+</script>
+{{/if}}
+
+<div align="center" style="min-height:350px; margin-top:50px; z-index:999999 !important;">
+    <h3 class="page-title">Add/Edit New Type Option</h3>    
+   
+   
+<form name="detail" method="post" action=""  enctype="multipart/form-data">
+<table id="list-table" width="100%">
+    <input type="hidden" name="task[et_id]" value="{{$detail.et_id}}" />
+   
+   
+    <tr>
+     <th>Type Option </th>
+     <td>
+          <input type="text"  name="task[et_option]" style ="width:700px" value="{{$detail.et_option}}"  required="required"/>
+      </td>
+    </tr>
+   
+
+  
+       
+    <tr>
+        <td colspan="2" style="text-align:center;">
+          <input type="submit" name="subAddDetail" value="Save" class="vsml" />
+          <input type="button" name="btnCancelDetail" value="Close" onclick="javascript:closepop();" class="vsml" />
+        </td>
+    </tr>
+</table>
+</form>
+    
+        <script type="text/javascript">
+		function closepop()
+		{
+		//setTimeout('parent.close_win();', 500);
+		window.location.href = "{{$BASE_URL}}email_response_tracker.view_type";
+		}
+	</script>
+    
+</div>

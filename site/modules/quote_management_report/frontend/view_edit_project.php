@@ -1,0 +1,84 @@
+<?php
+$fwMainView = 'file:' . getcwd() . '/view_edit_project.tpl';
+
+$thisTable = new Fw_Db_Table('quote_builder_component');
+$fwViewData['componentData'] = $thisTable->getAllRows();
+
+$sql = "SELECT  bsn_id, bsn_name from business";
+$fwViewData['projdetail'] = $fwDb->query($sql);
+
+$table_qmr = new Fw_Db_Table('quote_management_report');
+$fwViewData['qmrData'] = $table_qmr->getAllRows();
+
+$submit = $fwRequest->getParam('subAddDetail', '');
+
+if (!empty($submit)) {
+    $detail = $fwRequest->getParam('qmr', array());
+    $total_quotes = $fwRequest->getParam('total_quotes', array());
+    $fwViewData['detail'] = $detail;
+
+    $projectName = trim($detail['qm_project']);
+    $components = $detail['components'] ?? [];
+
+    if (!empty($projectName) && !empty($components)) {
+        foreach ($components as $qb_id => $action) {
+            if ((int)$action > 0 && !empty($qb_id)) {
+                $qb_id_safe = (int)$qb_id;
+                $action_safe = (int)$action;
+                $projectNameSafe = addslashes(trim($projectName));
+
+                $sql_check = "SELECT COUNT(*) as count FROM quote_management_report WHERE qm_project = '$projectNameSafe' AND qm_component = $qb_id_safe";
+                $existingRows = $fwDb->queryOne($sql_check);
+                $existingRows = is_array($existingRows) ? $existingRows['count'] : 0;
+
+                if ($existingRows > 0) {
+                    $whereClause = "qm_project = '$projectNameSafe' AND qm_component = $qb_id_safe";
+
+                    $sql_update = "UPDATE quote_management_report SET qm_component_action = $action_safe WHERE $whereClause";
+                    $fwDb->queryOne($sql_update);
+                } else {
+                    if($action_safe != 1) {
+                        $table_qmr->insertRow([
+                            'qm_project' => $projectNameSafe,
+                            'qm_component' => $qb_id_safe,
+                            'qm_component_action' => $action_safe
+                        ]);
+                    }                    
+                }
+
+                $totalOldRecords = $detail['qm_component_count'][$qb_id_safe] ?? 0;
+                if($action_safe == 1 && isset($total_quotes[$qb_id_safe]) && $total_quotes[$qb_id_safe] >= 1 && $total_quotes[$qb_id_safe] > $totalOldRecords) {
+                    $totalNewRecordsToCreate = $total_quotes[$qb_id_safe] - $totalOldRecords;
+                    for($i = 1; $i<=$totalNewRecordsToCreate; $i++) {
+                        $table_qmr->insertRow([
+                            'qm_project' => $projectNameSafe,
+                            'qm_component' => $qb_id_safe,
+                            'qm_component_action' => $action_safe
+                        ]);
+                    }
+                }
+
+                $opr = true;
+            }
+        }
+    }
+
+    $fwViewData['opr'] = $opr ?? false;
+    unset($_SESSION['selected_project']);
+}
+
+$selectedProject = $fwRequest->getParam('selected_project', '');
+if (!empty($selectedProject)) {
+    $_SESSION['selected_project'] = $selectedProject;
+    $fwViewData['detail']['qm_project'] = $_SESSION['selected_project'];
+    $fwViewData['project_get'] = $_SESSION['selected_project'];
+
+    $query = 'SELECT qm_component, COUNT(*) AS total FROM quote_management_report WHERE qm_project = "' . $selectedProject . '" GROUP BY qm_component;';
+    $result = $fwDb->query($query);
+    $qm_component_count = [];
+    foreach($result as $row) {
+        $qm_component_count[$row['qm_component']] = $row['total'];
+    }
+    // db($qm_component_count);
+    $fwViewData['qm_component_count'] = $qm_component_count;
+}

@@ -1,0 +1,84 @@
+body{
+
+color:#ff0000;
+font-family:Tahoma, Geneva, sans-serif;
+font-size:11px;
+padding-bottom:5px;
+} 
+
+.TextBox
+        {
+            FONT-WEIGHT: normal;
+            color:#777777;
+            FONT-STYLE: normal;
+            FONT-FAMILY: tahoma;
+            FONT-SIZE: 11px;
+            margin-left:3px;
+            margin-bottom:8px;
+	        HEIGHT:22px;
+	        width:202px;
+	        border:1px solid #CCC;
+padding:5px 0 0 5px;
+
+        }
+
+
+        .Labels
+        {
+	        color:#777777;
+	        font-size:11px;
+	        font-family:Tahoma, Geneva, sans-serif;
+	        margin-right:3px;
+			vertical-align: top;
+        }
+        
+
+
+.Combo {
+FONT-WEIGHT: normal;
+color:#777777;
+FONT-FAMILY: tahoma;
+margin-left:3px;
+FONT-SIZE: 10px;
+HEIGHT:28px;
+width:209px;
+border:1px solid #CCC;
+padding-bottom:5px;
+padding-top:5px;
+margin-bottom:8px;
+}
+
+        
+       .ButtonForm
+        {
+            Height:20px;
+            width:58px;
+            border-style:solid;
+            border-color:#98AA0A;
+            border-width:1px;
+            Font-Size:11px;
+            color:#ffffff;
+            background-color:#98AA0A;
+            font-style:normal;
+            font-family:Verdana;
+            padding-bottom:3px;
+        }
+
+        
+        .Frmleft
+        {
+	        color:#575757;
+	        font-size:11px;
+	        font-family:Tahoma, Geneva, sans-serif;
+
+	        text-align: left;
+        }
+        
+        .Frmright
+        {
+	        color:#575757;
+	        font-size:11px;
+	        font-family:Tahoma, Geneva, sans-serif;
+	        text-align: right;
+                        padding-bottom:5px;
+        }

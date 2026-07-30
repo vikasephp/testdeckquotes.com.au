@@ -1,0 +1,1136 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Class: Auth</title>
+    <link href="../styles/styles.css" rel="stylesheet" type="text/css" />
+  </head>
+
+  <body>
+    <h1>Class: Auth</h1>
+<pre>
+public    class Auth
+</pre>
+
+    <p>User authentication component. This is the basic authentication component; you can use this class if you only need toallow/disallow access to a page. If you need groups and roles support see the classGroupAuth and the class RoleAuth documentation. </p>
+
+    <p><code>Auth<br></code></p>
+
+    <table border="0">
+
+
+
+
+      <tr valign="top">
+        <th>Author(s):</th>
+
+        <td>Julio César Carrascal Urquijo &lt;<a href="mailto:jcesar@phreaker.net">jcesar@phreaker.net</a>&gt;</td>
+      </tr>
+
+
+
+
+      <tr valign="top">
+        <th>Version:</th>
+
+        <td>2.4 pl3</td>
+      </tr>
+
+
+
+
+
+
+      <tr valign="top">
+        <th>Direct known subclasses:</th>
+
+        <td><a href="GroupAuth.html">GroupAuth</a>, <a href="RoleAuth.html">RoleAuth</a></td>
+      </tr>
+
+
+
+
+    </table>
+
+
+    <h2>Public Method Summary</h2>
+
+    <dl>
+
+
+      <dt>void <a href="#function_Auth()">Auth([ string $options ])</a></dt>
+
+      <dd>Constructor.</dd>
+
+
+      <dt>void <a href="#function_startSession()">startSession()</a></dt>
+
+      <dd>Initialize the session.</dd>
+
+
+      <dt>void <a href="#function_forceLogin()">forceLogin()</a></dt>
+
+      <dd>Force the user to identify him self.</dd>
+
+
+      <dt>void <a href="#function_logout()">logout()</a></dt>
+
+      <dd>Delete all session information and logout the user.</dd>
+
+
+      <dt>void <a href="#function_refreshInfo()">refreshInfo()</a></dt>
+
+      <dd>Updates the user's information from the database.</dd>
+
+    </dl>
+
+
+    <h2>Private Method Summary</h2>
+
+    <dl>
+
+
+      <dt>void <a href="#function__callback()">_callback(int $action, [ string $message ])</a></dt>
+
+      <dd>Just calls the callback function and dies.</dd>
+
+
+      <dt>void <a href="#function__connect()">_connect()</a></dt>
+
+      <dd>Connect to the database only if necesary.</dd>
+
+
+      <dt>array <a href="#function__findByUsername()">_findByUsername(string $username, string $password)</a></dt>
+
+      <dd>Search the user in the database by his username and password.</dd>
+
+
+      <dt>array <a href="#function__findById()">_findById(int $userId)</a></dt>
+
+      <dd>Search the user in the database by his user_id field.</dd>
+
+
+      <dt>bool <a href="#function__checkSession()">_checkSession()</a></dt>
+
+      <dd>Validates the current session.</dd>
+
+    </dl>
+
+
+
+    <h2>Public Field Summary</h2>
+
+    <table border="0">
+
+
+      <tr valing="top">
+        <td>array</td>
+
+        <td><a href="#variable_$user">$user</a></td>
+
+        <td>Holds user information.</td>
+      </tr>
+
+
+      <tr valing="top">
+        <td>boolean</td>
+
+        <td><a href="#variable_$isIdentified">$isIdentified</a></td>
+
+        <td>If the user has been identified</td>
+      </tr>
+
+
+      <tr valing="top">
+        <td>string</td>
+
+        <td><a href="#variable_$cacheLevel">$cacheLevel</a></td>
+
+        <td>Wich cache level to use.</td>
+      </tr>
+
+
+      <tr valing="top">
+        <td>string</td>
+
+        <td><a href="#variable_$dbdriver">$dbdriver</a></td>
+
+        <td>Database driver. Example 'mysql', 'mssql', 'oci8'...</td>
+      </tr>
+
+
+      <tr valing="top">
+        <td>string</td>
+
+        <td><a href="#variable_$hostname">$hostname</a></td>
+
+        <td>Database hostname server.</td>
+      </tr>
+
+
+      <tr valing="top">
+        <td>string</td>
+
+        <td><a href="#variable_$username">$username</a></td>
+
+        <td>Database username</td>
+      </tr>
+
+
+      <tr valing="top">
+        <td>string</td>
+
+        <td><a href="#variable_$password">$password</a></td>
+
+        <td>Database password</td>
+      </tr>
+
+
+      <tr valing="top">
+        <td>string</td>
+
+        <td><a href="#variable_$database">$database</a></td>
+
+        <td>Database.</td>
+      </tr>
+
+    </table>
+
+
+    <h2>Private Field Summary</h2>
+
+    <table border="0">
+
+
+      <tr valing="top">
+        <td>string</td>
+
+        <td><a href="#variable_$_conn">$_conn</a></td>
+
+        <td>Holds an ADOConnection instance.</td>
+      </tr>
+
+
+      <tr valing="top">
+        <td>array</td>
+
+        <td><a href="#variable_$_options">$_options</a></td>
+
+        <td>This array hold database configuration and execution options.</td>
+      </tr>
+
+    </table>
+
+
+
+    <h2>Public Constant Summary</h2>
+
+    <table border="0">
+
+
+      <tr valign="top">
+        <td><a href="#constants_AUTH_INVALID_USER">AUTH_INVALID_USER</a></td>
+
+        <td>»<code>-2</code>«</td>
+
+        <td>The username/password pair is invalid.</td>
+      </tr>
+
+
+      <tr valign="top">
+        <td><a href="#constants_AUTH_EXPIRED">AUTH_EXPIRED</a></td>
+
+        <td>»<code>-3</code>«</td>
+
+        <td>The session has expired.</td>
+      </tr>
+
+
+      <tr valign="top">
+        <td><a href="#constants_AUTH_ACCESS_DENIED">AUTH_ACCESS_DENIED</a></td>
+
+        <td>»<code>-4</code>«</td>
+
+        <td>You don't have access to this area.</td>
+      </tr>
+
+
+      <tr valign="top">
+        <td><a href="#constants_AUTH_CACHE">AUTH_CACHE</a></td>
+
+        <td>»<code>2</code>«</td>
+
+        <td>Allow the browser to cache the page but proxys can't.</td>
+      </tr>
+
+
+      <tr valign="top">
+        <td><a href="#constants_AUTH_NO_CACHE">AUTH_NO_CACHE</a></td>
+
+        <td>»<code>1</code>«</td>
+
+        <td>Do not allow anyone to cache the page.</td>
+      </tr>
+
+    </table>
+
+
+    <h2>Private Constant Summary</h2>
+
+    <table border="0">
+
+
+      <tr valign="top">
+        <td><a href="#constants_AUTH_NEED_LOGIN">AUTH_NEED_LOGIN</a></td>
+
+        <td>»<code>-1</code>«</td>
+
+        <td>Need a valid username/password pair.</td>
+      </tr>
+
+    </table>
+
+
+
+
+
+
+
+
+    <h2>Public Method Details</h2>
+
+
+    <h3 id="function_Auth()">Auth</h3>
+<pre>
+public    void Auth( [ string $options ] );
+</pre>
+
+    <p>Constructor. </p>
+
+    <p></p>
+
+    <table border="0">
+
+
+      <tr valign="top">
+        <td><strong>Parameters:</strong></td>
+      </tr>
+
+      <tr valign="top">
+        <td>
+          <table border="0">
+
+
+            <tr valign="top">
+              <td><code>string</code></td>
+
+              <td><code><strong>$options</strong></code></td>
+
+              <td><code>= >>null<<</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td>&#160;</td>
+
+              <td colspan="2">=&gt; val of configuration parameters. </td>
+            </tr>
+
+          </table>
+        </td>
+      </tr>
+
+
+
+      <tr valign="top">
+        <td><strong>Returns:</strong> <code>void </code><br />
+         </td>
+      </tr>
+
+
+
+
+
+
+
+
+
+
+
+
+    </table>
+
+
+    <h3 id="function_startSession()">startSession</h3>
+<pre>
+public    void startSession(  );
+</pre>
+
+    <p>Initialize the session. Use this method only if loggin in to the current page is optional but you willwant to have access to the user's information if he has already been identified.</p>
+
+    <p></p>
+
+    <table border="0">
+
+
+
+      <tr valign="top">
+        <td><strong>Returns:</strong> <code>void </code><br />
+         </td>
+      </tr>
+
+
+
+
+
+
+
+
+
+
+
+
+    </table>
+
+
+    <h3 id="function_forceLogin()">forceLogin</h3>
+<pre>
+public    void forceLogin(  );
+</pre>
+
+    <p>Force the user to identify him self. </p>
+
+    <p></p>
+
+    <table border="0">
+
+
+
+      <tr valign="top">
+        <td><strong>Returns:</strong> <code>void </code><br />
+         </td>
+      </tr>
+
+
+
+
+
+
+
+
+
+
+
+
+    </table>
+
+
+    <h3 id="function_logout()">logout</h3>
+<pre>
+public    void logout(  );
+</pre>
+
+    <p>Delete all session information and logout the user. </p>
+
+    <p></p>
+
+    <table border="0">
+
+
+
+      <tr valign="top">
+        <td><strong>Returns:</strong> <code>void </code><br />
+         </td>
+      </tr>
+
+
+
+
+
+
+
+
+
+
+
+
+    </table>
+
+
+    <h3 id="function_refreshInfo()">refreshInfo</h3>
+<pre>
+public    void refreshInfo(  );
+</pre>
+
+    <p>Updates the user's information from the database. The user must be identified already. Usefull if you just updated the database andyou need to update your session variable.</p>
+
+    <p></p>
+
+    <table border="0">
+
+
+
+      <tr valign="top">
+        <td><strong>Returns:</strong> <code>void </code><br />
+         </td>
+      </tr>
+
+
+
+
+
+
+
+
+
+
+
+
+    </table>
+
+
+
+    <h2>Private Method Details</h2>
+
+
+    <h3 id="function__callback()">_callback</h3>
+<pre>
+private    void _callback( int $action, [ string $message ] );
+</pre>
+
+    <p>Just calls the callback function and dies. </p>
+
+    <p></p>
+
+    <table border="0">
+
+
+      <tr valign="top">
+        <td><strong>Parameters:</strong></td>
+      </tr>
+
+      <tr valign="top">
+        <td>
+          <table border="0">
+
+
+            <tr valign="top">
+              <td><code>int</code></td>
+
+              <td><code><strong>$action</strong></code></td>
+
+              <td><code></code></td>
+            </tr>
+
+            <tr valign="top">
+              <td>&#160;</td>
+
+              <td colspan="2">action should the callback function take. Has to be one<br />
+of AUTH_NEED_LOGIN, AUTH_INVALID_USER, AUTH_ACCESS_DENIED or<br />
+AUTH_EXPIRED. </td>
+            </tr>
+
+
+            <tr valign="top">
+              <td><code>string</code></td>
+
+              <td><code><strong>$message</strong></code></td>
+
+              <td><code>= >>''<<</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td>&#160;</td>
+
+              <td colspan="2">to show to the user, optional. </td>
+            </tr>
+
+          </table>
+        </td>
+      </tr>
+
+
+
+      <tr valign="top">
+        <td><strong>Returns:</strong> <code>void </code><br />
+         </td>
+      </tr>
+
+
+
+
+
+
+
+
+
+
+
+
+    </table>
+
+
+    <h3 id="function__connect()">_connect</h3>
+<pre>
+private    void _connect(  );
+</pre>
+
+    <p>Connect to the database only if necesary. </p>
+
+    <p></p>
+
+    <table border="0">
+
+
+
+      <tr valign="top">
+        <td><strong>Returns:</strong> <code>void </code><br />
+         </td>
+      </tr>
+
+
+
+
+
+
+
+
+
+
+
+
+    </table>
+
+
+    <h3 id="function__findByUsername()">_findByUsername</h3>
+<pre>
+private    array _findByUsername( string $username, string $password );
+</pre>
+
+    <p>Search the user in the database by his username and password. </p>
+
+    <p></p>
+
+    <table border="0">
+
+
+      <tr valign="top">
+        <td><strong>Parameters:</strong></td>
+      </tr>
+
+      <tr valign="top">
+        <td>
+          <table border="0">
+
+
+            <tr valign="top">
+              <td><code>string</code></td>
+
+              <td><code><strong>$username</strong></code></td>
+
+              <td><code></code></td>
+            </tr>
+
+            <tr valign="top">
+              <td>&#160;</td>
+
+              <td colspan="2"> </td>
+            </tr>
+
+
+            <tr valign="top">
+              <td><code>string</code></td>
+
+              <td><code><strong>$password</strong></code></td>
+
+              <td><code></code></td>
+            </tr>
+
+            <tr valign="top">
+              <td>&#160;</td>
+
+              <td colspan="2"> </td>
+            </tr>
+
+          </table>
+        </td>
+      </tr>
+
+
+
+      <tr valign="top">
+        <td><strong>Returns:</strong> <code>array </code><br />
+         users information.</td>
+      </tr>
+
+
+
+
+
+
+
+
+
+
+
+      <tr valign="top">
+        <td><strong>See Also:</strong> <a href="#function__findById()">_findById()</a></td>
+      </tr>
+
+
+
+    </table>
+
+
+    <h3 id="function__findById()">_findById</h3>
+<pre>
+private    array _findById( int $userId );
+</pre>
+
+    <p>Search the user in the database by his user_id field. </p>
+
+    <p></p>
+
+    <table border="0">
+
+
+      <tr valign="top">
+        <td><strong>Parameters:</strong></td>
+      </tr>
+
+      <tr valign="top">
+        <td>
+          <table border="0">
+
+
+            <tr valign="top">
+              <td><code>int</code></td>
+
+              <td><code><strong>$userId</strong></code></td>
+
+              <td><code></code></td>
+            </tr>
+
+            <tr valign="top">
+              <td>&#160;</td>
+
+              <td colspan="2">the user. </td>
+            </tr>
+
+          </table>
+        </td>
+      </tr>
+
+
+
+      <tr valign="top">
+        <td><strong>Returns:</strong> <code>array </code><br />
+         users information.</td>
+      </tr>
+
+
+
+
+
+
+
+
+
+
+
+      <tr valign="top">
+        <td><strong>See Also:</strong> <a href="#function__findByUsername()">_findByUsername()</a></td>
+      </tr>
+
+
+
+    </table>
+
+
+    <h3 id="function__checkSession()">_checkSession</h3>
+<pre>
+private    bool _checkSession(  );
+</pre>
+
+    <p>Validates the current session. </p>
+
+    <p></p>
+
+    <table border="0">
+
+
+
+      <tr valign="top">
+        <td><strong>Returns:</strong> <code>bool </code><br />
+         </td>
+      </tr>
+
+
+
+
+
+
+
+
+
+
+
+
+    </table>
+
+
+
+
+    <h2>Public Field Details</h2>
+
+
+    <h3 id="variable_$user">$user</h3>
+<pre>
+public   array $user
+</pre>
+
+    <p>Holds user information. </p>
+
+    <table border="0">
+
+
+
+
+
+
+
+
+
+    </table>
+
+
+    <h3 id="variable_$isIdentified">$isIdentified</h3>
+<pre>
+public   boolean $isIdentified
+</pre>
+
+    <p>If the user has been identified </p>
+
+    <table border="0">
+
+
+
+
+
+
+
+
+
+    </table>
+
+
+    <h3 id="variable_$cacheLevel">$cacheLevel</h3>
+<pre>
+public   string $cacheLevel
+</pre>
+
+    <p>Wich cache level to use. </p>
+
+    <table border="0">
+
+
+
+
+
+
+
+
+
+    </table>
+
+
+    <h3 id="variable_$dbdriver">$dbdriver</h3>
+<pre>
+public   string $dbdriver
+</pre>
+
+    <p>Database driver. Example 'mysql', 'mssql', 'oci8'... </p>
+
+    <table border="0">
+
+
+
+
+
+
+
+
+
+    </table>
+
+
+    <h3 id="variable_$hostname">$hostname</h3>
+<pre>
+public   string $hostname
+</pre>
+
+    <p>Database hostname server. </p>
+
+    <table border="0">
+
+
+
+
+
+
+
+
+
+    </table>
+
+
+    <h3 id="variable_$username">$username</h3>
+<pre>
+public   string $username
+</pre>
+
+    <p>Database username </p>
+
+    <table border="0">
+
+
+
+
+
+
+
+
+
+    </table>
+
+
+    <h3 id="variable_$password">$password</h3>
+<pre>
+public   string $password
+</pre>
+
+    <p>Database password </p>
+
+    <table border="0">
+
+
+
+
+
+
+
+
+
+    </table>
+
+
+    <h3 id="variable_$database">$database</h3>
+<pre>
+public   string $database
+</pre>
+
+    <p>Database. </p>
+
+    <table border="0">
+
+
+
+
+
+
+
+
+
+    </table>
+
+
+
+    <h2>Private Field Details</h2>
+
+
+    <h3 id="variable_$_conn">$_conn</h3>
+<pre>
+private   string $_conn
+</pre>
+
+    <p>Holds an ADOConnection instance. </p>
+
+    <table border="0">
+
+
+
+
+
+
+
+
+
+    </table>
+
+
+    <h3 id="variable_$_options">$_options</h3>
+<pre>
+private   array $_options
+</pre>
+
+    <p>This array hold database configuration and execution options. </p>
+
+    <table border="0">
+
+
+
+
+
+
+
+
+
+    </table>
+
+
+
+
+    <h2>Public Constant Details</h2>
+
+
+    <h3 id="constant_AUTH_INVALID_USER">const AUTH_INVALID_USER</h3>
+<pre>
+define( AUTH_INVALID_USER, »-2« );
+</pre>
+
+    <p>The username/password pair is invalid. </p>
+
+    <table border="0">
+
+
+
+
+
+
+
+
+
+    </table>
+
+
+    <h3 id="constant_AUTH_EXPIRED">const AUTH_EXPIRED</h3>
+<pre>
+define( AUTH_EXPIRED, »-3« );
+</pre>
+
+    <p>The session has expired. </p>
+
+    <table border="0">
+
+
+
+
+
+
+
+
+
+    </table>
+
+
+    <h3 id="constant_AUTH_ACCESS_DENIED">const AUTH_ACCESS_DENIED</h3>
+<pre>
+define( AUTH_ACCESS_DENIED, »-4« );
+</pre>
+
+    <p>You don't have access to this area. </p>
+
+    <table border="0">
+
+
+
+
+
+
+
+
+
+    </table>
+
+
+    <h3 id="constant_AUTH_CACHE">const AUTH_CACHE</h3>
+<pre>
+define( AUTH_CACHE, »2« );
+</pre>
+
+    <p>Allow the browser to cache the page but proxys can't. </p>
+
+    <table border="0">
+
+
+
+
+
+
+
+
+
+    </table>
+
+
+    <h3 id="constant_AUTH_NO_CACHE">const AUTH_NO_CACHE</h3>
+<pre>
+define( AUTH_NO_CACHE, »1« );
+</pre>
+
+    <p>Do not allow anyone to cache the page. </p>
+
+    <table border="0">
+
+
+
+
+
+
+
+
+
+    </table>
+
+
+
+    <h2>Private Constant Details</h2>
+
+
+    <h3 id="constant_AUTH_NEED_LOGIN">const AUTH_NEED_LOGIN</h3>
+<pre>
+define( AUTH_NEED_LOGIN, »-1« );
+</pre>
+
+    <p>Need a valid username/password pair. </p>
+
+    <table border="0">
+
+
+
+
+
+
+
+
+
+    </table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>
+

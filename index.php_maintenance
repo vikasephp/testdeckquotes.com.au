@@ -1,0 +1,44 @@
+<?php
+// List of IPs allowed to bypass maintenance mode
+$allowed_ips = ['158.69.182.221', '158.69.182.220', '223.185.37.128','103.252.171.53','106.201.100.183','223.185.41.71','103.73.212.141','103.136.95.155']; // Add your IPs here
+
+// Get real visitor IP from Cloudflare header
+$visitor_ip = $_SERVER['HTTP_CF_CONNECTING_IP'] ?? $_SERVER['REMOTE_ADDR'];
+
+// Optional: Log IP for debug
+// file_put_contents(__DIR__ . '/ip_log.txt', date('c') . ' - ' . $visitor_ip . "\n", FILE_APPEND);
+
+if (!in_array($visitor_ip, $allowed_ips)) {
+    header('HTTP/1.1 503 Service Unavailable');
+    header('Retry-After: 3600');
+    ?>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Maintenance Mode</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                text-align: center;
+                padding: 50px;
+                background-color: #f4f4f4;
+                color: #333;
+            }
+            h1 { font-size: 2.5rem; }
+            p { font-size: 1.2rem; }
+        </style>
+    </head>
+    <body>
+        <h1>The requested Website is under Maintenance</h1>
+        <p>It will be available shortly.</p>
+    </body>
+    </html>
+    <?php
+    exit;
+}
+
+// If allowed IP, show the real site
+include_once __DIR__ . '/index.php_bk';
+exit;
+

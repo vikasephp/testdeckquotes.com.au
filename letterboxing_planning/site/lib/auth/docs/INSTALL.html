@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>iCreativa User Authentication Suite.</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <link href="../styles/styles.css" rel="stylesheet" type="text/css" />
+    <meta name="author" content="Julio César Carrascal Urquijo" />
+    <link rev="made" href="mailto:jcesar@phreaker.net" />
+  </head>
+
+  <body>
+    <h1>iCreativa User Authentication Suite.<br />
+     Installation Guide.</h1>
+
+    <p>This guide will help you getting Auth Suite up and running in your web server and
+    integrate it with your existing applications.</p>
+
+    <h2>Integrating Auth in your application.</h2>
+
+    <p><strong>Auth Suite</strong> was designed as a component that you can drop in your
+    application in a matter of minutes, so you can continue working on other things.
+    Following you&#39;ll find three diferent ways of integrate <strong>Auth
+    Suite</strong> with your application depending on your needs.</p>
+
+    <h2>Simple User Authentication.</h2>
+
+    <p>By now probably you have defined your own &quot;<code>users</code>&quot; table and
+    probably you already have some users accounts there. No problem, you can customize
+    the way <strong>Auth Suite</strong> access your database easly. For example, supose
+    you have the folowing users table:</p>
+<pre>
+CREATE TABLE <strong>accounts</strong> (
+    <strong>account_key</strong> INT NOT NULL AUTO_INCREMENT,
+
+    <strong>login</strong> CHAR(32) NOT NULL,
+    <strong>pass</strong> CHAR(32) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    fullname VARCHAR(255) NOT NULL,
+
+    UNIQUE (login),
+    UNIQUE (email),
+    PRIMARY KEY(account_key)
+);
+</pre>
+
+    <p>The fields <code>account_key</code>, <code>login</code> and <code>pass</code> are
+    the only requirement for the users table. Since this aren&#39;t the default settings
+    for <strong>Auth Suite</strong>, we need to configure the class to use this table. We
+    can do this creating an array and passing it to the constructor.</p>
+<pre>
+$options = array(
+    &#39;usersTable&#39; =&gt; &#39;<strong>accounts</strong>&#39;,
+    &#39;userIdField&#39; =&gt; &#39;<strong>account_key</strong>&#39;,
+    &#39;usernameField&#39; =&gt; &#39;<strong>login</strong>&#39;,
+    &#39;passwordField&#39; =&gt; &#39;<strong>pass</strong>&#39;
+);
+
+$auth = new Auth($options);
+</pre>
+
+    <h3>Protecting a script.</h3>
+
+    <p>After that, to protect a script you write this code in the first lines:</p>
+<pre>
+require_once(&#39;adodb.inc.php&#39;);
+require_once(&#39;auth.php&#39;);
+
+$auth = new Auth($myAppSettings);
+$auth-&gt;forceLogin();
+</pre>
+
+    <p>That code forces the user to identify him self and check if the user belongs to
+    the &quot;<code>admins</code>&quot; AND the &quot;<code>editors</code>&quot; groups.
+    <code>requireGroups()</code> requires that the user belongs to each group that is
+    passed. If you need to grant access to users that belong to
+    &quot;<code>admins</code>&quot; OR &quot;<code>editors</code>&quot; then use the
+    <code>requireAtLeast()</code> method.</p>
+
+    <h3>Creating a Login form.</h3>
+
+    <p>Usualy you don&#39;t need to create a <code>login.php</code> script because every
+    protected script presents a login form but if you want to... Create a new script and
+    write this:</p>
+<pre>
+require_once(&#39;adodb.inc.php&#39;);
+require_once(&#39;auth.php&#39;);
+
+$auth = new Auth(array(&#39;force_redirect&#39; =&gt; true, &#39;redirect&#39; =&gt; &#39;index.php&#39;));
+$auth-&gt;forceLogin();
+</pre>
+
+    <p>That&#39;s all you have to do and, by the way, when the user has authenticated
+    it&#39;ll be redirected to index.php. Neat he?</p>
+
+    <h3>Logout a user.</h3>
+
+    <p>A <code>logout.php</code> script is as easy as:</p>
+<pre>
+require_once(&#39;adodb.inc.php&#39;);
+require_once(&#39;auth.php&#39;);
+
+$auth = new Auth();
+$auth-&gt;logout();
+</pre>
+
+    <h3>Accessing User&#39;s preferences.</h3>
+
+    <p>Now, you don&#39;t need to restrict access to your users to use
+    <strong>Auth</strong>. Have you seen <a href="http://www.amazon.com/">Amazon.com</a>?
+    That site customizes their homepage according user&#39;s preferences. You can do
+    that:</p>
+<pre>
+require_once(&#39;adodb.inc.php&#39;);
+require_once(&#39;auth.php&#39;);
+
+$auth = new Auth($myAppSettings);
+$auth-&gt;startSession();
+</pre>
+
+    <p>After those lines, if the user has identified before, you can access his
+    information using the <code>$auth-&gt;user</code> property. For example if you have a
+    &quot;<code>theme</code>&quot; field in your users table then with this code your
+    site will have <em>user-defined themes</em>:</p>
+<pre>
+$theme = $auth-&gt;user[&#39;theme&#39;];
+include(&quot;themes/$theme/header.php&quot;);
+</pre>
+
+    <p>But, How do I know if a user has been authenticaded? There is a property in the
+    class that you can check:</p>
+<pre>
+if($auth-&gt;isIdentified) {
+    // show customized content here.
+} else {
+    // default content for all users.
+}
+</pre>
+
+    <p>This is a read-only property and you shouldn&#39;t modify this in any form.</p>
+
+    <p>Now you should be wondering: How do I change those horrible login forms. Well if
+    you tell them horrible I wont tell you!. I&#39;ve spend... well like five minutes
+    designing them. Ok, they are in the &quot;<code>auth.callback.php</code>&quot; file.
+    There you change everything the user sees.</p>
+
+    <h2>Installing the examples.</h2>
+
+    <p>Included in the distribution are 3 examples that you can use to learn the concepts
+    used in <strong>Auth Suite</strong>. In every directory of each example you can find
+    a <code>MySQL.sql</code> file that you can use to recreate the database. You can
+    issue the following command:</p>
+<pre>
+mysql --database=test --user=root &lt; MySQL.sql
+</pre>
+
+    <p>You will also need to update the file conf.php to update the database connection
+    parameters. Change the following lines to the apropiate values.</p>
+<pre>
+$cnf-&gt;dbdriver = &#39;mysql&#39;;
+$cnf-&gt;hostname = &#39;localhost&#39;;
+$cnf-&gt;username = &#39;root&#39;;
+$cnf-&gt;password = &#39;&#39;;
+$cnf-&gt;database = &#39;test&#39;;
+</pre>
+
+    <p>Don&#39;t forguet to install <a href="http://php.weblogs.com/adodb/">ADOdb</a>
+    some where accessible by the script. Finally point your browser to the directory
+    where you unpack <strong>Auth Suite</strong>.</p>
+  </body>
+</html>
+

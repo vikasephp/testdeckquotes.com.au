@@ -1,0 +1,28 @@
+<?php
+$fwMainView = 'file:' . getcwd() . '/ps_qa.tpl';
+$bus_id = $fwRequest->getparam('bus_id', 0);
+$tsid = $fwRequest->getParam('tsid', 0);
+$tid = $fwRequest->getParam('tid', 0);
+
+$fwViewData['tid'] = $tid;
+$fwViewData['bus_id'] = $bus_id;
+
+//$sql = "SELECT * FROM business_tasks_sub where bts_bsn_id = ".$bus_id. " And bts_task_status_id = " .$tsid . " And bts_task_id = ".$tid;
+//	   $fwViewData['subtaskdata'] = $fwDb->query($sql);
+	   
+$sql = "SELECT * FROM ps_que_ans where ps_task_id = ".$tid;
+	   $fwViewData['psqadata'] = $fwDb->query($sql);
+		   
+
+$psqaTable = new Fw_Db_Table('ps_que_ans');
+$submit = $fwRequest->getParam('st_save', '');
+
+if(!empty($submit))
+{
+	$detail = $fwRequest->getParam('ps_qa', array());
+	$psqaTable->insertRow($detail);
+	
+	header('Location: '.$_SERVER['REQUEST_URI']);
+
+}
+ 

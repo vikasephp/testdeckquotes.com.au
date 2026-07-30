@@ -1,0 +1,934 @@
+<?php
+$pagenum = $fwRequest->getparam('pagenum','');
+$search = $fwRequest->getParam('search', '');
+$table = new Fw_Db_Table('business');
+$tablebusiness = new Fw_Db_Table('business');
+$busseller = new Fw_Db_Table('business_sellers');
+$searchaddr = $fwRequest->getParam('searchaddr', '');
+
+
+// Save da_posted
+$daposted = $fwRequest->getParam('da_posted', '');
+if(!empty($daposted)) {
+	$dap = $fwRequest->getParam('dap', '');
+	
+	foreach($dap as $kd=>$vd)
+	{
+		$poDetail['bs_da_posted'] = $vd;
+		$poDetail['bs_da_posted_date'] = date('d-m-Y');
+		$poDetail['bs_da_posted_user'] = $_SESSION['user']['user_name'];
+		
+		$busseller->setWhere('bs_business_id = '.$kd);
+		$id = $busseller->updateRow($poDetail);
+				
+	}
+}
+
+
+//ccs spoken
+$ccsspoken = $fwRequest->getParam('ccsspoken', '');
+if($ccsspoken)
+{
+	 foreach($ccsspoken as $kc=>$vc)
+	 {
+		  $id = $kc; 
+	 }
+	
+	  $detail['bs_ccs_spoken'] = $vc;
+	  $detail['bs_css_spoken_date'] = date('d-m-Y');
+	  $busseller->setWhere("bs_business_id = ".$id);
+	  if($busseller->rowExists())
+	  {
+		 $this_id = $busseller->updateRow($detail);
+	  }
+}
+// css spoken
+
+
+//Par Paperwork courieried
+$couriered = $fwRequest->getParam('couriered', '');
+if($couriered)
+{
+	 foreach($couriered as $kp=>$vp)
+	 {
+		  $id = $kp; 
+	 }
+	
+	  $ppcdetail['bs_par_paper_couriered'] = $vp;
+	  $ppcdetail['bs_par_couriered_date'] = date('d-m-Y');
+	  $busseller->setWhere("bs_business_id = ".$id);
+	  if($busseller->rowExists())
+	  {
+		 $this_id = $busseller->updateRow($ppcdetail);
+	  }
+}
+//End 
+
+$submitmoveto = $fwRequest->getParam('moveto', '');
+if(!empty($submitmoveto)) {
+	$movetoData = $fwRequest->getParam('old', '');	
+	
+	foreach($movetoData as $mtk => $mtv)
+	{
+		$moveDetail['bsn_planning_moveto_old'] = 1;
+		$tablebusiness->setWhere('bsn_id = '.$mtk);	
+		$this_id = $tablebusiness->updateRow($moveDetail);
+	}
+}
+
+
+$submitwatch = $fwRequest->getParam('watchlist', '');
+if(!empty($submitwatch)) {
+	$watchData = $fwRequest->getParam('watch', '');	
+	
+	foreach($watchData as $kw => $vw)
+	{
+		if($vw=='on') { $vw = 1; }
+		$watchDetail['bsn_watch_list'] = $vw;
+		$tablebusiness->setWhere('bsn_id = '.$kw);	
+		$this_id = $tablebusiness->updateRow($watchDetail);
+	}
+}
+
+
+$meetinoffice = $fwRequest->getParam('meetinoffice', '');
+
+if(!empty($meetinoffice)) {
+	
+	$meet = $fwRequest->getParam('meet', '');
+	
+	foreach($meet as $k=>$v)
+	{
+		  $meet = $k; 
+	 	  $detailM['bsn_sales_pathway'] = $v;
+		  
+		  $table->setWhere('bsn_id = '.$meet);
+		  if($table->rowExists())
+		  {
+			 $this_id = $table->updateRow($detailM);
+			
+		  }
+        }
+}
+
+$planning = $fwRequest->getParam('planning', '');
+
+if(!empty($planning)) {
+	$plreport_not = $fwRequest->getParam('plreport_not', '');
+	$_SESSION['plreport_not'] = $plreport_not;
+	$fwViewData['pnot'] = $plreport_not;
+}
+
+if(!empty($search)) {
+	$keyword = $fwRequest->getParam('keyword', '');
+	//$_SESSION['keyword'] = $keyword;
+}
+
+if(!empty($searchaddr)) {
+	$searchkey = $fwRequest->getParam('searchkey', '');
+	
+}
+
+
+$clear = $fwRequest->getParam('clear', '');
+
+if($clear)
+{
+	
+	unset($_SESSION['keyword']);
+	unset($_SESSION['plreport_not']);
+	unset($_SESSION['searchkey']);
+		
+}
+
+//unset($_SESSION['keyword']);
+$where = "WHERE business.bsn_state ='NSW' AND ((bsn_sub_status = 'Open' AND bsn_planning_moveto_old <> 1) OR (bsn_sub_status IN ('Hold', 'Lost') AND bsn_planning_moveto_old =  0 ) )";
+//$where = "WHERE ((bsn_sub_status = 'Open' AND bsn_planning_moveto_old <> 1 ) OR (bsn_sub_status IN ('Hold', 'Lost') AND bsn_planning_moveto_old =  0 ) )  AND project_type = 17";
+
+
+$fwViewData['ran'] =  rand(100000,999999);
+	
+if($keyword):
+
+$where .= "AND business.bsn_sub_status LIKE '%".$keyword."%'";
+	
+	$_SESSION['keyword'] = $keyword;
+	$fwViewData['keyword']=$_SESSION['keyword'];
+
+elseif($_SESSION['keyword'] && $pagenum > 0):
+
+	$where .= "AND business.bsn_sub_status LIKE '%".$_SESSION['keyword']."%'";
+	
+	$fwViewData['keyword']=$_SESSION['keyword'];
+endif;
+   
+if($searchkey):
+
+$where .= " AND business.bsn_address LIKE '%".$searchkey."%'";
+	
+	$_SESSION['searchkey'] = $searchkey;
+	$fwViewData['searchkey']=$_SESSION['searchkey'];
+
+elseif($_SESSION['searchkey'] && $pagenum > 0):
+
+	$where .= " AND business.bsn_address LIKE '%".$_SESSION['searchkey']."%'";
+	
+	$fwViewData['searchkey']=$_SESSION['searchkey'];
+endif;
+   
+
+   
+if(empty($pagenum))
+	{
+	unset($_SESSION['last_tdsql']);
+	}
+
+if($_SESSION['plreport_not'] && $pagenum > 0) { $plreport_not = 1; }
+
+
+$sql = "SELECT  business_sellers.bs_business_id, business_sellers.bs_customers_id, bus_customers.bcust_fname, bus_customers.bcust_lname,
+        bus_customers.bcust_misc_email1,bus_customers.bcust_misc_email2,bus_customers.bcust_misc_moble,bus_customers.bcust_misc_business,
+	bus_customers.bcust_misc_home,business.bsn_advert_text,  business.bsn_id, business.bsn_name, business.bsn_type,
+	business.bsn_sub_status, business.bsn_status_sys_date, business.bsn_address , business.bsn_rating, business.bsn_watch_list,
+	business.bsn_sales_pathway, business.bsn_proj_cust_type ,  business_sellers.bs_qr_delivery_method, business_sellers.bs_ccs_spoken,
+	business_sellers.bs_css_spoken_date, business_sellers.bs_da_posted, business_sellers.bs_da_posted_user, business_sellers.bs_da_posted_date,
+	business_sellers.bs_par_paper_couriered, business_sellers.bs_par_couriered_date
+	from business_sellers 		
+	Inner Join bus_customers ON business_sellers.bs_customers_id = bus_customers.bcust_id 
+	Inner Join business ON business_sellers.bs_business_id = business.bsn_id " . $where. " Order By business.bsn_status_sys_date DESC";
+
+
+if($plreport_not == 1 || $_SESSION['plreport_not'] == 1)
+{
+	$fwViewData['pnot'] = 1;	
+	
+	$sql = "SELECT  business_sellers.bs_business_id, business_sellers.bs_customers_id, bus_customers.bcust_fname, 
+	bus_customers.bcust_lname, bus_customers.bcust_misc_email1,bus_customers.bcust_misc_email2,bus_customers.bcust_misc_moble, 
+	bus_customers.bcust_misc_business, business.bsn_type, business_sellers.bs_ccs_spoken, business_sellers.bs_css_spoken_date,
+	bus_customers.bcust_misc_home,business.bsn_advert_text,  business.bsn_id, business.bsn_name, 
+	business.bsn_sub_status, business.bsn_status_sys_date, business.bsn_address , business.bsn_rating, business.bsn_watch_list,
+	business.bsn_sales_pathway, business.bsn_proj_cust_type, business_sellers.bs_qr_delivery_method , business_sellers.bs_da_posted, 
+	business_sellers.bs_da_posted_user, business_sellers.bs_da_posted_date, business_sellers.bs_par_paper_couriered, 
+	business_sellers.bs_par_couriered_date
+	from business_sellers 		
+	Inner Join bus_customers ON business_sellers.bs_customers_id = bus_customers.bcust_id 
+	Right Join document_check_list on  business_sellers.bs_business_id = document_check_list.doc_bsn_id 
+	And length(document_check_list.doc_file_name) = 0 And document_check_list.`doc_name_id` = 44
+	Inner Join business ON business_sellers.bs_business_id = business.bsn_id " . $where. " Order By business.bsn_status_sys_date DESC";
+
+}
+
+
+if($sql){$userData = $fwDb->query($sql);}
+
+$fwViewData['total'] = sizeof($userData);
+$total2 = sizeof($userData);
+ 
+//if(empty($pagenum)) { $pagenum = 1; }
+//$fwViewData['total'] =  $total2 - ($pagenum-1)*300;
+
+if(!empty($userData))
+{
+if (!(isset($pagenum)))
+    {
+        $pagenum = 1;
+    } 
+
+    $rows = count($userData);
+    
+    $page_rows = 200;
+    $last = ceil($rows/$page_rows); 
+
+    if ($pagenum <= 1)
+    {
+        $pagenum = 1;
+    }
+    elseif ($pagenum > $last)
+    {
+        $pagenum = $last;
+    }
+	$numstartvounter =  $page_rows * ($pagenum-1) + 1;
+	$fwViewData['numstartvounter'] = $numstartvounter;
+		
+    $fwViewData['last'] = $last;
+    $fwViewData['lastone'] = $last-1;
+	$fwViewData['lasttow'] = $last-2;
+    $fwViewData['pagenum'] = $pagenum;
+	$pagenatedatanext = $pagenum;
+	$pagenatedataprev = $pagenum;
+	for($i=0; $i<9; $i++)
+		{
+		$paginate[$pagenatedatanext] = $pagenatedatanext;
+		$pagenatedatanext ++;
+		}
+		$fwViewData['paginatenext'] = $paginate;
+	$pagenatedataprev = $pagenum;	
+	for($i=0; $i<9; $i++)
+		{
+		$paginateprev[$pagenatedataprev] = $pagenatedataprev;
+		$pagenatedataprev --;
+		}
+	$fwViewData['paginateprev'] = array_reverse($paginateprev);
+	
+    $max = 'limit ' .($pagenum - 1) * $page_rows .',' .$page_rows;
+    
+    $sql2 =  $sql." ".$max;
+
+if($sql2)
+{  
+
+ $setdata = $fwDb->query($sql2);
+ 
+foreach($setdata as $k => $v)
+{
+		//$sqla = "Select document_check_list.* from document_check_list
+		//	      where document_check_list.doc_bsn_id = ". $v['bsn_id'] . " And document_check_list.doc_name_id = 64";
+		//$data = $fwDb->queryOne($sqla);
+		$link = "http://www.deckquotes.com.au/business.detail/bsn_id/".$v['bsn_id'];	
+		
+		$ccdate = $v['bsn_status_sys_date'];
+		$Statusdate = changedate_y_m_d($ccdate);
+		$curdate_y_m_d = date('Y-m-d');
+		$dayscount = daysDifference($curdate_y_m_d, $Statusdate);
+				   
+		
+		// Uid 555 starts
+				
+			$sqluid555 = "Select business_tasks.bt_complete, business_tasks.bt_completed_date from business_tasks
+				      where business_tasks.bt_bsn_id = ". $v['bsn_id']. " And business_tasks.bt_task_id = 555";
+			$data555 = $fwDb->queryOne($sqluid555);
+		
+		// Uid 555 ends
+		
+		
+		// Uid 474 starts
+				
+			$sqluid474 = "Select business_tasks.bt_complete, business_tasks.bt_completed_date from business_tasks
+				      where business_tasks.bt_bsn_id = ". $v['bsn_id']. " And business_tasks.bt_task_id = 474";
+			$data474 = $fwDb->queryOne($sqluid474);
+		
+		// Uid 474 ends
+		
+		
+		// Uid 312 starts
+				
+			$sqluid312 = "Select business_tasks.bt_complete, business_tasks.bt_completed_date from business_tasks
+				      where business_tasks.bt_bsn_id = ". $v['bsn_id']. " And business_tasks.bt_task_id = 312";
+			$data312 = $fwDb->queryOne($sqluid312);
+	
+		// Uid 312 ends
+		
+		
+		// Uid 301 starts
+				
+			$sqluid301 = "Select business_tasks.bt_complete, business_tasks.bt_completed_date from business_tasks
+				      where business_tasks.bt_bsn_id = ". $v['bsn_id']. " And business_tasks.bt_task_id = 301";
+			$data301 = $fwDb->queryOne($sqluid301);
+	
+		// Uid 301 ends
+		
+		// Uid 330 starts
+				
+			$sqluid330 = "Select business_tasks.bt_complete, business_tasks.bt_completed_date from business_tasks
+				      where business_tasks.bt_bsn_id = ". $v['bsn_id']. " And business_tasks.bt_task_id = 330";
+			$data330 = $fwDb->queryOne($sqluid330);
+	
+		// Uid 330 ends
+		
+		
+		// Uid 369 starts
+				
+			$sqluid369 = "Select business_tasks.bt_complete, business_tasks.bt_completed_date from business_tasks
+				      where business_tasks.bt_bsn_id = ". $v['bsn_id']. " And business_tasks.bt_task_id = 369";
+			$data369 = $fwDb->queryOne($sqluid369);
+	
+		// Uid 369 ends
+		
+		
+		// Uid 340 starts
+				
+			$sqluid340 = "Select business_tasks.bt_complete, business_tasks.bt_completed_date from business_tasks
+				      where business_tasks.bt_bsn_id = ". $v['bsn_id']. " And business_tasks.bt_task_id = 340";
+			$data340 = $fwDb->queryOne($sqluid340);
+	
+		// Uid 340 ends
+		
+		// Uid 44 planning assessment report
+			
+			
+			$sql44 = "Select document_check_list.doc_file_name from document_check_list
+			          where document_check_list.doc_bsn_id = ". $v['bsn_id'] . " And document_check_list.doc_name_id = 44";
+			$data44 = $fwDb->queryOne($sql44);
+			
+		// Uid 40 ends
+		
+		
+		// Phone follow ups
+		
+		 $sfu = "Select count(*) as tot from  sales_followup where sf_pid = ".$v['bsn_id'];
+                 $sfData = $fwDb->queryOne($sfu);
+				
+		//
+		
+		// Last follow up date
+		
+		 $lfd = "Select max(sf_date) as last_followup_date from  sales_followup where sf_pid = ".$v['bsn_id'];
+                 $lfdData = $fwDb->queryOne($lfd);
+		// Last follow up date ends
+		
+		
+		// Uid 45 Signed Design Agreement
+				
+			$sql45 = "Select document_check_list.doc_file_name from document_check_list
+			          where document_check_list.doc_bsn_id = ". $v['bsn_id'] . " And document_check_list.doc_name_id = 45";
+			$data45 = $fwDb->queryOne($sql45);
+				
+		// Uid 45 ends
+		
+		// Uid 2 need analysis survey support
+				
+			$sql2 = "Select document_check_list.doc_file_name from document_check_list
+			         where document_check_list.doc_bsn_id = ". $v['bsn_id'] . " And document_check_list.doc_name_id = 2";
+			$data2 = $fwDb->queryOne($sql2);
+				
+		// Uid 2 ends
+		
+		
+		// Uid 302 starts
+				
+			$sqluid302 = "Select business_tasks.bt_complete, business_tasks.bt_completed_date from business_tasks
+				      where business_tasks.bt_bsn_id = ". $v['bsn_id']. " And business_tasks.bt_task_id = 302";
+			$data302 = $fwDb->queryOne($sqluid302);
+		
+		// Uid 302ends
+		
+		
+		// Uid 137 starts
+				
+			$sqluid137 = "Select business_tasks.bt_complete, business_tasks.bt_completed_date from business_tasks
+				      where business_tasks.bt_bsn_id = ". $v['bsn_id']. " And business_tasks.bt_task_id = 137";
+			$data137 = $fwDb->queryOne($sqluid137);
+		
+		// Uid 137 ends
+		
+		// Uid 206 starts
+				
+			$sqluid206 = "Select business_tasks.bt_complete, business_tasks.bt_completed_date from business_tasks
+				      where business_tasks.bt_bsn_id = ". $v['bsn_id']. " And business_tasks.bt_task_id = 206";
+			$data206 = $fwDb->queryOne($sqluid206);
+		
+		// Uid 206 ends
+		
+		
+		// Uid 412 Third Party Designs
+				
+			$sql412 = "Select document_check_list.doc_file_name from document_check_list
+			         where document_check_list.doc_bsn_id = ". $v['bsn_id'] . " And document_check_list.doc_name_id = 412";
+			$data412 = $fwDb->queryOne($sql412);
+				
+		// Uid 412 Third Party Designs ends
+		
+		 $sqltask = "Select count(*) as totpltasks from  business_tasks
+		             where bt_bsn_id = ".$v['bsn_id'] . " AND business_tasks.bt_task_status_id = 2 ";
+        	 $planingtasks = $fwDb->queryOne($sqltask);
+		
+		 $sqlpldone = "Select count(*) as pltaskcomp from  business_tasks
+		 where bt_bsn_id = ".$v['bsn_id'] . " AND business_tasks.bt_task_status_id = 2 AND business_tasks.bt_complete = 1";
+         	 
+		 $taskpldone = $fwDb->queryOne($sqlpldone);
+		
+		if(!count($taskpldone) > 0 ) {  $taskpldone['pltaskcomp'] = 0; }
+		
+		$setdata2[$k]['bs_business_id'] = $v['bs_business_id'];
+		$setdata2[$k]['bsn_id'] = $v['bsn_id'];
+		$setdata2[$k]['bsn_address'] = $v['bsn_address'];
+		$setdata2[$k]['hia_sign_date'] = changedate_d_m_y($ccdate);
+		$setdata2[$k]['link'] = $link;
+		$setdata2[$k]['status'] = $v['bsn_sub_status'];
+		$setdata2[$k]['dayscount'] = $dayscount;
+		$setdata2[$k]['budget'] = $v['bsn_advert_text'];
+		$setdata2[$k]['bs_ccs_spoken'] = $v['bs_ccs_spoken'];
+		$setdata2[$k]['bs_css_spoken_date'] = $v['bs_css_spoken_date'];
+		
+		$setdata2[$k]['bs_da_posted'] = $v['bs_da_posted'];
+		$setdata2[$k]['bs_da_posted_user'] = $v['bs_da_posted_user'];
+		$setdata2[$k]['bs_da_posted_date'] = $v['bs_da_posted_date'];
+		
+		$setdata2[$k]['project_type'] = $v['bsn_type'];
+		$setdata2[$k]['bsn_proj_cust_type'] = $v['bsn_proj_cust_type'];
+		
+		$setdata2[$k]['bsn_rating'] = $v['bsn_rating'];
+		
+		$setdata2[$k]['meet'] = $v['bsn_sales_pathway'];
+		$setdata2[$k]['watch'] = $v['bsn_watch_list'];
+		
+		$setdata2[$k]['uid555complete'] = $data555['bt_complete'];
+		$setdata2[$k]['uid555'] = $data555['bt_completed_date'];
+		
+		$setdata2[$k]['uid474complete'] = $data474['bt_complete'];
+		$setdata2[$k]['uid474'] = $data474['bt_completed_date'];
+		
+		$setdata2[$k]['uid312complete'] = $data312['bt_complete'];
+		$setdata2[$k]['uid312'] = $data312['bt_completed_date'];
+		
+		$setdata2[$k]['uid301complete'] = $data301['bt_complete'];
+		$setdata2[$k]['uid301'] = $data301['bt_completed_date'];
+		
+		$setdata2[$k]['uid330complete'] = $data330['bt_complete'];
+		$setdata2[$k]['uid330'] = $data330['bt_completed_date'];
+		
+		$setdata2[$k]['uid369complete'] = $data369['bt_complete'];
+		$setdata2[$k]['uid369'] = $data369['bt_completed_date'];
+		
+		$setdata2[$k]['uid340complete'] = $data340['bt_complete'];
+		$setdata2[$k]['uid340'] = $data340['bt_completed_date'];
+		
+		$setdata2[$k]['checklist44'] = $data44['doc_file_name'];
+		
+		$setdata2[$k]['salesfolloup'] = $sfData['tot'];
+		$setdata2[$k]['lastfoldt'] = $lfdData['last_followup_date'];
+		
+		$setdata2[$k]['checklist45'] = $data45['doc_file_name'];
+		
+		$setdata2[$k]['checklist2'] = $data2['doc_file_name'];
+		$setdata2[$k]['checklist412'] = $data412['doc_file_name'];
+		
+		if($data302['bt_complete'] == 1) {
+			$setdata2[$k]['boxsent'] = $data302['bt_completed_date'];	
+		}
+		
+		$setdata2[$k]['uid137complete'] = $data137['bt_complete'];
+		$setdata2[$k]['uid137'] = $data137['bt_completed_date'];
+		
+		$setdata2[$k]['uid206complete'] = $data206['bt_complete'];
+		$setdata2[$k]['uid206'] = $data206['bt_completed_date'];
+		
+		$setdata2[$k]['bcust_fname'] = $v['bcust_fname'];
+		$setdata2[$k]['bcust_lname'] = $v['bcust_lname'];
+		
+		$setdata2[$k]['bcust_misc_email1'] = $v['bcust_misc_email1'];
+		$setdata2[$k]['bcust_misc_email2'] = $v['bcust_misc_email2'];
+		$setdata2[$k]['bcust_misc_moble'] = $v['bcust_misc_moble'];
+		$setdata2[$k]['bcust_misc_business'] = $v['bcust_misc_business'];
+		$setdata2[$k]['bcust_misc_home'] = $v['bcust_misc_home'];
+		$setdata2[$k]['total_pl_task'] = $planingtasks['totpltasks'];
+		$setdata2[$k]['task_pl_done'] = $taskpldone['pltaskcomp'];
+		
+		$setdata2[$k]['bs_qr_delivery_method'] = $v['bs_qr_delivery_method'];
+		
+		$setdata2[$k]['bs_par_paper_couriered'] = $v['bs_par_paper_couriered'];
+		$setdata2[$k]['bs_par_couriered_date'] = $v['bs_par_couriered_date'];
+		
+
+}
+ 
+ 	$fwViewData['list'] =  $setdata2;
+	
+		
+	//$report = new Fw_Db_Table('report_planning_assessment_quick');
+//	$report->setWhere("1=1");
+//	$report->deleteRows();
+//	
+//	foreach($setdata2 as $rk => $rv)
+//	{
+//		if(!empty($rv['bsn_id'])) {
+//			$detailrp['re_bsn_id'] = $rv['bsn_id'];
+//			$this_id = $report->insertRow($detailrp);
+//			}
+//	}
+ }
+}
+
+//$_SESSION['last_sql'] = $sql;
+$fwViewData['current_date'] = date('Y-m-d');
+$fwViewData['title'] = "Planning Assesment Quick Report";
+
+$submitdownload = $fwRequest->getParam('download', '');
+if($submitdownload) {
+ 	$pdfData = $fwRequest->getParam('pdf', '');
+	
+	if($pdfData) {
+	$data='(';
+	foreach($pdfData as $k1 => $v1)
+	{
+		$data .= $k1 .",";
+	}
+	$data .= "0)";
+	
+	}
+	
+	$html = '';	
+	
+	
+$sqlP = "SELECT  business_sellers.bs_business_id, business_sellers.bs_customers_id, bus_customers.bcust_fname, bus_customers.bcust_lname,
+		bus_customers.bcust_misc_email1,bus_customers.bcust_misc_email2,bus_customers.bcust_misc_moble,bus_customers.bcust_misc_business,
+		bus_customers.bcust_misc_home,business.bsn_advert_text,  business.bsn_id, business.bsn_name, 
+		business.bsn_sub_status, business.bsn_status_sys_date, business.bsn_address 
+		from business_sellers 		
+		Inner Join bus_customers ON business_sellers.bs_customers_id = bus_customers.bcust_id 
+		Inner Join business ON business_sellers.bs_business_id = business.bsn_id " 
+		. $where. " And business.bsn_id IN ".$data." Order By business.bsn_status_sys_date DESC";
+	
+	
+	if($sqlP){$userDataP = $fwDb->query($sqlP);}
+	
+
+foreach($userDataP as $k => $v)
+{
+		//$sqla = "Select document_check_list.* from document_check_list
+		//	      where document_check_list.doc_bsn_id = ". $v['bsn_id'] . " And document_check_list.doc_name_id = 64";
+		//$data = $fwDb->queryOne($sqla);
+		
+		$link = "http://www.deckquotes.com.au/business.detail/bsn_id/".$v['bsn_id'];	
+		
+		
+				$ccdate = $v['bsn_status_sys_date'];
+				$Statusdate = changedate_y_m_d($ccdate);
+				$curdate_y_m_d = date('Y-m-d');
+				$dayscount = daysDifference($curdate_y_m_d, $Statusdate);
+				   
+				
+				$sqluid555 = "Select business_tasks.* from business_tasks
+				              where business_tasks.bt_bsn_id = ". $v['bsn_id']. " And business_tasks.bt_task_id = 555";
+		     	$data555 = $fwDb->queryOne($sqluid555);
+		
+		
+				$sqluid474 = "Select business_tasks.* from business_tasks
+				              where business_tasks.bt_bsn_id = ". $v['bsn_id']. " And business_tasks.bt_task_id = 474";
+		     	$data474 = $fwDb->queryOne($sqluid474);
+				
+				$sqluid312 = "Select business_tasks.* from business_tasks
+				              where business_tasks.bt_bsn_id = ". $v['bsn_id']. " And business_tasks.bt_task_id = 312";
+				$data312 = $fwDb->queryOne($sqluid312);
+				
+				$sqluid301 = "Select business_tasks.* from business_tasks
+				              where business_tasks.bt_bsn_id = ". $v['bsn_id']. " And business_tasks.bt_task_id = 301";
+				$data301 = $fwDb->queryOne($sqluid301);
+				
+				$sqluid330 = "Select business_tasks.* from business_tasks
+				              where business_tasks.bt_bsn_id = ". $v['bsn_id']. " And business_tasks.bt_task_id = 330";
+				$data330 = $fwDb->queryOne($sqluid330);
+				
+				$sqluid369 = "Select business_tasks.* from business_tasks
+				              where business_tasks.bt_bsn_id = ". $v['bsn_id']. " And business_tasks.bt_task_id = 369";
+				$data369 = $fwDb->queryOne($sqluid369);
+	
+
+				
+				$sqluid340 = "Select business_tasks.* from business_tasks
+				              where business_tasks.bt_bsn_id = ". $v['bsn_id']. " And business_tasks.bt_task_id = 340";
+				$data340 = $fwDb->queryOne($sqluid340);
+	
+			    $sql44 = "Select document_check_list.* from document_check_list
+			          where document_check_list.doc_bsn_id = ". $v['bsn_id'] . " And document_check_list.doc_name_id = 44";
+			    $data44 = $fwDb->queryOne($sql44);
+				
+	
+				 $sfu = "Select count(*) as tot from  sales_followup where sf_pid = ".$v['bsn_id'];
+				 $sfData = $fwDb->queryOne($sfu);
+						
+		
+				 $lfd = "Select max(sf_date) as last_followup_date from  sales_followup where sf_pid = ".$v['bsn_id'];
+				 $lfdData = $fwDb->queryOne($lfd);
+
+				
+				$sql45 = "Select document_check_list.doc_file_name from document_check_list
+						  where document_check_list.doc_bsn_id = ". $v['bsn_id'] . " And document_check_list.doc_name_id = 45";
+				$data45 = $fwDb->queryOne($sql45);
+					
+					
+				$sql2 = "Select document_check_list.doc_file_name from document_check_list
+						 where document_check_list.doc_bsn_id = ". $v['bsn_id'] . " And document_check_list.doc_name_id = 2";
+				$data2 = $fwDb->queryOne($sql2);
+					
+				
+				$sqluid302 = "Select business_tasks.bt_complete, business_tasks.bt_completed_date from business_tasks
+				              where business_tasks.bt_bsn_id = ". $v['bsn_id']. " And business_tasks.bt_task_id = 302";
+		     	        $data302 = $fwDb->queryOne($sqluid302);
+		
+				
+				$sqluid137 = "Select business_tasks.bt_complete, business_tasks.bt_completed_date from business_tasks
+				              where business_tasks.bt_bsn_id = ". $v['bsn_id']. " And business_tasks.bt_task_id = 137";
+		     	        $data137 = $fwDb->queryOne($sqluid137);
+		
+				
+				$sqluid206 = "Select business_tasks.bt_complete, business_tasks.bt_completed_date from business_tasks
+				              where business_tasks.bt_bsn_id = ". $v['bsn_id']. " And business_tasks.bt_task_id = 206";
+		     	        $data206 = $fwDb->queryOne($sqluid206);
+		
+		
+		
+		$setdataP[$k]['bsn_id'] = $v['bsn_id'];
+		$setdataP[$k]['bsn_address'] = $v['bsn_address'];
+		$setdataP[$k]['hia_sign_date'] = changedate_d_m_y($ccdate);
+		$setdataP[$k]['link'] = $link;
+		$setdataP[$k]['status'] = $v['bsn_sub_status'];
+		$setdataP[$k]['dayscount'] = $dayscount;
+		$setdataP[$k]['budget'] = $v['bsn_advert_text'];
+		
+		$setdataP[$k]['uid555complete'] = $data555['bt_complete'];
+		$setdataP[$k]['uid555'] = $data555['bt_completed_date'];
+		
+		$setdataP[$k]['uid474complete'] = $data474['bt_complete'];
+		$setdataP[$k]['uid474'] = $data474['bt_completed_date'];
+		
+		$setdataP[$k]['uid312complete'] = $data312['bt_complete'];
+		$setdataP[$k]['uid312'] = $data312['bt_completed_date'];
+		
+		$setdataP[$k]['uid301complete'] = $data301['bt_complete'];
+		$setdataP[$k]['uid301'] = $data301['bt_completed_date'];
+		
+		
+		$setdataP[$k]['uid330complete'] = $data330['bt_complete'];
+		$setdataP[$k]['uid330'] = $data330['bt_completed_date'];
+		
+		
+		$setdataP[$k]['uid369complete'] = $data369['bt_complete'];
+		$setdataP[$k]['uid369'] = $data369['bt_completed_date'];
+		
+		$setdataP[$k]['uid340complete'] = $data340['bt_complete'];
+		$setdataP[$k]['uid340'] = $data340['bt_completed_date'];
+		
+		$setdataP[$k]['checklist44'] = $data44['doc_file_name'];
+		
+		$setdataP[$k]['salesfolloup'] = $sfData['tot'];
+		$setdataP[$k]['lastfoldt'] = $lfdData['last_followup_date'];
+		
+		$setdataP[$k]['checklist45'] = $data45['doc_file_name'];
+		
+		$setdataP[$k]['checklist2'] = $data2['doc_file_name'];
+		
+		if($data302['bt_complete'] == 1) {
+			$setdataP[$k]['boxsent'] = $data302['bt_completed_date'];	
+		}
+		
+		$setdataP[$k]['uid137complete'] = $data137['bt_complete'];
+		$setdataP[$k]['uid137'] = $data137['bt_completed_date'];
+		
+		
+		$setdataP[$k]['uid206complete'] = $data206['bt_complete'];
+		$setdataP[$k]['uid206'] = $data206['bt_completed_date'];
+		
+		$setdataP[$k]['bcust_fname'] = $v['bcust_fname'];
+		$setdataP[$k]['bcust_lname'] = $v['bcust_lname'];
+		
+		$setdataP[$k]['bcust_misc_email1'] = $v['bcust_misc_email1'];
+		$setdataP[$k]['bcust_misc_email2'] = $v['bcust_misc_email2'];
+		$setdataP[$k]['bcust_misc_moble'] = $v['bcust_misc_moble'];
+		$setdataP[$k]['bcust_misc_business'] = $v['bcust_misc_business'];
+		$setdataP[$k]['bcust_misc_home'] = $v['bcust_misc_home'];
+		
+}
+ 
+
+ foreach ($setdataP as $key => $row) {
+    // replace 0 with the field's index/key
+    $dates[$key]  = $row['dayscount'];
+}
+	array_multisort($dates, SORT_ASC, $setdataP);
+
+
+	$html ='';
+	$html .= '<table class="first" cellpadding="5" border="1" style="border:1px solid #CCC">';
+	$html .= "<tr>";
+	$html .= "<th>Address</th><th>Customer</th> <th witdh='20'>Status </th><th>Day Count</th><th>Budget</th><th>Phone Follow Ups</th>
+	          <th>Last Followup Date</th>";
+	$html .= "<th>Box Sent</th><th>Face to Face<br>Booked</th><th>Planning<br>Assement Report<br> Delivered </th>";
+	
+				
+	$html .= "</tr>";
+	
+	foreach($setdataP as $k => $v)
+	{
+		$html .= "<tr>";
+		$html .= "<td>" . $v['bsn_address']. "</td>"; 
+		$html .= "<td>" . $v['bcust_fname']." ".$v['bcust_lname']. "</td>"; 
+		
+		$html .= "<td>".  $v['status'] ."</td>";
+		$html .= "<td>".  $v['dayscount'] ."</td>";
+		$html .= "<td>".  $v['budget'] ."</td>"; 
+		$html .= "<td>".  $v['salesfolloup'] ."</td>"; 
+		$html .= "<td>".  $v['lastfoldt'] ."</td>"; 
+		
+		$html .= "<td>".  changedate_d_m_y($v['boxsent']) ."</td>"; 
+		$html .= "<td>".  changedate_d_m_y($v['uid137']) ."</td>";
+		$html .= "<td>".  changedate_d_m_y($v['uid206']) ."</td>";
+		
+		$html .= "</tr>";
+		
+	}
+    $html .= "</table>";
+	
+	$heading = "Planning Assesment Quick Report";
+
+	$fname = "";
+	
+	
+	create_quick_report($heading,$html,$fname);
+	
+}
+
+$sqlpsc = "select * from process_street_checklist";
+$fwViewData['pro_street_checklist'] = $fwDb->query($sqlpsc);
+
+
+$export = $fwRequest->getParam('export', 0);
+
+if($export > 0)
+	{
+
+	$contactsql = "SELECT * FROM contact_list";	
+
+    if($contactsql){$contactData = $fwDb->query($contactsql);}
+	
+	
+require BASE_DIR . "PHPExcel/Classes/PHPExcel.php";
+//require BASE_DIR . "PHPExcel/Classes/PHPExcel/Writer/Excel2007.php";
+
+
+// Create new PHPExcel object
+$objPHPExcel = new PHPExcel();
+
+// Set document properties
+$objPHPExcel->getProperties()->setCreator("Deckquotes")
+							 ->setLastModifiedBy("Nick C")
+							 ->setTitle("Office 2007 XLSX Test Document")
+							 ->setSubject("Office 2007 XLSX Test Document")
+							 ->setDescription("Contact list exported to Office 2007 XLSX.")
+							 ->setKeywords("office 2007 openxml php")
+							 ->setCategory("Contact list file");
+
+
+$objPHPExcel->getActiveSheet()->getColumnDimension('A')->setAutoSize(true);
+
+$objPHPExcel->getActiveSheet()->getColumnDimension('B')->setAutoSize(true);
+$objPHPExcel->getActiveSheet()->getColumnDimension('C')->setAutoSize(true);
+$objPHPExcel->getActiveSheet()->getColumnDimension('D')->setAutoSize(true);
+$objPHPExcel->getActiveSheet()->getColumnDimension('E')->setAutoSize(true);
+$objPHPExcel->getActiveSheet()->getColumnDimension('F')->setAutoSize(true);
+$objPHPExcel->getActiveSheet()->getColumnDimension('G')->setAutoSize(true);
+$objPHPExcel->getActiveSheet()->getColumnDimension('H')->setAutoSize(true);
+$objPHPExcel->getActiveSheet()->getColumnDimension('I')->setAutoSize(true);
+$objPHPExcel->getActiveSheet()->getColumnDimension('J')->setAutoSize(true);
+$objPHPExcel->getActiveSheet()->getColumnDimension('K')->setAutoSize(true);
+$objPHPExcel->getActiveSheet()->getColumnDimension('L')->setAutoSize(true);
+
+$objPHPExcel->getActiveSheet()->getColumnDimension('M')->setAutoSize(true);
+$objPHPExcel->getActiveSheet()->getColumnDimension('N')->setAutoSize(true);	
+
+// Add some data
+$objPHPExcel->setActiveSheetIndex(0)
+            ->setCellValue('A1', 'SrNo')
+            ->setCellValue('B1', 'Address')
+            ->setCellValue('C1', 'Status')
+            ->setCellValue('D1', 'Day Count')
+	    ->setCellValue('E1', 'Budget')
+	    ->setCellValue('F1', 'Project Type')
+	    ->setCellValue('G1', 'Project Customer Type')
+	    ->setCellValue('H1', 'Sales Pathway')
+	    ->setCellValue('I1', 'Star Rating')
+	    ->setCellValue('J1', 'Phone Follow Ups')
+	    ->setCellValue('K1', 'Last Followup Date')
+	    ->setCellValue('L1', 'Box Sent')
+	    ->setCellValue('M1', 'Face to Face Booked')
+	    ->setCellValue('N1', 'Planning Assement Report Delivered ')
+			;
+
+$from = "A1"; // or any value
+$to = "N1"; // or any value
+$objPHPExcel->getActiveSheet()->getStyle("$from:$to")->getFont()->setBold( true );
+
+// Miscellaneous glyphs, UTF-8
+//$objPHPExcel->setActiveSheetIndex(0)
+//            ->setCellValue('A4', 'Miscellaneous glyphs')
+//            ->setCellValue('A5', 'éàèùâêîôûëïüÿäöüç');
+$row=2;
+$sr=1;
+foreach($setdata2 as $k=>$v)
+{
+	if($v['project_type'] == 15 ) {
+		$pt = "Customer Granny Flat";
+	} elseif($v['project_type'] == 17 ) {
+	 	$pt = " Fixed Price Extentension";
+	} elseif($v['project_type'] == 19 ) {
+		$pt = "Canberra Custom Homes";
+	}
+	
+	if($v['bsn_proj_cust_type'] == 2 ) {
+		$pct = "Real Estate Buyer";
+	} elseif($v['bsn_proj_cust_type'] == 3 ) {
+	 	$pct = "Real Estate Agent";
+	} elseif($v['bsn_proj_cust_type'] == 4 ) {
+		$pct = "Financial Advisor";
+	}  elseif($v['bsn_proj_cust_type'] == 5 ) {
+		$pct = "Undetermined";
+	} elseif($v['bsn_proj_cust_type'] == 6 ) {
+		$pct = "Standard Customer";
+	}
+	
+	
+	if($v['meet'] == 1 ) {
+		$spw = "Default";
+	} elseif($v['meet'] == 2 ) {
+		$spw = "Meet in Office";
+	} elseif($v['meet'] == 3 ) {
+	 	$spw = "Email then meets in office";
+	} elseif($v['meet'] == 4 ) {
+		$spw = "Only Email Reports";
+	} elseif($v['meet'] == 5 ) {
+		$spw = "Email and Post Reports";
+	} elseif($v['meet'] == 6 ) {
+		$spw = "Sorry can't Help";
+	}
+	 
+	
+	$objPHPExcel->getActiveSheet()
+				->setCellValue('A'.$row, $sr)
+				->setCellValue('B'.$row, $v['bsn_address'])
+				->setCellValue('C'.$row, $v['status'])
+				->setCellValue('D'.$row, $v['dayscount'])
+				->setCellValue('E'.$row, $v['budget'])
+				->setCellValue('F'.$row, $pt)
+				->setCellValue('G'.$row, $pct)
+				->setCellValue('H'.$row, $spw)
+				->setCellValue('I'.$row, $v['bsn_rating'])
+				->setCellValue('J'.$row, $v['salesfolloup'])
+				->setCellValue('K'.$row, $v['lastfoldt'])
+				->setCellValue('L'.$row, changedate_d_m_y($v['boxsent']))
+				->setCellValue('M'.$row, changedate_d_m_y($v['uid137']))
+				->setCellValue('N'.$row, changedate_d_m_y($v['uid206']))
+				;	
+	$row= $row+1;			
+	$sr=$sr+1;
+}
+
+// Rename worksheet
+$objPHPExcel->getActiveSheet()->setTitle('Contact List');
+
+
+// Set active sheet index to the first sheet, so Excel opens this as the first sheet
+$objPHPExcel->setActiveSheetIndex(0);
+
+
+// Redirect output to a client’s web browser (Excel2007)
+//header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+
+// Redirect output to a client’s web browser (Excel5)
+header('Content-Type: application/vnd.ms-excel');
+header('Content-Disposition: attachment;filename="contact_list.xls"');
+header('Cache-Control: max-age=0');
+// If you're serving to IE 9, then the following may be needed
+header('Cache-Control: max-age=1');
+
+// If you're serving to IE over SSL, then the following may be needed
+header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
+header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+header ('Pragma: public'); // HTTP/1.0
+
+$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+$objWriter->save('php://output');
+exit;
+
+	}
+
