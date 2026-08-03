@@ -140,6 +140,7 @@ if (isset($_POST['convert_pdf'])) {
     if (isset($_FILES['pdf_file']) && $_FILES['pdf_file']['error'] == UPLOAD_ERR_OK) {
 
         $file = $_FILES['pdf_file'];
+
         $pdfPath = $file['tmp_name'];
 
         $originalName = pathinfo($file['name'], PATHINFO_FILENAME);
@@ -157,6 +158,7 @@ if (isset($_POST['convert_pdf'])) {
         );
 
         $output = shell_exec($command);
+
 
         if (!file_exists($htmlFile)) {
 

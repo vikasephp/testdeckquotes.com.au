@@ -243,7 +243,6 @@
                 <td> {{$item.plr_edate}} </td>
 				<td>{{$item.plr_subject}}</td>
 		
-			                
                 <td>
                 		<input name="same" type="checkbox" {{if $item.plr_qa eq 1}} checked="checked" {{/if}} onclick="update_qa({{$item.plr_id}},this.checked)">
 							<script>
@@ -270,8 +269,6 @@
                   <div id="temp{{$item.plr_id}}"> {{if $item.plr_qa == 1}} {{$item.plr_qa_user}}<br />{{$item.plr_qa_date}} {{/if}}</div>          
                  </td>
                 
-				
-				
 				<td data-col="action">
                     <a href="{{$BASE_URL}}{{$BASEFOLDER}}.add_detail/plr_id/{{$item.plr_id}}" class="various" title="Edit"><img style="height:20px; width:20px;" src="{{$BASE_URL}}css/admin/images/edit.png" alt=""></a>
                     <a href="{{$BASE_URL}}{{$BASEFOLDER}}.delete_detail/plr_id/{{$item.plr_id}}" onclick="javascript:if(!confirm('Are you sure want to delete this detail with Record Number {{$bac_count}}?')) return false;" title="Delete"><img style="height:20px; width:20px;" src="{{$BASE_URL}}css/admin/images/delete.png" alt=""></a>
