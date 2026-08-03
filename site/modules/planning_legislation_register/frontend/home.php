@@ -155,12 +155,8 @@ if (isset($_FILES['pdf_file']) && $_FILES['pdf_file']['error'] == UPLOAD_ERR_OK)
 
     if (!file_exists($htmlFile)) {
 
-        echo "<pre>";
-        echo "Conversion failed\n";
-        echo $output;
-        echo "</pre>";
-
-        exit;
+        echo "<script>alert('PDF conversion failed. Please try again.'); window.history.back();</script>";
+		exit;
     }
 	
 	$htmlContent = file_get_contents($htmlFile);
@@ -185,6 +181,7 @@ if (isset($_FILES['pdf_file']) && $_FILES['pdf_file']['error'] == UPLOAD_ERR_OK)
 
 } else {
 
-    echo "No file uploaded";
+	echo "<script>alert('Please select a PDF file.');window.history.back();</script>";
+	exit;
 
 }
