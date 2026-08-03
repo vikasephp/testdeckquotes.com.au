@@ -1,3 +1,4 @@
+<script type="text/javascript" src="{{$BASE_URL}}js/jquery.min.js"></script>
 <script type="text/javascript" language="javascript" src="{{$BASE_URL}}js/form_validator/gen_validatorv31.js"></script>  
 <link rel="stylesheet" type="text/css" href="{{$BASE_URL}}css/default/cis-styles2.css" />
 
@@ -40,20 +41,6 @@
    CKEDITOR.add  
 </script>
 
-<script type="text/javascript">
-
-document.querySelectorAll('.aiFormatBtn').forEach(function(button) {
-
-    button.addEventListener('click', function() {
-
-        alert("Button clicked");
-
-    });
-
-});
-
-</script>
-
 
 {{if $opr}}
 <script type="text/javascript">
@@ -87,10 +74,6 @@ setTimeout(function() {
             <tr>
                 <th width="100">Question:</th>
                 <td><textarea cols="230" name="{{$TABLE}}[docqa_question]" id="editor1" class="ckeditor" >{{$detail.docqa_question}} </textarea>
-				<br>
-				<button type="button" class="aiFormatBtn" data-editor="editor1">
-					✨ Format with AI
-				</button>
 				</td>
             </tr>    
             
@@ -113,54 +96,71 @@ setTimeout(function() {
                 <td width="900">
                 <textarea cols="1000" rows="25" name="{{$TABLE}}[docqa_answer]" id="editor2" class="ckeditor" style="height:270px;">{{$detail.docqa_answer|stripslashes}}</textarea>
 				<br>
-				<button type="button" class="aiFormatBtn" data-editor="editor2">
+				<button type="button" id="btnAIFormat">
 					✨ Format with AI
 				</button>
-				<button type="button" id="aiFormatBtn">
-					Format with AI
-				</button>
 				<script type="text/javascript">
-				document.getElementById('aiFormatBtn').onclick = function() {
 
-					var editor = CKEDITOR.instances.editor2;
+jQuery("#btnAIFormat").click(function () {
 
-					var content = editor.getData();
+    var html = CKEDITOR.instances.editor2.getData();
 
-					var btn = this;
-					btn.innerHTML = "Processing...";
+    console.log("Sending content:", html);
 
+    jQuery.ajax({
 
-					fetch('ai_format.php', {
-						method: 'POST',
-						headers: {
-							'Content-Type': 'application/json'
-						},
-						body: JSON.stringify({
-							content: content
-						})
-					})
-					.then(function(response) {
-						return response.json();
-					})
-					.then(function(data) {
+        type: "POST",
 
-						alert("Response received");
+        url: "{{$BASE_URL}}{{$BASEFOLDER}}.format_text",
 
-						editor.setData(data.html);
+        data: {
+            content: html
+        },
 
-						btn.innerHTML = "Format with AI";
+        dataType: "json",
 
-					})
-					.catch(function(error) {
+        beforeSend:function(){
+            console.log("Request started");
+        },
 
-						alert("Error: " + error);
+        success:function(result){
 
-						btn.innerHTML = "Format with AI";
+            console.log("Response:", result);
 
-					});
+            if(result.success){
 
-				};
-				</script>
+                CKEDITOR.instances.editor2.setData(result.content);
+
+            }else{
+
+                alert(result.message);
+
+            }
+
+        },
+
+        error:function(xhr, status, error){
+
+            console.log("AJAX Error:");
+            console.log(xhr.responseText);
+			 console.log("HTTP Status:", xhr.status);
+    console.log("Response:", xhr.responseText);
+            console.log(status);
+            console.log(error);
+
+        },
+
+        complete:function(){
+
+            console.log("Request completed");
+
+        }
+
+    });
+
+});
+
+</script>
                 </td>
             </tr>
 			
