@@ -135,60 +135,66 @@ $fwViewData['typedata'] = $fwDb->query($sqlT);
 $fwViewData['title'] = $MODULE_PLURAL;
 
 //Convert PDf to HTML File
-if (isset($_FILES['pdf_file']) && $_FILES['pdf_file']['error'] == UPLOAD_ERR_OK) {
+if (isset($_POST['convert_pdf'])) {
 
-    $file = $_FILES['pdf_file'];
+    if (isset($_FILES['pdf_file']) && $_FILES['pdf_file']['error'] == UPLOAD_ERR_OK) {
 
-    $pdfPath = $file['tmp_name'];
+        $file = $_FILES['pdf_file'];
+        $pdfPath = $file['tmp_name'];
 
-    $originalName = pathinfo($file['name'], PATHINFO_FILENAME);
-    $htmlFileName = $originalName . '.html';
-    $outputDir = sys_get_temp_dir() . '/pdf_html_' . uniqid();
-    mkdir($outputDir, 0755, true);
-    $htmlFile = $outputDir . '/' . $htmlFileName;
-    $command = sprintf(
-        '/usr/bin/pdftohtml -s -noframes %s %s 2>&1',
-        escapeshellarg($pdfPath),
-        escapeshellarg($htmlFile)
-    );
-    $output = shell_exec($command);
+        $originalName = pathinfo($file['name'], PATHINFO_FILENAME);
+        $htmlFileName = $originalName . '.html';
 
-    if (!file_exists($htmlFile)) {
+        $outputDir = sys_get_temp_dir() . '/pdf_html_' . uniqid();
+        mkdir($outputDir, 0755, true);
 
-        echo "<script>alert('PDF conversion failed. Please try again.'); window.history.back();</script>";
-		exit;
+        $htmlFile = $outputDir . '/' . $htmlFileName;
+
+        $command = sprintf(
+            '/usr/bin/pdftohtml -s -noframes %s %s 2>&1',
+            escapeshellarg($pdfPath),
+            escapeshellarg($htmlFile)
+        );
+
+        $output = shell_exec($command);
+
+        if (!file_exists($htmlFile)) {
+
+            echo "<script>alert('PDF conversion failed. Please try again.');</script>";
+            exit;
+        }
+
+        $htmlContent = file_get_contents($htmlFile);
+
+        $htmlContent = str_replace(
+            'bgcolor="#A0A0A0"',
+            '',
+            $htmlContent
+        );
+
+        file_put_contents($htmlFile, $htmlContent);
+
+        header('Content-Type: text/html');
+        header('Content-Disposition: attachment; filename="' . $htmlFileName . '"');
+        header('Content-Length: ' . filesize($htmlFile));
+
+        readfile($htmlFile);
+
+        if (is_dir($outputDir)) {
+            $files = glob($outputDir . '/*');
+            foreach ($files as $file) {
+                if (is_file($file)) {
+                    unlink($file);
+                }
+            }
+
+            rmdir($outputDir);
+        }
+        exit;
+
+    } else {
+
+        echo "<script>alert('Please select a PDF file.');</script>";
+        exit;
     }
-	
-	$htmlContent = file_get_contents($htmlFile);
-
-	$htmlContent = str_replace(
-		'bgcolor="#A0A0A0"',
-		'',
-		$htmlContent
-	);
-
-	file_put_contents($htmlFile, $htmlContent);
-
-    header('Content-Type: text/html');
-    header('Content-Disposition: attachment; filename="' . $htmlFileName . '"');
-    header('Content-Length: ' . filesize($htmlFile));
-    readfile($htmlFile);
-
-	if (is_dir($outputDir)) {
-		$files = glob($outputDir . '/*');
-		foreach ($files as $file) {
-			if (is_file($file)) {
-				unlink($file);
-			}
-		}
-		rmdir($outputDir);
-	}
-
-    exit;
-
-} else {
-
-	echo "<script>alert('Please select a PDF file.');window.history.back();</script>";
-	exit;
-
 }

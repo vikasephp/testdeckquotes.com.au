@@ -97,6 +97,7 @@
     </div>
 </form>
 <form method="post" enctype="multipart/form-data">
+    <input type="hidden" name="convert_pdf" value="1">
     <label>Select PDF file:</label>
     <input type="file" name="pdf_file" accept="application/pdf" required>
     <button type="submit">
