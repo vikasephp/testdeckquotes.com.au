@@ -174,8 +174,15 @@ if (isset($_FILES['pdf_file']) && $_FILES['pdf_file']['error'] == UPLOAD_ERR_OK)
     header('Content-Length: ' . filesize($htmlFile));
     readfile($htmlFile);
 
-    unlink($htmlFile);
-    rmdir($outputDir);
+	if (is_dir($outputDir)) {
+		$files = glob($outputDir . '/*');
+		foreach ($files as $file) {
+			if (is_file($file)) {
+				unlink($file);
+			}
+		}
+		rmdir($outputDir);
+	}
 
     exit;
 
