@@ -22,10 +22,33 @@
         else if (type == 'manage_status') {
             viewurl = "{{$BASE_URL}}{{ $BASEFOLDER }}.{{ $ATTRIBUTES.status.view_fle_name }}" + "/random/" + Math.random();
         }
+        
         $(document).ready(function () {
             $.fancybox({
                 'width': '90%',
                 'height': '99%',
+                'autoScale': false,
+                'transitionIn': 'elastic',
+                'transitionOut': 'elastic',
+                'speedIn': 400,
+                'speedOut': 300,
+                'overlayShow': true,
+                'overlayColor': '#000',
+                'hideOnOverlayClick': false,
+                'hideOnContentClick': false,
+                'type': 'iframe',
+                'href': viewurl,
+                'scrolling': 'yes'
+            });
+        });
+    }
+
+    function viewLetterLog(recordId) {
+        let viewurl = "{{$BASE_URL}}{{ $BASEFOLDER }}.letter_log/" + recordId + "?record_id=" + recordId;
+        $(document).ready(function () {
+            $.fancybox({
+                'width': '90%',
+                'height': '91%',
                 'autoScale': false,
                 'transitionIn': 'elastic',
                 'transitionOut': 'elastic',
@@ -105,6 +128,8 @@
                 <th class="topmenu" align="center" valign="middle" data-col="date_uploaded">Date Uploaded</th>
                 <th class="topmenu" align="center" valign="middle" data-col="uploaded_by">Uploaded By</th>
                 <th class="topmenu" align="center" valign="middle" data-col="status">Status</th>
+                <th class="topmenu" align="center" valign="middle" data-col="send_letter">Send Letter</th>
+                <th class="topmenu" align="center" valign="middle" data-col="letter_log">Letter Log</th>
                 <th class="topmenu" align="center" valign="middle" data-col="uploaded_file">Uploaded File</th>
                 <th class="topmenu" align="center" valign="middle" data-col="additional_file">Additional File</th>
                 <th class="topmenu" align="center" valign="middle" data-col="action">Action</th>
@@ -122,8 +147,11 @@
                     </a>
                 </td>
                 <td data-col="customer_name">
-                    {{ if $clientArr and $item.cld_bsn_id }}
-                    {{ $clientArr[$item.cld_bsn_id] }}
+                    {{ assign var=cld_bsn_id value=$item.cld_bsn_id }}
+                    {{ if $clientArr and $cld_bsn_id and $clientArr.$cld_bsn_id }}
+                    {{ foreach from=$clientArr.$cld_bsn_id item="clientName" }}
+                    {{ $clientName }}<br>
+                    {{ /foreach }}
                     {{ /if }}
                 </td>
                 <td data-col="letter_type">
@@ -165,6 +193,14 @@
                             /if }}>{{ $row.$option_col }}</option>
                         {{ /foreach }}
                     </select>
+                </td>
+                <td data-col="send_letter" style="text-align: center;">
+                    <a href="{{$BASE_URL}}{{$BASEFOLDER}}.compose_letter/{{$ID}}/{{$item.$ID}}?letter_type={{ $typedata[$item.cld_letter_type_id].name }}" class="various">
+                       <button type="button" class="btn btn-info" style="padding: 5px 10px; font-size: 12px;">Send Letter</button>
+                    </a>
+                </td>
+                <td data-col="letter_log" style="text-align: center;">
+                    <button type="button" onclick="viewLetterLog({{ $item.$ID }})" class="btn btn-info" style="padding: 5px 10px; font-size: 12px;">Letter Log</button>
                 </td>
                 <td data-col="uploaded_file">
                     {{ if $item.cld_file_name }}
@@ -318,6 +354,7 @@
             }
         })
     }
+ 
     function update_date(record_id, t) {
         var currentDate = t.value;
         console.log("record_id ::" + record_id + " currentDate ::" + currentDate);

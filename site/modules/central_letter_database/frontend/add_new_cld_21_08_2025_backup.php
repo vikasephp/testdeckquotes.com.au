@@ -23,8 +23,7 @@ if (!empty($submit)) {
 	unset($detail[$primary_id]);
 
 	$project_name = $detail['cld_project_name'];
-	//$findBSN = "SELECT bsn_id FROM `business` WHERE `bsn_name` LIKE '%" . addslashes($project_name) . "%'";
-	$findBSN = "SELECT bsn_id FROM `business` WHERE `bsn_name` LIKE '%" . addslashes($project_name) . "'";
+	$findBSN = "SELECT bsn_id FROM `business` WHERE `bsn_name` LIKE '%" . addslashes($project_name) . "%'";
 	$projectbsn = $fwDb->query($findBSN);
 	$fwViewData['projectbsn'] = $projectbsn;
 	// db($findBSN);
@@ -60,23 +59,6 @@ if (!empty($submit)) {
 		}
 
 		$fwViewData['opr'] = $opr;
-
-		// Sync mapped letter types into Project Document Checklist (trackers read from there).
-		if (!empty($opr)) {
-			$syncFileName = !empty($detail['cld_file_name']) ? $detail['cld_file_name'] : '';
-			if ($syncFileName === '' && $this_id > 0) {
-				$existingRow = $fwDb->queryOne('SELECT cld_file_name FROM central_letter_database WHERE cld_id = ' . (int)$this_id);
-				$syncFileName = !empty($existingRow['cld_file_name']) ? $existingRow['cld_file_name'] : '';
-			}
-			// Prefer sync when a letter file is present (new upload or existing file on save).
-			if ($syncFileName !== '' && !empty($detail['cld_letter_type_id']) && !empty($detail['cld_bsn_id'])) {
-				sync_cld_letter_to_document_checklist(
-					$detail['cld_bsn_id'],
-					$detail['cld_letter_type_id'],
-					$syncFileName
-				);
-			}
-		}
 	} else {
 		$fwViewData['error'] = 'Select the valid project';
 	}

@@ -17,27 +17,41 @@ $save_central_letter_database_files = $fwRequest->getParam('save_central_letter_
 if ($save_central_letter_database_files && !empty($_FILES['central_letter_database_files']['name'])) {
 	$this_id = (int)$fwRequest->getParam($ID, 0);
 	$files = $_FILES['central_letter_database_files'];
-	// db($_SESSION);
-	// db($files);
-	// db($this_id);
-	// die();
+	$uploadedAny = false;
 	foreach ($_FILES['central_letter_database_files']['name'] as $index => $name) {
+		if ($name === '' || empty($files['tmp_name'][$index])) {
+			continue;
+		}
+		// Skip failed uploads / empty temp files (e.g. browser form resubmit without file).
+		if (!empty($files['error'][$index]) && (int)$files['error'][$index] !== UPLOAD_ERR_OK) {
+			continue;
+		}
 		$record = [];
 		$docfile_1 = $name;
-		$docfile_1 =  preg_replace('/[^A-Z0-9._]/i', '_', $docfile_1);
-		// db($docfile_1);
+		$docfile_1 = preg_replace('/[^A-Z0-9._-]/i', '_', basename((string)$docfile_1));
+		$docfile_1 = preg_replace('/_+/', '_', $docfile_1);
+		$docfile_1 = trim($docfile_1, '._');
 		$temp_name_1 = $files['tmp_name'][$index];
-		// db($temp_name_1);
 		$fileUploaded = upload($docfile_1, $temp_name_1);
+		if (empty($fileUploaded)) {
+			continue;
+		}
 		$record['cldf_file'] = $fileUploaded;
 		$table = new Fw_Db_Table('central_letter_database_files');
 		$record['cldf_cld_id'] = $this_id;
 		$record['cldf_file_upload_at'] = date('Y-m-d');
 		$record['cldf_file_upload_by'] = $_SESSION['user']['user_id'];
-		// db($record);
 		$table->insertRow($record);
+		$uploadedAny = true;
 	}
-	// die();
+	// Post-Redirect-Get: prevent re-upload on browser refresh.
+	if ($uploadedAny || $save_central_letter_database_files) {
+		$redirectUrl = BASE_URL . (isset($XFA['home']) ? $XFA['home'] : 'central_letter_database.home');
+		if (!empty($pagenum)) {
+			$redirectUrl .= '/pagenum/' . (int)$pagenum;
+		}
+		Location($redirectUrl);
+	}
 }
 
 $search_project = $fwRequest->getParam('search_project', '');
@@ -90,7 +104,17 @@ $custsql = "Select business_sellers.bs_business_id, bus_customers.bcust_id, bus_
 $custdetail  = $fwDb->query($custsql);
 $clientArr = [];
 foreach ($custdetail as $cust) {
-	$clientArr[$cust['bs_business_id']] = $cust['bcust_fname'] . ' ' . $cust['bcust_lname'];
+	$fullName = trim(($cust['bcust_fname'] ?? '') . ' ' . ($cust['bcust_lname'] ?? ''));
+	if ($fullName === '') {
+		continue;
+	}
+	$bsnId = $cust['bs_business_id'];
+	if (!isset($clientArr[$bsnId])) {
+		$clientArr[$bsnId] = [];
+	}
+	if (!in_array($fullName, $clientArr[$bsnId], true)) {
+		$clientArr[$bsnId][] = $fullName;
+	}
 }
 $fwViewData['clientArr'] = $clientArr;
 
@@ -238,9 +262,13 @@ if ($export > 0) {
 	$row = 2;
 	$sr = 1;
 	foreach ($resultData as $k => $v) {
+		$customerNamesExport = '';
+		if (!empty($clientArr[$v['cld_bsn_id']]) && is_array($clientArr[$v['cld_bsn_id']])) {
+			$customerNamesExport = implode("\n", $clientArr[$v['cld_bsn_id']]);
+		}
 		$objPHPExcel->getActiveSheet()
 			->setCellValue('A' . $row, $projectArr[$v['cld_bsn_id']])
-			->setCellValue('B' . $row, $clientArr[$v['cld_bsn_id']])
+			->setCellValue('B' . $row, $customerNamesExport)
 			->setCellValue('C' . $row, $typeArr[$v['cld_letter_type_id']])
 			->setCellValue('D' . $row, strtotime($v['cld_date_uploaded']) > 0 ? date('d-m-Y', strtotime($v['cld_date_uploaded'])) : '')
 			->setCellValue('E' . $row, $userArr[$v['cld_file_uploaded_by']])
