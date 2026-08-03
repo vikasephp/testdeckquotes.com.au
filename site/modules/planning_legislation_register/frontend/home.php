@@ -133,3 +133,58 @@ $sqlT = "select * from  planning_legislation_doctype where pd_active = 1";
 $fwViewData['typedata'] = $fwDb->query($sqlT);
 
 $fwViewData['title'] = $MODULE_PLURAL;
+
+//Convert PDf to HTML File
+if (isset($_FILES['pdf_file']) && $_FILES['pdf_file']['error'] == UPLOAD_ERR_OK) {
+
+    $file = $_FILES['pdf_file'];
+
+    $pdfPath = $file['tmp_name'];
+
+    $originalName = pathinfo($file['name'], PATHINFO_FILENAME);
+    $htmlFileName = $originalName . '.html';
+    $outputDir = sys_get_temp_dir() . '/pdf_html_' . uniqid();
+    mkdir($outputDir, 0755, true);
+    $htmlFile = $outputDir . '/' . $htmlFileName;
+    $command = sprintf(
+        '/usr/bin/pdftohtml -s -noframes %s %s 2>&1',
+        escapeshellarg($pdfPath),
+        escapeshellarg($htmlFile)
+    );
+    $output = shell_exec($command);
+
+    if (!file_exists($htmlFile)) {
+
+        echo "<pre>";
+        echo "Conversion failed\n";
+        echo $output;
+        echo "</pre>";
+
+        exit;
+    }
+	
+	$htmlContent = file_get_contents($htmlFile);
+
+	$htmlContent = str_replace(
+		'bgcolor="#A0A0A0"',
+		'',
+		$htmlContent
+	);
+
+	file_put_contents($htmlFile, $htmlContent);
+
+    header('Content-Type: text/html');
+    header('Content-Disposition: attachment; filename="' . $htmlFileName . '"');
+    header('Content-Length: ' . filesize($htmlFile));
+    readfile($htmlFile);
+
+    unlink($htmlFile);
+    rmdir($outputDir);
+
+    exit;
+
+} else {
+
+    echo "No file uploaded";
+
+}

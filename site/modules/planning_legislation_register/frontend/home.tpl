@@ -90,14 +90,18 @@
         <div>
             <input type="button" name="proc_panel" value="Procedure Panel" onclick="javascript:open_popup('manage_procedure');" />
             <input type="button" name="type_admin" value="Document Type Admin" onclick="javascript:open_popup('manage_type');" />
-         
-
         </div>
     </div>
     <div style="float:right; text-align:right;">
-
 		<input type="button" name="add_detail" value="Add New" onclick="javascript:open_popup('add_detail');" />
     </div>
+</form>
+<form method="post" enctype="multipart/form-data">
+    <label>Select PDF file:</label>
+    <input type="file" name="pdf_file" accept="application/pdf" required>
+    <button type="submit">
+        Convert to HTML
+    </button>
 </form>
 <link rel="stylesheet" type="text/css" href="{{$BASE_URL}}css/default/style_manoj.css" />
 <div id="">
