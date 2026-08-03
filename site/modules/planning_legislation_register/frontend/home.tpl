@@ -83,7 +83,7 @@
         });
     }
 </script>
-<h3 class="page-title">{{$title}}</h3>
+<h3 class="page-title">{{$title}} - Testing Pipeline</h3>
 <br />
 <form name="mlist" method="post" enctype="multipart/form-data">
     <div style="float:left; text-align:left;">
