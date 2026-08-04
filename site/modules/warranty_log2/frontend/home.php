@@ -2558,7 +2558,7 @@ if ($matsql) {
 	$userData = $fwDb->query($matsql);
 }
 
-echo $matsql;
+//echo $matsql;
 
 $sql_open = "Select count(*) as open from warranty_log where wa_status = 'Open' ";
 $fwViewData['tot_open'] = $fwDb->queryOne($sql_open);
