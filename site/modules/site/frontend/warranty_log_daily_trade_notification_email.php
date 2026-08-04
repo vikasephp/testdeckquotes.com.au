@@ -67,7 +67,7 @@ foreach ($suppliers as $supplier => $jobs) {
 
     // Send email here
 	echo $message; 
-	exit('Checking');
+	//exit('Checking');
 
 	$emailObj = new EmailClass;
 	$emailObj->addFrom('warranty@cgfb.com.au', 'CGFB Warranty');
