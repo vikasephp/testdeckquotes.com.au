@@ -76,8 +76,8 @@ foreach ($suppliers as $supplier => $jobs) {
 	$emailObj->message = $message;
 	
 	//$emailObj->addTo($customerEmail, $customerName);
-	//$emailObj->addTo('rahul@ephpsolutions.com', 'Rahul');
-	$emailObj->addTo('arun@ephpsolutions.com', 'Tester');
+	$emailObj->addTo('rahul@ephpsolutions.com', 'Rahul');
+	//$emailObj->addTo('arun@ephpsolutions.com', 'Tester');
 	$emailObj->attachments = [];
 	
 	$response = $emailObj->sendEmail();
