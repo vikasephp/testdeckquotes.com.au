@@ -706,39 +706,32 @@
 								<td style="text-align:center;">{{$item.lastfoldt}}</td>
 
 
-								{{if $item.checklist412}}
-								<td style="text-align:center;">
-									<a
-										href="/planning_assesment_quickreport.download_content?file_name={{$item.checklist412}}&module_name=planning_assesment_quickreport.home">Download</a>
+                {{if $item.checklist412}}
+                <td style="text-align:center;">
+                    <a href="/planning_assesment_quickreport.download_content?file_name={{$item.checklist412}}&module_name=planning_assesment_quickreport.home">Download</a>
+                </td>
+                {{else}}
+                    <td style="background:#F00"> </td>
+                {{/if}}
 
 
-								</td>
-								{{else}}
-									<td style="background:#F00"> </td>
-									{{/if}}
-
-
-									{{if $item.checklist45}}
-									<td style="text-align:center;">
-										<a
-											href="/planning_assesment_quickreport.download_content?file_name={{$item.checklist45}}&module_name=planning_assesment_quickreport.home">Download</a>
-
-									</td>
-									{{else}}
-										<td style="background:#F00"> </td>
-										{{/if}}
+                {{if $item.checklist45}}
+                <td style="text-align:center;">
+                    <a href="/planning_assesment_quickreport.download_content?file_name={{$item.checklist45}}&module_name=planning_assesment_quickreport.home">Download</a>
+                </td>
+                {{else}}
+                    <td style="background:#F00">.. </td>
+                {{/if}}
 
 										{{if $item.checklist2}}
 										<td style="text-align:center;">
-											<!--  <a href = "https://deckquote.s3.amazonaws.com/files/document_check_list_files/{{$item.checklist2}}?dummy={{$ran}}" target="_blank">Download</a>
-   -->
-											<a
-												href="/planning_assesment_quickreport.download_content?file_name={{$item.checklist2}}&module_name=planning_assesment_quickreport.home">Download</a>
+
+							<a href="/planning_assesment_quickreport.download_content?file_name={{$item.checklist2}}&module_name=planning_assesment_quickreport.home">Download</a>
 
 										</td>
 										{{else}}
 											<td style="background:#F00"> </td>
-											{{/if}}
+										{{/if}}
 
 											<td style="text-align:center;">
 												<input type="button" name="Alert" value="Add Feedback"

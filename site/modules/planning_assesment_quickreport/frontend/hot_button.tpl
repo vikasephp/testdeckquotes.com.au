@@ -17,7 +17,22 @@ setTimeout('parent.close_win();', 500);
 
 
 <table id="list-table" width="90%" cellpadding="15">
+<tr>
+<th colspan="2">
+<div style="color:#F00; margin-bottom:10px;font-size:16px;">Initial Introduction Emails </div>
+<input type="hidden" name="bsn_id" value="{{$bsn_id}}"  />
+<input type="submit" name="email_10" value="Email - MS-10" {{if $ms10 eq 'sent'}} style="background:#0F6 !important; color:#C03" {{/if}}/> &nbsp; &nbsp; &nbsp;
+<input type="submit" name="email_11" value="Email - MS-11" {{if $ms11 eq 'sent'}} style="background:#0F6 !important; color:#C03" {{/if}}/> &nbsp;&nbsp; &nbsp;
+<input type="submit" name="email_121" value="Email - MS-12.1 (Phone)" {{if $ms121S eq 'sent'}} style="background:#0F6; color:#C03" {{/if}}/ >&nbsp;&nbsp; &nbsp;
+<input type="submit" name="email_121Email" value="Email - MS-12.1 (Email)" {{if $ms121E eq 'sent'}} style="background:#0F6; color:#C03" {{/if}}/><br />
+<input type="submit" name="email_600" value="Email - MS-600" {{if $ms600 eq 'sent'}} style="background:#0F6 !important; color:#C03" {{/if}}/ >&nbsp;&nbsp; &nbsp;
+<input type="submit" name="email_17" value="Email - MS-17" {{if $ms17 eq 'sent'}} style="background:#0F6 !important; color:#C03" {{/if}}/>&nbsp;&nbsp; &nbsp;
+<input type="submit" name="email_0768" value="Email - MS-0768"{{if $ms768 eq 'sent'}} style="background:#0F6 !important;color:#C03" {{/if}}/ >
+</th>
+</tr>
+
 <tr> 
+
 <th width="50%">
 Enter Text Message :
 <textarea name="message" cols="80" rows="3"></textarea><br />

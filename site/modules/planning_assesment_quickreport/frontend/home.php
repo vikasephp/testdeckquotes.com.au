@@ -90,6 +90,7 @@ if ($clear) {
 	unset($_SESSION['view_meeting_occurred_records']);
 }
 
+//$where = "WHERE ((bsn_sub_status = 'Open' AND bsn_planning_moveto_old <> 1) OR (bsn_sub_status IN ('Hold', 'Lost') AND bsn_planning_moveto_old =  0 ) )";
 $where = "WHERE business.bsn_state <> 'NSW' AND business.bsn_type <> 27 AND ((business.bsn_sub_status = 'Open' AND business.bsn_planning_moveto_old <> 1) OR (business.bsn_sub_status IN ('Hold', 'Lost') AND business.bsn_planning_moveto_old = 0) )";
 
 $dm = $fwRequest->getParam('tobedm', '');
@@ -194,6 +195,21 @@ $sql = "SELECT  business_sellers.bs_business_id, business_sellers.bs_customers_i
 if ($plreport_not == 1 || $_SESSION['plreport_not'] == 1) {
 	$fwViewData['pnot'] = 1;
 
+	/*$sql = "SELECT  business_sellers.bs_business_id, business_sellers.bs_customers_id, bus_customers.bcust_fname, 
+	bus_customers.bcust_lname, bus_customers.bcust_misc_email1,bus_customers.bcust_misc_email2,bus_customers.bcust_misc_moble, 
+	bus_customers.bcust_misc_business, business.bsn_type, 
+	bus_customers.bcust_misc_home,business.bsn_advert_text,  business.bsn_id, business.bsn_name, 
+	business.bsn_sub_status, business.bsn_status_sys_date, business.bsn_address , business.bsn_rating, business.bsn_watch_list,
+	business.bsn_proj_cust_type, business_sellers.bs_qr_delivery_method , business.bsn_address_same,
+	business_sellers.bs_paqr_alertoption, business_sellers.bs_paqr_alertoption_at, business_sellers.bs_paqr_alertoption_by, business_sellers.bs_qr_dm_user,
+	business_sellers.bs_qr_dm_date, business_sellers.bs_paqr_sqm,  business_sellers.bs_paqr_meeting_o,
+		business_sellers.bs_paqr_meeting_o_user, business_sellers.bs_paqr_meeting_o_date
+	from business_sellers 		
+	Inner Join bus_customers ON business_sellers.bs_customers_id = bus_customers.bcust_id 
+	Right Join document_check_list on  business_sellers.bs_business_id = document_check_list.doc_bsn_id 
+	And length(document_check_list.doc_file_name) = 0 And document_check_list.`doc_name_id` = 44
+	Inner Join business ON business_sellers.bs_business_id = business.bsn_id " . $where . " Order By business.bsn_status_sys_date DESC";*/
+	/*$sql = "SELECT business_sellers.bs_business_id, business_sellers.bs_customers_id, bus_customers.bcust_fname, bus_customers.bcust_lname, bus_customers.bcust_misc_email1,bus_customers.bcust_misc_email2,bus_customers.bcust_misc_moble, bus_customers.bcust_misc_business, business.bsn_type, bus_customers.bcust_misc_home,business.bsn_advert_text, business.bsn_id, business.bsn_name, business.bsn_sub_status, business.bsn_status_sys_date, business.bsn_address , business.bsn_rating, business.bsn_watch_list, business.bsn_proj_cust_type, business_sellers.bs_qr_delivery_method , business.bsn_address_same, business_sellers.bs_paqr_alertoption, business_sellers.bs_paqr_alertoption_at, business_sellers.bs_paqr_alertoption_by, business_sellers.bs_qr_dm_user, business_sellers.bs_qr_dm_date, business_sellers.bs_paqr_sqm, business_sellers.bs_paqr_meeting_o, business_sellers.bs_paqr_meeting_o_user, business_sellers.bs_paqr_meeting_o_date from business_sellers Inner Join bus_customers ON business_sellers.bs_customers_id = bus_customers.bcust_id Left Join document_check_list on business_sellers.bs_business_id = document_check_list.doc_bsn_id And document_check_list.`doc_name_id` = 44 Inner Join business ON business_sellers.bs_business_id = business.bsn_id WHERE ((bsn_sub_status = 'Open' AND bsn_planning_moveto_old <> 1) OR (bsn_sub_status IN ('Hold', 'Lost') AND bsn_planning_moveto_old = 0 ) ) AND (document_check_list.doc_file_name IS NULL OR TRIM(document_check_list.doc_file_name) = '') Order By business.bsn_status_sys_date DESC";*/
 	$sql = "SELECT bs.bs_business_id, bs.bs_customers_id, bc.bcust_fname, bc.bcust_lname, bc.bcust_misc_email1, bc.bcust_misc_email2, bc.bcust_misc_moble, bc.bcust_misc_business, business.bsn_type, bc.bcust_misc_home, business.bsn_advert_text, business.bsn_id, business.bsn_name, business.bsn_sub_status, business.bsn_status_sys_date, business.bsn_address, business.bsn_rating, business.bsn_watch_list, business.bsn_proj_cust_type, bs.bs_qr_delivery_method, business.bsn_address_same, bs.bs_paqr_alertoption, bs.bs_paqr_alertoption_at, bs.bs_paqr_alertoption_by, bs.bs_qr_dm_user, bs.bs_qr_dm_date, bs.bs_paqr_sqm, bs.bs_paqr_meeting_o, bs.bs_paqr_meeting_o_user, bs.bs_paqr_meeting_o_date FROM business_sellers bs JOIN bus_customers bc ON bs.bs_customers_id = bc.bcust_id JOIN business ON bs.bs_business_id = business.bsn_id " . $where . " AND NOT EXISTS ( SELECT 1 FROM document_check_list dcl WHERE dcl.doc_bsn_id = bs.bs_business_id AND dcl.doc_name_id = 44 AND TRIM(COALESCE(dcl.doc_file_name, '')) <> '' ) ORDER BY business.bsn_status_sys_date DESC";
 }
 
@@ -398,6 +414,19 @@ if (!empty($userData)) {
 			$sql45 = "Select document_check_list.doc_file_name from document_check_list
 			          where document_check_list.doc_bsn_id = " . $v['bsn_id'] . " And document_check_list.doc_name_id = 45";
 			$data45 = $fwDb->queryOne($sql45);
+			
+			
+			if(!empty($data45['doc_file_name'])) {
+				//db($v['bsn_id']);
+				
+					$move45['bsn_planning_moveto_old'] = 1;
+					$tablebusiness->setWhere('bsn_id = ' . $v['bsn_id']);
+					$this_id = $tablebusiness->updateRow($move45);
+					
+					   unset($setdata2[$k]);
+					   continue;
+				
+			}
 
 			// Uid 45 ends
 
@@ -440,9 +469,6 @@ if (!empty($userData)) {
 				$taskpldone['pltaskcomp'] = 0;
 			}
 
-			//$setdata2[$k]['bs_business_id'] = $v['bs_business_id'];
-			//$setdata2[$k]['bsn_id'] = $v['bsn_id'];
-			//$setdata2[$k]['bsn_address'] = $v['bsn_address'];
 
 			$setdata2[$k]['bs_paqr_alertoption_at'] = '';
 			if (strtotime($v['bs_paqr_alertoption_at']) > 0) {
@@ -462,9 +488,7 @@ if (!empty($userData)) {
 			$setdata2[$k]['budget'] = $v['bsn_advert_text'];
 
 			$setdata2[$k]['project_type'] = $v['bsn_type'];
-			//$setdata2[$k]['bsn_proj_cust_type'] = $v['bsn_proj_cust_type'];
-			//$setdata2[$k]['bsn_rating'] = $v['bsn_rating'];
-			//$setdata2[$k]['meet'] = $v['bsn_sales_pathway'];
+		
 			$setdata2[$k]['watch'] = $v['bsn_watch_list'];
 			$setdata2[$k]['uid555complete'] = $data555['bt_complete'];
 			$setdata2[$k]['uid555'] = $data555['bt_completed_date'];
@@ -502,14 +526,7 @@ if (!empty($userData)) {
 			}
 
 
-			//$setdata2[$k]['bcust_fname'] = $v['bcust_fname'];
-			//$setdata2[$k]['bcust_lname'] = $v['bcust_lname'];
-
-			//$setdata2[$k]['bcust_misc_email1'] = $v['bcust_misc_email1'];
-			//$setdata2[$k]['bcust_misc_email2'] = $v['bcust_misc_email2'];
-			//$setdata2[$k]['bcust_misc_moble'] = $v['bcust_misc_moble'];
-			//$setdata2[$k]['bcust_misc_business'] = $v['bcust_misc_business'];
-			//$setdata2[$k]['bcust_misc_home'] = $v['bcust_misc_home'];
+	
 			$setdata2[$k]['total_pl_task'] = $planingtasks['totpltasks'];
 			$setdata2[$k]['task_pl_done'] = $taskpldone['pltaskcomp'];
 
