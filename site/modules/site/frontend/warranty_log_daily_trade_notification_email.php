@@ -63,7 +63,7 @@ foreach ($suppliers as $supplier => $jobs) {
 	Click here to Update
 	</a>
 
-	<br><br>Thank you.";	
+	<br><br>Thank you.<br>";	
 
     // Send email here
 	echo $message; 
