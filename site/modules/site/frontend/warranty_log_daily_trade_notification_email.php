@@ -78,7 +78,7 @@ foreach ($suppliers as $supplier => $data) {
 	You are scheduled for the following warranty jobs today:<br><br>";
 
     foreach ($jobs as $job) {	
-	$message .= "<strong>{$job['project']}</strong> &nbsp;&nbsp; <a href='https://warrantyreport.com.au/project/warranty_issue/{$job['bsn_id']}/open/{$job['wa_id']}'>Log {$job['wa_id']}</a><br>";
+	$message .= "<strong>{$job['project']}</strong> - <a href='https://warrantyreport.com.au/project/warranty_issue/{$job['bsn_id']}/open/{$job['wa_id']}'>Log {$job['wa_id']}</a><br>";
     }
 
     $message .= "
