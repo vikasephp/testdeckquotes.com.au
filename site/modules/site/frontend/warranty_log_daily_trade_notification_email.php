@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Send Email to Trades for Warranty Jobs Scheduled Today
+ * Send Email to customers for Warranty Log Action Required 
  */
 
 require_once LIB_DIR . 'EmailClass.php';
@@ -9,12 +9,15 @@ require_once LIB_DIR . 'EmailClass.php';
 $query = "SELECT * FROM warranty_log WHERE STR_TO_DATE(wa_schedule_date, '%d-%m-%Y') = CURDATE()";
 $results = $fwDb->query($query);
 
-$sql_bsn_name = "SELECT bsn_name, bsn_address FROM business";
+$sql_bsn_name = "SELECT bsn_id, bsn_name, bsn_address FROM business";
 $data_bsn_name = $fwDb->query($sql_bsn_name);
 
 $businessMap = [];
-foreach ($data_bsn_name as $bsn_name) {
-    $businessMap[$bsn_name['bsn_name']] = $bsn_name['bsn_address'];
+foreach ($data_bsn_name as $business) {
+    $businessMap[$business['bsn_name']] = [
+        'bsn_id'      => $business['bsn_id'],
+        'bsn_address' => $business['bsn_address']
+    ];
 }
 
 //echo "<pre>"; print_r($results); exit('Checking');
@@ -41,23 +44,28 @@ foreach ($results as $row) {
         $suppliers[$supplier]['wa_ids'][$wa_id] = $wa_id;
 		
 		$project = $row['wa_project'];
+		$bsn_id = '';
+
 		if (isset($businessMap[$project])) {
-			$project = $businessMap[$project];
+			$bsn_id = $businessMap[$project]['bsn_id'];
+			$project = $businessMap[$project]['bsn_address'];
 		}
-		
+
 		$lastComma = strrpos($project, ',');
 		if ($lastComma !== false) {
 			$project = substr($project, 0, $lastComma);
 		}
-		
-        $suppliers[$supplier]['jobs'][] = [
-			'project' => $project,
-            'problem' => $row['wa_problem']
-        ];
+
+		$suppliers[$supplier]['jobs'][] = [
+			'wa_id'   => $wa_id,
+			'bsn_id'  => $bsn_id,
+			'project' => trim($project),
+			'problem' => $row['wa_problem']
+		];
     }
 }
 
-
+//echo "<pre>"; print_r($suppliers); exit();
 foreach ($suppliers as $supplier => $data) {
 
     $jobs = $data['jobs'];
@@ -69,9 +77,8 @@ foreach ($suppliers as $supplier => $data) {
 
 	You are scheduled for the following warranty jobs today:<br><br>";
 
-    foreach ($jobs as $job) {
-        $message .= "<strong>{$job['project']}</strong><br>";
-        $message .= "&#8226; {$job['problem']}<br><br>";
+    foreach ($jobs as $job) {	
+	$message .= "<strong>{$job['project']}</strong> &nbsp;&nbsp; <a href='https://warrantyreport.com.au/project/warranty_issue/{$job['bsn_id']}/open/{$job['wa_id']}'>Log {$job['wa_id']}</a><br>";
     }
 
     $message .= "
@@ -123,7 +130,7 @@ foreach ($suppliers as $supplier => $data) {
 		); */
 	}
 	//$emailObj->addTo($customerEmail, $customerName);
-	$emailObj->addTo('rahul@ephpsolutions.com', 'Rahul');
+	//$emailObj->addTo('rahul@ephpsolutions.com', 'Rahul');
 	$emailObj->addTo('arun@ephpsolutions.com', 'Tester');
 	$emailObj->attachments = [];
 	
