@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Send Email to customers for Warranty Log Action Required 
+ * Send Email to Trades for Warranty Jobs Scheduled Today
  */
 
 require_once LIB_DIR . 'EmailClass.php';

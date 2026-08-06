@@ -107,6 +107,7 @@ function add_procedure()
                    <th class="topmenu" align="center" valign="middle" width="10%">Project/Topic</th> 
                    <th class="topmenu" align="center" valign="middle" width="10%">Recording Link</th>
                    <th class="topmenu" align="center" valign="middle" width="10%">Transcript Link</th>
+				   <th class="topmenu" align="center" valign="middle" width="10%">Action AI Transcript</th>
                    <th class="topmenu" align="center" valign="middle" width="10%">Meeting Minutes</th>
                    <th class="topmenu" align="center" valign="middle" width="20%">Notes</th>
                    <th class="topmenu" align="center" valign="middle" width="10%">Meeting Summary Emailed</th>
@@ -140,6 +141,14 @@ function add_procedure()
         {{$item.fr_upload_user}} <br />{{$item.fr_upload_date}} 
         {{/if}}
         
+        </td>
+		
+		<td>
+			{{if $item.fr_actionAItranscript}}
+			<a href="/franks_recording_report.download_content?file_name={{$item.fr_actionAItranscript}}&module_name=franks_recording_report.home" title="{{$item.fr_actionAItranscript}}">Download Transcript</a>
+			<a href="{{$BASE_URL}}franks_recording_report.delete_ait/fr_id/{{$item.fr_id}}" onclick="javascript:if(!confirm('Are you sure want to delete?')) return false;" title="Delete"><img src="{{$BASE_URL}}/images/delete_icon.png" width="20" /></a><br/>
+			{{$item.fr_actionAItranscript_by}}<br/>{{$item.fr_actionAItranscript_at|date_format:"%d-%m-%Y"}}
+			{{/if}}
         </td>
         
         <td>{{if $item.fr_meeting_minutes}}

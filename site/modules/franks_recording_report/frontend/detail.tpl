@@ -67,6 +67,12 @@ setTimeout('parent.close_win();', 500);
   </td>      
   </tr>
   
+  <tr>
+  <th> Action AI Transcrpit </th> 
+  <td> <input type="file" name="actionAItranscript" />
+  </td>      
+  </tr>
+  
    <tr>
   <th> Upload Meeting Minutes File </th> 
   <td> <input type="file" name="meetingminutes" />

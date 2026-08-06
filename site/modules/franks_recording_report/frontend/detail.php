@@ -39,6 +39,17 @@ if(!empty($submit))
 			upload($docfile_1, $temp_name_1);
 		}
 		
+	if($_FILES['actionAItranscript']['name'])
+		{
+			$docfile_3 = $_FILES['actionAItranscript']['name'];
+			$docfile_3 =  preg_replace('/[^A-Z0-9._]/i', '_', $docfile_3);
+			$temp_name_3 = $_FILES['actionAItranscript']['tmp_name'];
+			$detail['fr_actionAItranscript'] = $docfile_3;
+			$detail['fr_actionAItranscript_by'] = $_SESSION['user']['user_name'];
+			$detail['fr_actionAItranscript_at'] = date('d-m-Y');
+			upload($docfile_3, $temp_name_3);
+		}
+		
 		
 	if($_FILES['meetingminutes']['name'])
 		{
