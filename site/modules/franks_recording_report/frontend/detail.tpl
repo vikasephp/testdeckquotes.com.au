@@ -68,8 +68,10 @@ setTimeout('parent.close_win();', 500);
   </tr>
   
   <tr>
-  <th> Action AI Transcrpit </th> 
-  <td> <input type="file" name="actionAItranscript" />
+  <th> Action AI Transcript </th> 
+  <td> 
+  <!--<input type="file" name="actionAItranscript" />-->
+  <input type="text" name="{{$TABLE}}[fr_actionAItranscript]" style="width:800px" value="{{$detail.fr_actionAItranscript}}" />
   </td>      
   </tr>
   

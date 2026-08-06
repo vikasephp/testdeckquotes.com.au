@@ -145,8 +145,9 @@ function add_procedure()
 		
 		<td>
 			{{if $item.fr_actionAItranscript}}
-			<a href="/franks_recording_report.download_content?file_name={{$item.fr_actionAItranscript}}&module_name=franks_recording_report.home" title="{{$item.fr_actionAItranscript}}">Download Transcript</a>
-			<a href="{{$BASE_URL}}franks_recording_report.delete_ait/fr_id/{{$item.fr_id}}" onclick="javascript:if(!confirm('Are you sure want to delete?')) return false;" title="Delete"><img src="{{$BASE_URL}}/images/delete_icon.png" width="20" /></a><br/>
+			<a href="{{$item.fr_actionAItranscript}}" target="_blank">View Action AI Transcript</a><br />
+			<!--<a href="/franks_recording_report.download_content?file_name={{$item.fr_actionAItranscript}}&module_name=franks_recording_report.home" title="{{$item.fr_actionAItranscript}}">Download Transcript</a>
+			<a href="{{$BASE_URL}}franks_recording_report.delete_ait/fr_id/{{$item.fr_id}}" onclick="javascript:if(!confirm('Are you sure want to delete?')) return false;" title="Delete"><img src="{{$BASE_URL}}/images/delete_icon.png" width="20" /></a><br/>-->
 			{{$item.fr_actionAItranscript_by}}<br/>{{$item.fr_actionAItranscript_at|date_format:"%d-%m-%Y"}}
 			{{/if}}
         </td>
