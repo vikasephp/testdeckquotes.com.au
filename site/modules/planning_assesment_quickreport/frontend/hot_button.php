@@ -228,7 +228,15 @@ if(!empty($email_10)) {
 	$sqlSeller = "select bs_customers_id from business_sellers where bs_business_id = ".$bsn_id;
 	$customersdata = $fwDb->query($sqlSeller);
 	
-				
+	$toLog = '';	
+	
+	require_once(LIB_DIR . 'EmailClass.php');
+	$emailObj = new EmailClass;
+	
+	$emailObj->subject = $subject;
+	$emailObj->message = $email_body;
+	$emailObj->addFrom($from, $fromname);
+	$emailObj->attachments = $attachmentsend;		
 	
 	foreach($customersdata as $k => $v)
 	{
@@ -240,43 +248,57 @@ if(!empty($email_10)) {
 	
 		$toname = $custdata['bcust_fname'];
 		$to = $custdata['bcust_misc_email1'];
-		$toLog = $custdata['bcust_misc_email1'];
+		$toLog .=  '<br>- '. $custdata['bcust_misc_email1'];
 		//$to = "manojs@ephpsolutions.com";
-		send_email($toname,$to, $fromname, $from, $subject, $email_body, $attachmentsend='');
+		//send_email($toname,$to, $fromname, $from, $subject, $email_body, $attachmentsend='');
+		$emailObj->addTo($to, $toname);
 		
 		if($custdata['bcust_misc_email2'])
 		{
-			send_email($toname,$custdata['bcust_misc_email2'], $fromname, $from, $subject, $email_body, $attachmentsend='');	
-			$toLog = $toLog . ','. $custdata['bcust_misc_email2'];
+			//send_email($toname,$custdata['bcust_misc_email2'], $fromname, $from, $subject, $email_body, $attachmentsend='');	
+			$emailObj->addCC($custdata['bcust_misc_email2'], $toname);	
+			$toLog = $toLog . '<br>- '. $custdata['bcust_misc_email2'];
 		}
 		
 		if($custdata['bcust_misc_email3'])
 		{
-			send_email($toname,$custdata['bcust_misc_email3'], $fromname, $from, $subject, $email_body, $attachmentsend='');
-			$toLog = $toLog . ','. $custdata['bcust_misc_email3'];	
+			//send_email($toname,$custdata['bcust_misc_email3'], $fromname, $from, $subject, $email_body, $attachmentsend='');
+			$emailObj->addCC($custdata['bcust_misc_email3'], $toname);	
+			$toLog = $toLog . '<br>- '. $custdata['bcust_misc_email3'];	
 		}
 		
 		if($custdata['bcust_misc_email4'])
 		{
-			send_email($toname,$custdata['bcust_misc_email4'], $fromname, $from, $subject, $email_body, $attachmentsend='');
-			$toLog = $toLog . ','. $custdata['bcust_misc_email4'];
+			//send_email($toname,$custdata['bcust_misc_email4'], $fromname, $from, $subject, $email_body, $attachmentsend='');
+			$emailObj->addCC($custdata['bcust_misc_email4'], $toname);
+			$toLog = $toLog . '<br>- '. $custdata['bcust_misc_email4'];
 				
 		}
 		
 		if($custdata['bcust_misc_email5'])
 		{
-			send_email($toname,$custdata['bcust_misc_email5'], $fromname, $from, $subject, $email_body, $attachmentsend='');	
-			$toLog = $toLog . ','. $custdata['bcust_misc_email5'];
+			//send_email($toname,$custdata['bcust_misc_email5'], $fromname, $from, $subject, $email_body, $attachmentsend='');	
+			$emailObj->addCC($custdata['bcust_misc_email5'], $toname);
+			$toLog = $toLog . '<br>- '. $custdata['bcust_misc_email5'];
 			
 		}
-		
-		
-		
+			
 	}
 	
-    send_email($toname,$tocc, $fromname, $from, $subject, $email_body, $attachmentsend='');
-	send_email($toname,'emailbackup@cgfb.com.au', $fromname, $from, $subject, $email_body, $attachmentsend='');
-	$fwViewData['msg'] = "Email MS-10 Has Been Successfully Sent";
+	
+	$emailObj->addCC('emailbackup@cgfb.com.au', $toname);	
+	$response = $emailObj->sendEmail();
+	if ($response['success']) {
+		
+		$fwViewData['msg'] = "Email MS-10 Has Been Successfully Sent";
+	} else {
+		
+		$fwViewData['msg'] = 'Email Not Sent';
+	}
+	
+    // send_email($toname,$tocc, $fromname, $from, $subject, $email_body, $attachmentsend='');
+	//send_email($toname,'emailbackup@cgfb.com.au', $fromname, $from, $subject, $email_body, $attachmentsend='');
+	//$fwViewData['msg'] = "Email MS-10 Has Been Successfully Sent";
 	
 	$emailLog['elog_eml_code'] = 'MS-0128 - MS 10';
 	$emailLog['elog_to'] = $toLog;
@@ -321,10 +343,7 @@ if(!empty($email_11)) {
 		$emaildata['eml_email_content'] .= "<img src='" . BASE_URL . "files/email_library/" . $signature[0]['es_logo'] . "'>";
 	}
 	
-	
-	//$toname = $custdata['bcust_fname'];
-	//$to = $custdata['bcust_misc_email1'];
-	//$to = "manojs@ephpsolutions.com";
+
 	$tocc = "info@cgfb.com.au";
 	$fromname = "CGFB and FPE Team";
 	$from = "info@cgfb.com.au";
@@ -353,12 +372,19 @@ if(!empty($email_11)) {
 		}
 		
 		if (!empty($fdata)) {
-			$attachmentsend = serialize($fdata);
+			//$attachmentsend = serialize($fdata);
+			$attachmentsend = $fdata;
 		}
 	
+	require_once(LIB_DIR . 'EmailClass.php');
+	$emailObj = new EmailClass;
 	
+	$emailObj->subject = $subject;
+	$emailObj->message = $email_body;
+	$emailObj->addFrom($from, $fromname);
+	$emailObj->attachments = $attachmentsend;
 	
-	
+	$toLog = '';
 	foreach($customersdata as $k => $v)
 	{
 		
@@ -368,41 +394,55 @@ if(!empty($email_11)) {
 		
 		$toname = $custdata['bcust_fname'];
 		$to = $custdata['bcust_misc_email1'];
-		$toLog = $custdata['bcust_misc_email1'];
+		$toLog .= '<br>- '. $custdata['bcust_misc_email1'];
 		//$to = "manojs@ephpsolutions.com";
 		
-		send_email($toname,$to, $fromname, $from, $subject, $email_body, $attachmentsend);
+		//send_email($toname,$to, $fromname, $from, $subject, $email_body, $attachmentsend);
+		$emailObj->addTo($to, $toname);
 		
 		if($custdata['bcust_misc_email2'])
 		{
-			send_email($toname,$custdata['bcust_misc_email2'], $fromname, $from, $subject, $email_body, $attachmentsend);	
-			$toLog = $toLog . ','. $custdata['bcust_misc_email2'];
+			//send_email($toname,$custdata['bcust_misc_email2'], $fromname, $from, $subject, $email_body, $attachmentsend);
+			$emailObj->addCC($custdata['bcust_misc_email2'], $toname);	
+			$toLog = $toLog . '<br>- '. $custdata['bcust_misc_email2'];
 		}
 		
 		if($custdata['bcust_misc_email3'])
 		{
-			send_email($toname,$custdata['bcust_misc_email3'], $fromname, $from, $subject, $email_body, $attachmentsend);
-			$toLog = $toLog . ','. $custdata['bcust_misc_email3'];	
+			//send_email($toname,$custdata['bcust_misc_email3'], $fromname, $from, $subject, $email_body, $attachmentsend);
+			$emailObj->addCC($custdata['bcust_misc_email3'], $toname);	
+			$toLog = $toLog . '<br>- '. $custdata['bcust_misc_email3'];	
 		}
 		
 		if($custdata['bcust_misc_email4'])
 		{
-			send_email($toname,$custdata['bcust_misc_email4'], $fromname, $from, $subject, $email_body, $attachmentsend);
-			$toLog = $toLog . ','. $custdata['bcust_misc_email4'];		
+			//send_email($toname,$custdata['bcust_misc_email4'], $fromname, $from, $subject, $email_body, $attachmentsend);
+			$emailObj->addCC($custdata['bcust_misc_email4'], $toname);	
+			$toLog = $toLog . '<br>- '. $custdata['bcust_misc_email4'];		
 		}
 		
 		if($custdata['bcust_misc_email5'])
 		{
-			send_email($toname,$custdata['bcust_misc_email5'], $fromname, $from, $subject, $email_body, $attachmentsend);	
-			$toLog = $toLog . ','. $custdata['bcust_misc_email5'];	
+			//send_email($toname,$custdata['bcust_misc_email5'], $fromname, $from, $subject, $email_body, $attachmentsend);
+			$emailObj->addCC($custdata['bcust_misc_email5'], $toname);		
+			$toLog = $toLog . '<br>- '. $custdata['bcust_misc_email5'];	
 		}
 			
 	}
 	
+	$emailObj->addCC('emailbackup@cgfb.com.au', $toname);	
+	$response = $emailObj->sendEmail();
+	if ($response['success']) {
+		
+		$fwViewData['msg'] = "Email MS-11 Has Been Successfully Sent";
+	} else {
+		
+		$fwViewData['msg'] = 'Email Not Sent';
+	}
 	
-	send_email($toname,$tocc, $fromname, $from, $subject, $email_body, $attachmentsend);
-	send_email($toname,'emailbackup@cgfb.com.au', $fromname, $from, $subject, $email_body, $attachmentsend);
-	$fwViewData['msg'] = "Email MS-11 Has Been Successfully Sent";
+	//send_email($toname,$tocc, $fromname, $from, $subject, $email_body, $attachmentsend);
+	//send_email($toname,'emailbackup@cgfb.com.au', $fromname, $from, $subject, $email_body, $attachmentsend);
+	//$fwViewData['msg'] = "Email MS-11 Has Been Successfully Sent";
 	
 	$emailLog['elog_eml_code'] = 'MS-0022 - MS 11';
 	$emailLog['elog_to'] = $toLog;
@@ -411,6 +451,7 @@ if(!empty($email_11)) {
 	$emailLog['elog_email_body'] = $email_body;
 	$emailLog['elog_bsn_id'] = $bsn_id;
 	$emailLog['elog_business'] = $busdata['bsn_name'];
+	$emailLog['elog_attachment1'] = $docData['bgd_name'];
 	
 	$email_log_Table = new Fw_Db_Table('email_log');
 	$email_log_Table->insertRow($emailLog);
@@ -457,6 +498,17 @@ if(!empty($email_17)) {
 	$sqlSeller = "select bs_customers_id from business_sellers where bs_business_id = ".$bsn_id;
 	$customersdata = $fwDb->query($sqlSeller);
 	
+	
+	require_once(LIB_DIR . 'EmailClass.php');
+	$emailObj = new EmailClass;
+	
+	$emailObj->subject = $subject;
+	$emailObj->message = $email_body;
+	$emailObj->addFrom($from, $fromname);
+	$emailObj->attachments = $attachmentsend;
+	
+	$toLog = '';
+	
 	foreach($customersdata as $k => $v)
 	{
 		
@@ -466,40 +518,55 @@ if(!empty($email_17)) {
 		
 		$toname = $custdata['bcust_fname'];
 		$to = $custdata['bcust_misc_email1'];
-		$toLog = $custdata['bcust_misc_email1'];
+		$toLog .= '<br>- '. $custdata['bcust_misc_email1'];
 		//$to = "manojs@ephpsolutions.com";
-		send_email($toname,$to, $fromname, $from, $subject, $email_body, $attachmentsend='');
+		//send_email($toname,$to, $fromname, $from, $subject, $email_body, $attachmentsend='');
+		$emailObj->addTo($to, $toname);
 		
 		if($custdata['bcust_misc_email2'])
 		{
-			send_email($toname,$custdata['bcust_misc_email2'], $fromname, $from, $subject, $email_body, $attachmentsend='');	
-			$toLog = $toLog . ','. $custdata['bcust_misc_email2'];
+			//send_email($toname,$custdata['bcust_misc_email2'], $fromname, $from, $subject, $email_body, $attachmentsend='');
+			$emailObj->addCC($custdata['bcust_misc_email2'], $toname);		
+			$toLog = $toLog . '<br>- '. $custdata['bcust_misc_email2'];
 		}
 		
 		if($custdata['bcust_misc_email3'])
 		{
-			send_email($toname,$custdata['bcust_misc_email3'], $fromname, $from, $subject, $email_body, $attachmentsend='');
-			$toLog = $toLog . ','. $custdata['bcust_misc_email3'];	
+			//send_email($toname,$custdata['bcust_misc_email3'], $fromname, $from, $subject, $email_body, $attachmentsend='');
+			$emailObj->addCC($custdata['bcust_misc_email3'], $toname);	
+			$toLog = $toLog . '<br>- '. $custdata['bcust_misc_email3'];	
 		}
 		
 		if($custdata['bcust_misc_email4'])
 		{
-			send_email($toname,$custdata['bcust_misc_email4'], $fromname, $from, $subject, $email_body, $attachmentsend='');
-			$toLog = $toLog . ','. $custdata['bcust_misc_email4'];		
+			//send_email($toname,$custdata['bcust_misc_email4'], $fromname, $from, $subject, $email_body, $attachmentsend='');
+			$emailObj->addCC($custdata['bcust_misc_email4'], $toname);	
+			$toLog = $toLog . '<br>- '. $custdata['bcust_misc_email4'];		
 		}
 		
 		if($custdata['bcust_misc_email5'])
 		{
-			send_email($toname,$custdata['bcust_misc_email5'], $fromname, $from, $subject, $email_body, $attachmentsend='');	
-			$toLog = $toLog . ','. $custdata['bcust_misc_email5'];	
+			//send_email($toname,$custdata['bcust_misc_email5'], $fromname, $from, $subject, $email_body, $attachmentsend='');	
+			$emailObj->addCC($custdata['bcust_misc_email5'], $toname);	
+			$toLog = $toLog . '<br>- '. $custdata['bcust_misc_email5'];	
 		}
 		
 	}
 	
+	$emailObj->addCC('emailbackup@cgfb.com.au', $toname);	
+	$response = $emailObj->sendEmail();
+	if ($response['success']) {
+		
+		$fwViewData['msg'] = "Email MS-17 Has Been Successfully Sent";
+	} else {
+		
+		$fwViewData['msg'] = 'Email Not Sent';
+	}
 	
-	send_email($toname,$tocc, $fromname, $from, $subject, $email_body, $attachmentsend='');
-	send_email($toname,'emailbackup@cgfb.com.au', $fromname, $from, $subject, $email_body, $attachmentsend='');
-	$fwViewData['msg'] = "Email MS-17 Has Been Successfully Sent";
+	
+	//send_email($toname,$tocc, $fromname, $from, $subject, $email_body, $attachmentsend='');
+	//send_email($toname,'emailbackup@cgfb.com.au', $fromname, $from, $subject, $email_body, $attachmentsend='');
+	//$fwViewData['msg'] = "Email MS-17 Has Been Successfully Sent";
 	
 	$emailLog['elog_eml_code'] = 'MS-0517 - MS 17';
 	$emailLog['elog_to'] = $toLog;
@@ -525,7 +592,6 @@ if(!empty($email_121)) {
 	$mobile = str_replace(' ', '', $custdata['bcust_misc_moble']);
 	
 	
-	
 	if($mobile) {
 	    
 	  $sql = "Select eml_email_content, eml_subject  from emaillibrary where eml_code = 'MS-0515'";
@@ -545,7 +611,7 @@ if(!empty($email_121)) {
 	  $username = "manojsoniephp";
  	  $password = "jaimatadi108";
       
-	  $message =  $detail['bcust_fname'].' '. $sms; 
+	  $message =   $sms; 
 	
 	  $type     = "1-way";
 	  $senderid = "CGFB"; 
@@ -568,7 +634,7 @@ if(!empty($email_121)) {
 		  if($result[0] == "id") 
 		  {
 			echo("Message sent\n");
-			$fwViewData['msg'] = "MS-12 Text Message Has Been Successfully Sent";
+			$fwViewData['msg'] = "MS-12.1 Text Message Has Been Successfully Sent";
 			
 		  }
 		  else
@@ -621,6 +687,17 @@ if(!empty($email_121Email)) {
 	$sqlSeller = "select bs_customers_id from business_sellers where bs_business_id = ".$bsn_id;
 	$customersdata = $fwDb->query($sqlSeller);
 	
+	
+	require_once(LIB_DIR . 'EmailClass.php');
+	$emailObj = new EmailClass;
+	
+	$emailObj->subject = $subject;
+	$emailObj->message = $email_body;
+	$emailObj->addFrom($from, $fromname);
+	$emailObj->attachments = $attachmentsend;
+	
+	$toLog = '';
+	
 	foreach($customersdata as $k => $v)
 	{
 		
@@ -630,40 +707,55 @@ if(!empty($email_121Email)) {
 		
 		$toname = $custdata['bcust_fname'];
 		$to = $custdata['bcust_misc_email1'];
-		$toLog = $custdata['bcust_misc_email1'];
+		$toLog .= '<br>- '.$custdata['bcust_misc_email1'];
 		//$to = "manojs@ephpsolutions.com";
-		send_email($toname,$to, $fromname, $from, $subject, $email_body, $attachmentsend='');
+		//send_email($toname,$to, $fromname, $from, $subject, $email_body, $attachmentsend='');
+		$emailObj->addTo($to, $toname);
+		
 		
 		if($custdata['bcust_misc_email2'])
 		{
-			send_email($toname,$custdata['bcust_misc_email2'], $fromname, $from, $subject, $email_body, $attachmentsend='');	
-			$toLog = $toLog . ','. $custdata['bcust_misc_email2'];
+			//send_email($toname,$custdata['bcust_misc_email2'], $fromname, $from, $subject, $email_body, $attachmentsend='');
+			$emailObj->addCC($custdata['bcust_misc_email2'], $toname);		
+			$toLog = $toLog . '<br>- '. $custdata['bcust_misc_email2'];
 		}
 		
 		if($custdata['bcust_misc_email3'])
 		{
-			send_email($toname,$custdata['bcust_misc_email3'], $fromname, $from, $subject, $email_body, $attachmentsend='');
-			$toLog = $toLog . ','. $custdata['bcust_misc_email3'];	
+			//send_email($toname,$custdata['bcust_misc_email3'], $fromname, $from, $subject, $email_body, $attachmentsend='');
+			$emailObj->addCC($custdata['bcust_misc_email3'], $toname);	
+			$toLog = $toLog . '<br>- '. $custdata['bcust_misc_email3'];	
 		}
 		
 		if($custdata['bcust_misc_email4'])
 		{
-			send_email($toname,$custdata['bcust_misc_email4'], $fromname, $from, $subject, $email_body, $attachmentsend='');
-			$toLog = $toLog . ','. $custdata['bcust_misc_email4'];		
+			//send_email($toname,$custdata['bcust_misc_email4'], $fromname, $from, $subject, $email_body, $attachmentsend='');
+			$emailObj->addCC($custdata['bcust_misc_email4'], $toname);	
+			$toLog = $toLog . '<br>- '. $custdata['bcust_misc_email4'];		
 		}
 		
 		if($custdata['bcust_misc_email5'])
 		{
-			send_email($toname,$custdata['bcust_misc_email5'], $fromname, $from, $subject, $email_body, $attachmentsend='');	
-			$toLog = $toLog . ','. $custdata['bcust_misc_email5'];	
+			//send_email($toname,$custdata['bcust_misc_email5'], $fromname, $from, $subject, $email_body, $attachmentsend='');	
+			$emailObj->addCC($custdata['bcust_misc_email5'], $toname);	
+			$toLog = $toLog . '<br>- '. $custdata['bcust_misc_email5'];	
 		}
 		
 	}
 	
+	$emailObj->addCC('emailbackup@cgfb.com.au', $toname);	
+	$response = $emailObj->sendEmail();
+	if ($response['success']) {
+		
+		$fwViewData['msg'] = "Email MS-12.1 Has Been Successfully Sent";
+	} else {
+		
+		$fwViewData['msg'] = 'Email Not Sent';
+	}
 	
-	send_email($toname,$tocc, $fromname, $from, $subject, $email_body, $attachmentsend='');
-	send_email($toname,'emailbackup@cgfb.com.au', $fromname, $from, $subject, $email_body, $attachmentsend='');
-	$fwViewData['msg'] = "Email MS-12.1 Has Been Successfully Sent";
+	//send_email($toname,$tocc, $fromname, $from, $subject, $email_body, $attachmentsend='');
+	//send_email($toname,'emailbackup@cgfb.com.au', $fromname, $from, $subject, $email_body, $attachmentsend='');
+	//$fwViewData['msg'] = "Email MS-12.1 Has Been Successfully Sent";
 	
 	$emailLog['elog_eml_code'] = 'MS-0515 - MS 12.1';
 	$emailLog['elog_to'] = $toLog;
@@ -719,6 +811,16 @@ if(!empty($email_600)) {
 	$sqlSeller = "select bs_customers_id from business_sellers where bs_business_id = ".$bsn_id;
 	$customersdata = $fwDb->query($sqlSeller);
 	
+	require_once(LIB_DIR . 'EmailClass.php');
+	$emailObj = new EmailClass;
+	
+	$emailObj->subject = $subject;
+	$emailObj->message = $email_body;
+	$emailObj->addFrom($from, $fromname);
+	$emailObj->attachments = $attachmentsend;
+	
+	$toLog = '';
+	
 	foreach($customersdata as $k => $v)
 	{
 		
@@ -728,39 +830,54 @@ if(!empty($email_600)) {
 		
 		$toname = $custdata['bcust_fname'];
 		$to = $custdata['bcust_misc_email1'];
-		$toLog = $custdata['bcust_misc_email1'];
+		$toLog .= '<br>- '.$custdata['bcust_misc_email1'];
 
-		send_email($toname,$to, $fromname, $from, $subject, $email_body, $attachmentsend='');
+		//send_email($toname,$to, $fromname, $from, $subject, $email_body, $attachmentsend='');
+		$emailObj->addTo($to, $toname);
 		
 		if($custdata['bcust_misc_email2'])
 		{
-			send_email($toname,$custdata['bcust_misc_email2'], $fromname, $from, $subject, $email_body, $attachmentsend='');	
-			$toLog = $toLog . ','. $custdata['bcust_misc_email2'];
+			//send_email($toname,$custdata['bcust_misc_email2'], $fromname, $from, $subject, $email_body, $attachmentsend='');	
+			$emailObj->addCC($custdata['bcust_misc_email2'], $toname);	
+			$toLog = $toLog . '<br>- '. $custdata['bcust_misc_email2'];
 		}
 		
 		if($custdata['bcust_misc_email3'])
 		{
-			send_email($toname,$custdata['bcust_misc_email3'], $fromname, $from, $subject, $email_body, $attachmentsend='');
-			$toLog = $toLog . ','. $custdata['bcust_misc_email3'];	
+			//send_email($toname,$custdata['bcust_misc_email3'], $fromname, $from, $subject, $email_body, $attachmentsend='');
+			$emailObj->addCC($custdata['bcust_misc_email3'], $toname);	
+			$toLog = $toLog . '<br>- '. $custdata['bcust_misc_email3'];	
 		}
 		
 		if($custdata['bcust_misc_email4'])
 		{
-			send_email($toname,$custdata['bcust_misc_email4'], $fromname, $from, $subject, $email_body, $attachmentsend='');
-			$toLog = $toLog . ','. $custdata['bcust_misc_email4'];		
+			//send_email($toname,$custdata['bcust_misc_email4'], $fromname, $from, $subject, $email_body, $attachmentsend='');
+			$emailObj->addCC($custdata['bcust_misc_email4'], $toname);	
+			$toLog = $toLog . '<br>- '. $custdata['bcust_misc_email4'];		
 		}
 		
 		if($custdata['bcust_misc_email5'])
 		{
-			send_email($toname,$custdata['bcust_misc_email5'], $fromname, $from, $subject, $email_body, $attachmentsend='');	
-			$toLog = $toLog . ','. $custdata['bcust_misc_email5'];	
+			//send_email($toname,$custdata['bcust_misc_email5'], $fromname, $from, $subject, $email_body, $attachmentsend='');
+			$emailObj->addCC($custdata['bcust_misc_email5'], $toname);		
+			$toLog = $toLog . '<br>- '. $custdata['bcust_misc_email5'];	
 		}
 		
 	}
 	
-	send_email($toname,$to, $fromname, $from, $subject, $email_body, $attachmentsend='');
-	send_email($toname,'emailbackup@cgfb.com.au', $fromname, $from, $subject, $email_body, $attachmentsend='');
-	$fwViewData['msg'] = "Email MS-600 Has Been Successfully Sent";
+	$emailObj->addCC('emailbackup@cgfb.com.au', $toname);	
+	$response = $emailObj->sendEmail();
+	if ($response['success']) {
+		
+		$fwViewData['msg'] = "Email MS-600 Has Been Successfully Sent";
+	} else {
+		
+		$fwViewData['msg'] = 'Email Not Sent';
+	}
+	
+	//send_email($toname,$to, $fromname, $from, $subject, $email_body, $attachmentsend='');
+	//send_email($toname,'emailbackup@cgfb.com.au', $fromname, $from, $subject, $email_body, $attachmentsend='');
+	//$fwViewData['msg'] = "Email MS-600 Has Been Successfully Sent";
 	
 	$emailLog['elog_eml_code'] = 'MS-0516 - MS 600';
 	$emailLog['elog_to'] = $toLog;
@@ -789,7 +906,7 @@ if(!empty($email_600)) {
 	  $username = "manojsoniephp";
  	  $password = "jaimatadi108";
       
-	  $message =  $detail['bcust_fname'].' '. $sms; 
+	  $message =   $sms; 
 	
 	  $type     = "1-way";
 	  $senderid = "CGFB"; 
@@ -874,6 +991,16 @@ if(!empty($email_0768)) {
 	$sqlSeller = "select bs_customers_id from business_sellers where bs_business_id = ".$bsn_id;
 	$customersdata = $fwDb->query($sqlSeller);
 	
+	require_once(LIB_DIR . 'EmailClass.php');
+	$emailObj = new EmailClass;
+	
+	$emailObj->subject = $subject;
+	$emailObj->message = $email_body;
+	$emailObj->addFrom($from, $fromname);
+	$emailObj->attachments = $attachmentsend;
+	
+	$toLog = '';
+	
 	foreach($customersdata as $k => $v)
 	{
 		
@@ -883,43 +1010,57 @@ if(!empty($email_0768)) {
 		
 		$toname = $custdata['bcust_fname'];
 		$to = $custdata['bcust_misc_email1'];
-		$toLog = $custdata['bcust_misc_email1'];
+		$toLog .= '<br>- '.$custdata['bcust_misc_email1'];
 
-		send_email($toname,$to, $fromname, $from, $subject, $email_body, $attachmentsend='');
+		//send_email($toname,$to, $fromname, $from, $subject, $email_body, $attachmentsend='');
+		$emailObj->addTo($to, $toname);
 		
 		if($custdata['bcust_misc_email2'])
 		{
-			send_email($toname,$custdata['bcust_misc_email2'], $fromname, $from, $subject, $email_body, $attachmentsend='');	
-			$toLog = $toLog . ','. $custdata['bcust_misc_email2'];
+			//send_email($toname,$custdata['bcust_misc_email2'], $fromname, $from, $subject, $email_body, $attachmentsend='');	
+			$emailObj->addCC($custdata['bcust_misc_email2'], $toname);
+			$toLog = $toLog . '<br>- '. $custdata['bcust_misc_email2'];
 		}
 		
 		if($custdata['bcust_misc_email3'])
 		{
-			send_email($toname,$custdata['bcust_misc_email3'], $fromname, $from, $subject, $email_body, $attachmentsend='');
-			$toLog = $toLog . ','. $custdata['bcust_misc_email3'];	
+			//send_email($toname,$custdata['bcust_misc_email3'], $fromname, $from, $subject, $email_body, $attachmentsend='');
+			$emailObj->addCC($custdata['bcust_misc_email3'], $toname);
+			$toLog = $toLog . '<br>- '. $custdata['bcust_misc_email3'];	
 		}
 		
 		if($custdata['bcust_misc_email4'])
 		{
-			send_email($toname,$custdata['bcust_misc_email4'], $fromname, $from, $subject, $email_body, $attachmentsend='');
-			$toLog = $toLog . ','. $custdata['bcust_misc_email4'];		
+			//send_email($toname,$custdata['bcust_misc_email4'], $fromname, $from, $subject, $email_body, $attachmentsend='');
+			$emailObj->addCC($custdata['bcust_misc_email4'], $toname);
+			$toLog = $toLog . '<br>- '. $custdata['bcust_misc_email4'];		
 		}
 		
 		if($custdata['bcust_misc_email5'])
 		{
-			send_email($toname,$custdata['bcust_misc_email5'], $fromname, $from, $subject, $email_body, $attachmentsend='');	
-			$toLog = $toLog . ','. $custdata['bcust_misc_email5'];	
+			//send_email($toname,$custdata['bcust_misc_email5'], $fromname, $from, $subject, $email_body, $attachmentsend='');
+			$emailObj->addCC($custdata['bcust_misc_email5'], $toname);	
+			$toLog = $toLog . '<br>- '. $custdata['bcust_misc_email5'];	
 		}
 		
 	}
 	
 	
-	send_email($toname,$tocc, $fromname, $from, $subject, $email_body, $attachmentsend='');
-    send_email($toname,'emailbackup@cgfb.com.au', $fromname, $from, $subject, $email_body, $attachmentsend='');
-	$fwViewData['msg'] = "Email MS-768 Has Been Successfully Sent";
+	$emailObj->addCC('emailbackup@cgfb.com.au', $toname);	
+	$response = $emailObj->sendEmail();
+	if ($response['success']) {
+		
+		$fwViewData['msg'] = "Email MS-768 Has Been Successfully Sent";
+	} else {
+		
+		$fwViewData['msg'] = 'Email Not Sent';
+	}
+	//send_email($toname,$tocc, $fromname, $from, $subject, $email_body, $attachmentsend='');
+    //send_email($toname,'emailbackup@cgfb.com.au', $fromname, $from, $subject, $email_body, $attachmentsend='');
+	//$fwViewData['msg'] = "Email MS-768 Has Been Successfully Sent";
 	
 	$emailLog['elog_eml_code'] = 'MS-0768';
-	$emailLog['elog_to'] = $to;
+	$emailLog['elog_to'] = $toLog;
 	$emailLog['elog_from'] = $from;
 	$emailLog['elog_subject'] = $subject;
 	$emailLog['elog_email_body'] = $email_body;
