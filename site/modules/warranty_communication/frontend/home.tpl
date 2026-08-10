@@ -68,6 +68,18 @@
 </script>
 
 <h3 class="page-title" style="margin-bottom: 50px;">{{$title}}</h3>
+<h3 class="page-title">{{$report}}</h3><br />
+
+<form name="mshort" action="" method="post">
+
+<div style="float:left; text-align:left; margin-left:5px;">
+	<input type="Submit" name="clients" value="Clients" /> 
+	<input type="submit" name="trades" value="Trades"  /> 
+</div>
+
+<div style="float:right; text-align:right;"> 
+</div>
+</form><br/><br/>
 
 <form name="mshort" action="" method="post">
 	<div style="display: flex; justify-content: space-between;">
@@ -80,7 +92,6 @@
 					<option value="Sms" {{if $communication_type == 'Sms'}}selected{{/if}}>Sms</option>
 				</select>
 				<input type="submit" value="Search" name="search_communication_type">
-				<input type="submit" name="clear" value="Clear Search">
 			</div>
 			<div>
 				<strong>Project Name:</strong>
@@ -99,43 +110,14 @@
 	</div>
 </form>
 
+
 <div>
-	<table id="list-table" style="width: 100%; margin: auto; margin-top: 20px;">
-		<thead>
-			<tr>
-				<th class="topmenu" align="center" valign="middle">ID</th>
-				<th class="topmenu" align="center" valign="middle">Communication type</th>
-				<th class="topmenu" align="center" valign="middle">Date & time sent</th>
-				<th class="topmenu" align="center" valign="middle">Client name</th>
-				<th class="topmenu" align="center" valign="middle">Client contact</th>
-				<!-- <th class="topmenu" align="center" valign="middle">Related log</th> -->
-				<th class="topmenu" align="center" valign="middle">Project Name</th>
-				<th class="topmenu" align="center" valign="middle">Delivery status</th>
-				<th class="topmenu" align="center" valign="middle">Message content</th>
-			</tr>
-		</thead>
-		<tbody>
-			{{if count($list) > 0}}
-				{{foreach from=$list key=index item=row}}
-					<tr>
-						<td>{{$row.email_id}}</td>
-						<td>{{$row.communication_type}}</td>
-						<td>{{$row.sent_datetime}}</td>
-						<td>{{$row.client_name}}</td>
-						<td>{{$row.client_contact}}</td>
-						<!-- <td>{{$row.related_log}}</td> -->
-						<td>{{$row.project_name}}</td>
-						<td>{{$row.delivery_status}}</td>
-						<td>{{$row.message_content}}</td>
-					</tr>
-				{{/foreach}}
-			{{else}}
-				<tr>
-					<th colspan="9">No Record</th>
-				</tr>
-			{{/if}}
-		</tbody>
-	</table>
+
+	{{if $show eq 1 }}  
+		{{include file=$clients}} 
+	{{elseif $show eq 2}}
+		{{include file=$trades}}                 
+	{{/if}}
 
 	{{if $last > 1}}
 	<table width="90%" border="0" cellpadding="0" cellspacing="0">

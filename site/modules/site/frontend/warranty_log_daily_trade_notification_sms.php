@@ -4,9 +4,7 @@
  * Send SMS to Trades for Warranty Jobs Scheduled Today
  */
 
-// SMS Credentials
-$username = "manojsoniephp";
-$password = "jaimatadi108";
+require_once LIB_DIR . 'SmsClass.php';
 
 $query = "SELECT * FROM warranty_log WHERE STR_TO_DATE(wa_schedule_date, '%d-%m-%Y') = CURDATE()";
 $results = $fwDb->query($query);
@@ -117,26 +115,34 @@ foreach ($suppliers as $supplier => $data) {
             $to = '61' . substr($to, 1);
         }
 
-        $type = "1-way";
-        $senderid = "CGFB";
+        $smsObj = new SmsClass($to, $smsMessage);
+        $response = $smsObj->send();
+		
+		foreach ($jobs as $job) {
 
-        $url = "http://api.directsms.com.au/s3/http/send_message?" .
-            "username=" . urlencode($username) . "&" .
-            "password=" . urlencode($password) . "&" .
-            "message=" . urlencode($smsMessage) . "&" .
-            "type=" . urlencode($type) . "&" .
-            "senderid=" . urlencode($senderid) . "&" .
-            "to=" . urlencode($to);
+			$metaData = [
+				'module_name' => 'warranty_log_daily_trade_notification',
+				'table_name'  => 'warranty_log',
+				'column_name' => 'wa_id',
+				'column_id'   => $job['wa_id'],
+				'to' => [
+					[
+						'email' => $to,
+						'name'  => $supplier,
+					]
+				]
+			];
 
-        // Send SMS
-		$output = file($url);
+			$smsObj->log($response, $metaData);
 
-        //Debug
-        echo "<pre>";
-        echo $supplier . " -> " . $to . PHP_EOL;
-        echo $smsMessage . PHP_EOL;
-        echo "<pre>"; 
-		print_r($output);
+			if (!$response['success']) {
+				$smsErrorLog[] = [
+					'to'      => $to,
+					'message' => $smsMessage,
+					'error'   => $response['smsMessage']
+				];
+			}
+		}
     }
 }
 

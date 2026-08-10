@@ -135,11 +135,27 @@ foreach ($suppliers as $supplier => $data) {
 	$emailObj->attachments = [];
 	
 	$response = $emailObj->sendEmail();
-	/* $emailObj->logSendEmail($response, [
-		'module_name' => 'inspection_warranty_log.home',
-		'table_name' => 'business',
-		'column_name' => 'bsn_id',
-		'column_id' => $log_bsn,
+	foreach ($data['wa_ids'] as $wa_id) {
+		$emailObj->logSendEmail($response, [
+			'module_name' => 'warranty_log_daily_trade_notification',
+			'table_name' => 'warranty_log',
+			'column_name' => 'wa_id',
+			'column_id' => $wa_id,
+		]);
+		
+		if (!$response['success']) {
+			$emailErrorLog[] = [
+				'to' => $emailObj->to,
+				'subject' => $emailObj->subject,
+				'error' => $response['message']
+			];
+		}
+	}
+	/*$emailObj->logSendEmail($response, [
+		'module_name' => 'warranty_log_daily_trade_notification',
+		'table_name' => 'warranty_log',
+		'column_name' => 'wa_id',
+		'column_id' => $wa_ids,
 	]);
 	if (!$response['success']) {
 		$emailErrorLog[] = [
@@ -147,7 +163,7 @@ foreach ($suppliers as $supplier => $data) {
 			'subject' => $emailObj->subject,
 			'error' => $response['message']
 		];
-	} */
+	}*/
 	// db($emailObj);
 	echo $html;
 }
