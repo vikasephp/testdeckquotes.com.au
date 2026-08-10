@@ -1,8 +1,49 @@
 <?php
 
 $where = ' WHERE 1=1';
+$fwViewData['report'] = "Clients";
+$fwViewData['show'] = 1;
 
-$emailModulesArray = ["site.inpsection_warranty_log_schedule_reminder", "inspection_warranty_log.home", "inspection_warranty_log.view_log_detail"];
+//if(isset($_SESSION['report'])) { $fwViewData['report'] = $_SESSION['report'] ; }
+
+$fwViewData['clients'] = MODULES_DIR.$BASEFOLDER.'/frontend/clients.tpl';
+$fwViewData['trades'] = MODULES_DIR.$BASEFOLDER.'/frontend/trades.tpl';
+
+$clients = $fwRequest->getParam('clients', '');
+if($clients) {
+	unset($_SESSION['show']);
+	unset($_SESSION['where']);
+	unset($_SESSION['report']);
+	
+	$fwViewData['show'] = 1;
+	$_SESSION['show'] = 1;
+	
+	$where = " where 1 = 1";
+	$_SESSION['where'] = " where 1 = 1" ;
+	
+	$fwViewData['report'] = "Clients";
+	$_SESSION['report'] = "Clients";
+	
+}
+
+$trades = $fwRequest->getParam('trades', '');
+if($trades) {
+	unset($_SESSION['show']);
+	unset($_SESSION['where']);
+	unset($_SESSION['report']);
+	
+	$fwViewData['show'] = 2;
+	$_SESSION['show'] = 2;
+	
+	$where =  " where 1 = 1";
+	$_SESSION['where'] = " where 1 = 1" ;
+	
+	$fwViewData['report'] = "Trades";
+	$_SESSION['report'] = "Trades";
+	
+}
+
+$emailModulesArray = ["site.inpsection_warranty_log_schedule_reminder", "inspection_warranty_log.home", "inspection_warranty_log.view_log_detail", "warranty_log_daily_trade_notification"];
 
 $query = "SELECT DISTINCT wa_project from warranty_log";
 $fwViewData['project_data'] = $fwDb->query($query);
@@ -24,6 +65,10 @@ $clear = $fwRequest->getParam('clear', '');
 if ($clear) {
     unset($_SESSION['communication_type']);
     unset($_SESSION['project_name']);
+	unset($_SESSION['show']);
+	unset($_SESSION['where']);
+	unset($_SESSION['report']);
+	//$fwViewData['report'] = 'Clients';
 }
 
 if (isset($_SESSION['communication_type'])) {
@@ -39,6 +84,11 @@ if (isset($_SESSION['project_name'])) {
     $fwViewData['project_name'] = $_SESSION['project_name'];
 }
 
+if ($fwViewData['show'] == 1) {
+    $where .= ' AND module_name != "warranty_log_daily_trade_notification"';
+} else {
+    $where .= ' AND module_name = "warranty_log_daily_trade_notification"';
+}
 
 $mainQuery = 'SELECT * FROM (
         SELECT
@@ -76,7 +126,6 @@ $mainQuery = 'SELECT * FROM (
     ' . $where . '    
     ORDER BY
         created_at desc';
-
 
 $records = $fwDb->query($mainQuery);
 
