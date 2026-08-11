@@ -32,6 +32,15 @@
 				</td>
 			</tr>
 			<tr>
+				<th>Uploaded Document</th>
+				<td>
+					<input type="file" name="task[psrpd_file]" accept="application/pdf,.pdf" />
+					{{ if $detail.psrpd_file }}
+					<a href="{{$BASE_URL}}{{$BASEFOLDER}}.download_content?file_name={{$detail.psrpd_file}}&module_name=properties_sale_reports.view_project" target="_blank">View/Download</a>
+					{{/if}}
+				</td>
+			</tr>
+			<tr>
 				<td colspan="2" style="text-align:center;">
 					<input type="submit" name="subAddDetail" value="Save" class="vsml" />
 					<input type="button" name="btnCancelDetail" value="Close" onclick="javascript:closepop();"

@@ -251,37 +251,61 @@ $sql_4 = "SELECT doc_id, doc_name_id, doc_live_link, doc_live_link_username, doc
 $data_sql_4 = $fwDb->queryOne($sql_4);
 $fwViewData['contract_for_sale_link'] = $data_sql_4['doc_live_link'];
 $fwViewData['contract_for_sale_link_username'] = $data_sql_4['doc_live_link_username'];
-$fwViewData['contract_for_sale_link_date'] = $data_sql_4['doc_live_link_date'];;
+$fwViewData['contract_for_sale_link_date'] = $data_sql_4['doc_live_link_date'];
+
+$sql_4_file = "SELECT doc_file_name, doc_user_name, doc_date_uploaded, users.user_name FROM `document_check_list` LEFT JOIN users on users.user_id = document_check_list.doc_user_name where doc_bsn_id = $bsn_id and doc_name_id = 471";
+$data_4_file = $fwDb->queryOne($sql_4_file);
+$fwViewData['data_4_file'] = $data_4_file;
 
 $sql_5 = "SELECT doc_id, doc_name_id, doc_live_link, doc_live_link_username, doc_live_link_date FROM document_check_list WHERE doc_bsn_id = $bsn_id and doc_name_id = 766 ";
 $data_sql_5 = $fwDb->queryOne($sql_5);
 $fwViewData['building_comp_link'] = $data_sql_5['doc_live_link'];
 $fwViewData['building_comp_link_username'] = $data_sql_5['doc_live_link_username'];
-$fwViewData['building_comp_link_date'] = $data_sql_5['doc_live_link_date'];;
+$fwViewData['building_comp_link_date'] = $data_sql_5['doc_live_link_date'];
+
+$sql_5_file = "SELECT doc_file_name, doc_user_name, doc_date_uploaded, users.user_name FROM `document_check_list` LEFT JOIN users on users.user_id = document_check_list.doc_user_name where doc_bsn_id = $bsn_id and doc_name_id = 766";
+$data_5_file = $fwDb->queryOne($sql_5_file);
+$fwViewData['data_5_file'] = $data_5_file;
 
 $sql_6 = "SELECT doc_id, doc_name_id, doc_live_link, doc_live_link_username, doc_live_link_date FROM document_check_list WHERE doc_bsn_id = $bsn_id and doc_name_id = 773 ";
 $data_sql_6 = $fwDb->queryOne($sql_6);
 $fwViewData['floor_plan_link'] = $data_sql_6['doc_live_link'];
 $fwViewData['floor_plan_link_username'] = $data_sql_6['doc_live_link_username'];
-$fwViewData['floor_plan_link_date'] = $data_sql_6['doc_live_link_date'];;
+$fwViewData['floor_plan_link_date'] = $data_sql_6['doc_live_link_date'];
+
+$sql_6_file = "SELECT doc_file_name, doc_user_name, doc_date_uploaded, users.user_name FROM `document_check_list` LEFT JOIN users on users.user_id = document_check_list.doc_user_name where doc_bsn_id = $bsn_id and doc_name_id = 773";
+$data_6_file = $fwDb->queryOne($sql_6_file);
+$fwViewData['data_6_file'] = $data_6_file;
 
 $sql_7 = "SELECT doc_id, doc_name_id, doc_live_link, doc_live_link_username, doc_live_link_date FROM document_check_list WHERE doc_bsn_id = $bsn_id and doc_name_id = 770 ";
 $data_sql_7 = $fwDb->queryOne($sql_7);
 $fwViewData['rental_valuation_link'] = $data_sql_7['doc_live_link'];
 $fwViewData['rental_valuation_link_username'] = $data_sql_7['doc_live_link_username'];
-$fwViewData['rental_valuation_link_date'] = $data_sql_7['doc_live_link_date'];;
+$fwViewData['rental_valuation_link_date'] = $data_sql_7['doc_live_link_date'];
+
+$sql_7_file = "SELECT doc_file_name, doc_user_name, doc_date_uploaded, users.user_name FROM `document_check_list` LEFT JOIN users on users.user_id = document_check_list.doc_user_name where doc_bsn_id = $bsn_id and doc_name_id = 770";
+$data_7_file = $fwDb->queryOne($sql_7_file);
+$fwViewData['data_7_file'] = $data_7_file;
 
 $sql_8 = "SELECT doc_id, doc_name_id, doc_live_link, doc_live_link_username, doc_live_link_date FROM document_check_list WHERE doc_bsn_id = $bsn_id and doc_name_id = 769 ";
 $data_sql_8 = $fwDb->queryOne($sql_8);
 $fwViewData['sales_valuation_link'] = $data_sql_8['doc_live_link'];
 $fwViewData['sales_valuation_link_username'] = $data_sql_8['doc_live_link_username'];
-$fwViewData['sales_valuation_link_date'] = $data_sql_8['doc_live_link_date'];;
+$fwViewData['sales_valuation_link_date'] = $data_sql_8['doc_live_link_date'];
+
+$sql_8_file = "SELECT doc_file_name, doc_user_name, doc_date_uploaded, users.user_name FROM `document_check_list` LEFT JOIN users on users.user_id = document_check_list.doc_user_name where doc_bsn_id = $bsn_id and doc_name_id = 769";
+$data_8_file = $fwDb->queryOne($sql_8_file);
+$fwViewData['data_8_file'] = $data_8_file;
 
 $sql_9 = "SELECT doc_id, doc_name_id, doc_live_link, doc_live_link_username, doc_live_link_date FROM document_check_list WHERE doc_bsn_id = $bsn_id and doc_name_id = 768 ";
 $data_sql_9 = $fwDb->queryOne($sql_9);
 $fwViewData['suburb_flyover_link'] = $data_sql_9['doc_live_link'];
 $fwViewData['suburb_flyover_link_username'] = $data_sql_9['doc_live_link_username'];
-$fwViewData['suburb_flyover_link_date'] = $data_sql_9['doc_live_link_date'];;
+$fwViewData['suburb_flyover_link_date'] = $data_sql_9['doc_live_link_date'];
+
+$sql_9_file = "SELECT doc_file_name, doc_user_name, doc_date_uploaded, users.user_name FROM `document_check_list` LEFT JOIN users on users.user_id = document_check_list.doc_user_name where doc_bsn_id = $bsn_id and doc_name_id = 768";
+$data_9_file = $fwDb->queryOne($sql_9_file);
+$fwViewData['data_9_file'] = $data_9_file;
 
 $sql_10 = "SELECT doc_id, doc_name_id, doc_live_link, doc_live_link_username, doc_live_link_date FROM document_check_list WHERE doc_bsn_id = $bsn_id and doc_name_id = 774 ";
 $data_sql_10 = $fwDb->queryOne($sql_10);
@@ -289,11 +313,104 @@ $fwViewData['air_dna_link'] = $data_sql_10['doc_live_link'];
 $fwViewData['air_dna_link_username'] = $data_sql_10['doc_live_link_username'];
 $fwViewData['air_dna_link_date'] = $data_sql_10['doc_live_link_date'];
 
+$sql_10_file = "SELECT doc_file_name, doc_user_name, doc_date_uploaded, users.user_name FROM `document_check_list` LEFT JOIN users on users.user_id = document_check_list.doc_user_name where doc_bsn_id = $bsn_id and doc_name_id = 774";
+$data_10_file = $fwDb->queryOne($sql_10_file);
+$fwViewData['data_10_file'] = $data_10_file;
+
 $fwViewData['document'] =  $_SERVER['DOCUMENT_ROOT'] . '/site/modules/properties_sale_reports/frontend/document.tpl';
 
 $pdTable = new Fw_Db_Table('psr_public_documents');
 $pdTable->setWhere("psr_bsn_id = $bsn_id");
 $fwViewData['pd_data'] = $pdTable->getAllRows();
+
+require_once(MODULES_DIR . 'PDFMerger.php');
+
+use PDFMerger\PDFMerger;
+
+$merge = $fwRequest->getParam('merge_public_doc', '');
+
+if (!empty($merge)) {
+
+    $sql_public_document = "SELECT file_name FROM ( SELECT doc_file_name AS file_name, doc_name_id FROM document_check_list WHERE doc_bsn_id = 3486 AND doc_name_id IN (471, 766, 773, 770, 769, 768, 774) UNION ALL SELECT psrpd_file AS file_name, 0 AS doc_name_id FROM psr_public_documents WHERE psr_bsn_id = 3486 ) AS files ORDER BY FIELD(doc_name_id, 471, 766, 773, 770, 769, 768, 774, 0)";
+    $data = $fwDb->query($sql_public_document);
+
+    if (empty($data)) {
+        exit('No documents found to merge.');
+    }
+
+    $pdf = new PDFMerger;
+
+    /*Temp local folder*/
+    $publicDocumentPath = BASE_DIR . FILE_PATH . 'files/public_document/';
+
+    if (!is_dir($publicDocumentPath)) {
+        mkdir($publicDocumentPath, 0777, true);
+    }
+
+    deleteFiles($publicDocumentPath);
+    $fn = 'public_document_' . time() . '.pdf';
+
+    /*S3 folder*/
+    $folder_path = 'files/document_check_list_files/';
+
+    /*Download each PDF and add it to merger*/
+    foreach ($data as $document) {
+
+        if (empty($document['file_name'])) {
+            continue;
+        }
+
+        $fileName = basename($document['file_name']);
+        $source = get_file_raw_data($folder_path, $fileName);
+
+        if (!$source || !file_exists($source)) {
+            continue;
+        }
+
+        $localFile = $publicDocumentPath . $fileName;
+
+        if (!copy($source, $localFile)) {
+            continue;
+        }
+
+        $pdf->addPDF($localFile);
+    }
+
+    /* Path for merged PDF */
+    $mergedFile = $publicDocumentPath . $fn;
+
+    $pdf->merge('file', $mergedFile);
+
+    if (!file_exists($mergedFile)) {
+        deleteFiles($publicDocumentPath);
+        exit('Unable to create merged PDF.');
+    }
+
+    /*Download merged PDF*/
+    header('Content-Type: application/pdf');
+    header('Content-Disposition: attachment; filename="' . $fn . '"');
+    header('Content-Length: ' . filesize($mergedFile));
+    header('Cache-Control: private, max-age=0, must-revalidate');
+    header('Pragma: public');
+
+    readfile($mergedFile);
+
+    /*delete temporary files after download*/
+    deleteFiles($publicDocumentPath);
+    exit;
+}
+
+function deleteFiles($dir)
+{
+    if (!is_dir($dir)) {
+        return;
+    }
+    foreach (glob($dir . '/*') as $file) {
+        if (is_file($file)) {
+            unlink($file);
+        }
+    }
+}
 
 //Under Offer Tab Code
 $fwViewData['under_offer'] =  $_SERVER['DOCUMENT_ROOT'] . '/site/modules/properties_sale_reports/frontend/under_offer.tpl';

@@ -224,3 +224,46 @@ $fwViewData['businessData'] = $businessData;
 
 $query = "SELECT * FROM property_sale_project_stage";
 $fwViewData['stageData'] = $fwDb->query($query);
+
+function upload_public_doc($filename, $tmpname, $module = 'business.home')
+{
+    require_once(LIB_DIR . 'CloudEphpClass.php');
+    $obj = new CloudEphpClass($module);
+    return $obj->upload($filename, $tmpname);
+}
+
+function get_file_raw_data($folder_path, $object_name)
+{
+    $filetoinclude = $_SERVER['DOCUMENT_ROOT'] . '/file_upload/server/s3/S3.php';
+    include_once $filetoinclude;
+    $bucket_name = "deckquote";
+
+    $s3 = new S3(ACCESS_KEY, SECRET_KEY);
+    try {
+
+        $file_data = $s3->getObject($bucket_name, $folder_path . $object_name, false );
+        if (empty($file_data) || !isset($file_data->body)) {
+            return false;
+        }
+        $file_raw_data = $file_data->body;
+        $downloadPath = $_SERVER['DOCUMENT_ROOT'] . '/download_files/';
+
+        if (!is_dir($downloadPath)) {
+            mkdir($downloadPath, 0777, true);
+        }
+
+        $file = basename($object_name);
+        $filePath = $downloadPath . $file;
+
+        if (file_put_contents($filePath, $file_raw_data) === false) {
+            return false;
+        }
+
+        return $filePath;
+
+    } catch (ErrorException $ex) {
+
+        echo $ex->getMessage();
+        return false;
+    }
+}

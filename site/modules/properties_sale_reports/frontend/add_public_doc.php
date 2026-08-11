@@ -15,6 +15,20 @@ if (!empty($submit)) {
 	$detail['psrpd_updated_by'] = $user;
 	$detail['psrpd_updated_date'] = $dt;
 	unset($detail['psrpd_id']);
+	
+	if (!empty($_FILES['task']['name']['psrpd_file'])) {		
+		$file = $_FILES['task'];
+		$docfile_1 = $file['name']['psrpd_file'];
+		$docfile_1 = preg_replace('/[^A-Z0-9._]/i', '_', $docfile_1);
+
+		$temp_name_1 = $file['tmp_name']['psrpd_file'];
+
+		$fileUploaded = upload_public_doc($docfile_1, $temp_name_1);
+		$detail['psrpd_file'] = $docfile_1;
+		$detail['psrpd_file_uploaded_by'] = $user;
+		$detail['psrpd_file_uploaded_at'] = $dt;
+	}
+	
 	if ($this_id > 0) {
 		unset($detail['psrpd_id']);
 		$tableTask->setWhere("psrpd_id = $this_id");

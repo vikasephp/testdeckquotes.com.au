@@ -99,7 +99,7 @@ td {
 					<option value="Warm" {{if $item.psre_status eq 'Warm'}}selected="selected"{{/if}}>Warm</option>-->
 					<option value="Inactive" {{if $item.psre_status eq 'Inactive'}}selected="selected"{{/if}}>Inactive</option>
 				</select>
-				<div id="ps_status_{{$item.psre_id}}">{{$item.psre_status_user}}<br/>{{$item.psre_status_date}}</div>
+				<div id="ps_status_{{$item.psre_id}}">{{if $item.psre_status_user and $item.psre_status_user neq '0' and $item.psre_status_date and $item.psre_status_date neq '0'}}{{$item.psre_status_user}}<br/>{{$item.psre_status_date}}{{elseif $item.psre_status_user and $item.psre_status_user neq '0'}}{{$item.psre_status_user}}{{elseif $item.psre_status_date and $item.psre_status_date neq '0'}}{{$item.psre_status_date}}{{/if}}</div>
 				<script>
 					function update_enquiry_status(id, value) {
 						var status = '#status_' + id;
@@ -120,7 +120,15 @@ td {
 									$(status).css('background', '');
 								}
 								
-								$(ps).html(statusUser+'<br/>'+statusDate);
+								if (statusUser && statusUser != '0' && statusDate && statusDate != '0') {
+									$(ps).html(statusUser + '<br/>' + statusDate);
+								} else if (statusUser && statusUser != '0') {
+									$(ps).html(statusUser);
+								} else if (statusDate && statusDate != '0') {
+									$(ps).html(statusDate);
+								} else {
+									$(ps).html('');
+								}
 							}
 						});
 					}

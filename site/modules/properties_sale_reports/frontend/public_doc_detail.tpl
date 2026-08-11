@@ -46,15 +46,23 @@
 		</div>
 		<table id="list-table" width="99%">
 			<tr>
-				<th width="40%">Document</th>
-				<th width="25%">Link </th>
+				<th width="30%">Document</th>
+				<th width="20%">Uploaded Document</th>
+				<th width="20%">Link </th>
 				<th width="20%">Uploaded By </th>
-				<th width="15">Action</th>
+				<th width="10%">Action</th>
 			</tr>
 			{{if $public_doc}}
 			{{foreach from=$public_doc key="key" item="item"}}
 			<tr>
 				<td>{{$item.psrpd_doc_name}}</td>
+				<td>
+					{{if $item.psrpd_file}}
+						<a href="{{$BASE_URL}}{{$BASEFOLDER}}.download_content?file_name={{$item.psrpd_file}}&module_name=properties_sale_reports.view_project" target="_blank" title="{{$item.psrpd_file}}">View/Download</a><br/>
+						{{$item.psrpd_file_uploaded_by}}<br/>
+						{{$item.psrpd_file_uploaded_at|date_format:"%d-%m-%Y"}}
+					{{/if}}
+				</td>
 				<td style="text-align:center;">
 					{{if $item.psrpd_doc_link}}
 					<a href="{{$item.psrpd_doc_link}}" target="_blank">MSTeams Link</a>
