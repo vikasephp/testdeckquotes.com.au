@@ -10,38 +10,47 @@ if(!empty($submit))
   
 	unset($detail[$ID]);
 	
-	if(!empty($detail['fr_recording_link'])) {
+	$oldDetail = array();
+
+	if ($this_id > 0) {
+		$tableqa->setWhere("$ID = $this_id");
+		$oldDetail = $tableqa->getRow();
+	}
+	
+	if ($this_id == 0 ||(!empty($detail['fr_recording_link']) && $detail['fr_recording_link'] != $oldDetail['fr_recording_link'])) {
 		$detail['fr_upload_date'] = date('d-m-Y');
 		$detail['fr_upload_user'] = $_SESSION['user']['user_name'];
 	}
-	
-	if(!empty($detail['fr_transcript_link'])) {
+
+	if ($this_id == 0 || (!empty($detail['fr_transcript_link']) && $detail['fr_transcript_link'] != $oldDetail['fr_transcript_link'])) {
 		$detail['fr_upload_date'] = date('d-m-Y');
 		$detail['fr_upload_user'] = $_SESSION['user']['user_name'];
 	}
-	
-	if(!empty($detail['fr_transcript_file'])) {
+
+	if ($this_id == 0 ||(!empty($detail['fr_transcript_file']) && $detail['fr_transcript_file'] != $oldDetail['fr_transcript_file'])) {
 		$detail['fr_upload_date'] = date('d-m-Y');
 		$detail['fr_upload_user'] = $_SESSION['user']['user_name'];
 	}
-	
-	if(!empty($detail['fr_meeting_minutes'])) {
+
+	if ($this_id == 0 ||(!empty($detail['fr_meeting_minutes']) && $detail['fr_meeting_minutes'] != $oldDetail['fr_meeting_minutes'])) {
 		$detail['fr_upload_date'] = date('d-m-Y');
 		$detail['fr_upload_user'] = $_SESSION['user']['user_name'];
 	}
-	
-	//
-	if(!empty($detail['fr_smtm_chatgpt'])) {
+
+	if ($this_id == 0 || (!empty($detail['fr_smtm_chatgpt']) &&	$detail['fr_smtm_chatgpt'] != $oldDetail['fr_smtm_chatgpt'])) {
 		$detail['fr_smtm_date'] = date('d-m-Y');
 		$detail['fr_smtm_user'] = $_SESSION['user']['user_name'];
 	}
-	
-	if(!empty($detail['fr_ss_chatgpt'])) {
+
+	if ($this_id == 0 || (!empty($detail['fr_ss_chatgpt']) && $detail['fr_ss_chatgpt'] != $oldDetail['fr_ss_chatgpt'])) {
 		$detail['fr_ss_date'] = date('d-m-Y');
 		$detail['fr_ss_user'] = $_SESSION['user']['user_name'];
 	}
-	//
-	
+
+	if ($this_id == 0 ||(!empty($detail['fr_actionAItranscript']) && $detail['fr_actionAItranscript'] != $oldDetail['fr_actionAItranscript'])) {
+		$detail['fr_actionAItranscript_by'] = $_SESSION['user']['user_name'];
+		$detail['fr_actionAItranscript_at'] = date('d-m-Y');
+	}
 	
 	if($_FILES['transcript']['name'])
 		{
@@ -69,32 +78,29 @@ if(!empty($submit))
 	}
 		
 		
-	  if($_FILES['meetingminutes']['name'])
-		{
-			$docfile_1 = $_FILES['meetingminutes']['name'];
-			$docfile_1 =  preg_replace('/[^A-Z0-9._]/i', '_', $docfile_1);
-			$temp_name_1 = $_FILES['meetingminutes']['tmp_name'];
-			$detail['fr_meeting_minutes'] = $docfile_1;
-			upload($docfile_1, $temp_name_1);
-		}	
-	
+	if($_FILES['meetingminutes']['name'])
+	{
+		$docfile_1 = $_FILES['meetingminutes']['name'];
+		$docfile_1 =  preg_replace('/[^A-Z0-9._]/i', '_', $docfile_1);
+		$temp_name_1 = $_FILES['meetingminutes']['tmp_name'];
+		$detail['fr_meeting_minutes'] = $docfile_1;
+		upload($docfile_1, $temp_name_1);
+	}	
 
-		
-			
-	   if($this_id > 0)
-    	{
-		
-       		 $tableqa->setWhere("$ID = $this_id");
-	     	 $opr = $tableqa->updateRow($detail);
-    	}
-		else
-		{	
-			 $opr = $tableqa->insertRow($detail); 
-		}    	
+
+	if($this_id > 0)
+	{
+		$tableqa->setWhere("$ID = $this_id");
+		$opr = $tableqa->updateRow($detail);
+	}
+	else
+	{	
+		$opr = $tableqa->insertRow($detail); 
+	}    	
     
     $fwViewData['opr'] = $opr;
 		
-		//Location(BASE_URL . $XFA['home']);
+	//Location(BASE_URL . $XFA['home']);
 }
 
 $this_id = (int)$fwRequest->getParam($ID, 0);
