@@ -71,13 +71,7 @@ if(!empty($submit))
 			$detail['fr_actionAItranscript_at'] = date('d-m-Y');
 			upload($docfile_3, $temp_name_3);
 		}*/
-		
-	if (!empty($detail['fr_actionAItranscript'])) {
-		$detail['fr_actionAItranscript_by'] = $_SESSION['user']['user_name'];
-		$detail['fr_actionAItranscript_at'] = date('d-m-Y');
-	}
-		
-		
+	
 	if($_FILES['meetingminutes']['name'])
 	{
 		$docfile_1 = $_FILES['meetingminutes']['name'];
