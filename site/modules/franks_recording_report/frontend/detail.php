@@ -52,35 +52,33 @@ if(!empty($submit))
 		$detail['fr_actionAItranscript_at'] = date('d-m-Y');
 	}
 	
-	if($_FILES['transcript']['name'])
-		{
-			$docfile_1 = $_FILES['transcript']['name'];
-			$docfile_1 =  preg_replace('/[^A-Z0-9._]/i', '_', $docfile_1);
-			$temp_name_1 = $_FILES['transcript']['tmp_name'];
-			$detail['fr_transcript_file'] = $docfile_1;
-			upload($docfile_1, $temp_name_1);
-		}
-		
-	/*if($_FILES['actionAItranscript']['name'])
-		{
-			$docfile_3 = $_FILES['actionAItranscript']['name'];
-			$docfile_3 =  preg_replace('/[^A-Z0-9._]/i', '_', $docfile_3);
-			$temp_name_3 = $_FILES['actionAItranscript']['tmp_name'];
-			$detail['fr_actionAItranscript'] = $docfile_3;
-			$detail['fr_actionAItranscript_by'] = $_SESSION['user']['user_name'];
-			$detail['fr_actionAItranscript_at'] = date('d-m-Y');
-			upload($docfile_3, $temp_name_3);
-		}*/
 	
-	if($_FILES['meetingminutes']['name'])
-	{
+	if($_FILES['transcript']['name']){
+		$docfile_1 = $_FILES['transcript']['name'];
+		$docfile_1 =  preg_replace('/[^A-Z0-9._]/i', '_', $docfile_1);
+		$temp_name_1 = $_FILES['transcript']['tmp_name'];
+		$detail['fr_transcript_file'] = $docfile_1;
+		upload($docfile_1, $temp_name_1);
+	}
+		
+	/*if($_FILES['actionAItranscript']['name']){
+		$docfile_3 = $_FILES['actionAItranscript']['name'];
+		$docfile_3 =  preg_replace('/[^A-Z0-9._]/i', '_', $docfile_3);
+		$temp_name_3 = $_FILES['actionAItranscript']['tmp_name'];
+		$detail['fr_actionAItranscript'] = $docfile_3;
+		$detail['fr_actionAItranscript_by'] = $_SESSION['user']['user_name'];
+		$detail['fr_actionAItranscript_at'] = date('d-m-Y');
+		upload($docfile_3, $temp_name_3);
+	}*/
+		
+		
+	if($_FILES['meetingminutes']['name']){
 		$docfile_1 = $_FILES['meetingminutes']['name'];
 		$docfile_1 =  preg_replace('/[^A-Z0-9._]/i', '_', $docfile_1);
 		$temp_name_1 = $_FILES['meetingminutes']['tmp_name'];
 		$detail['fr_meeting_minutes'] = $docfile_1;
 		upload($docfile_1, $temp_name_1);
-	}	
-
+	}
 
 	if($this_id > 0)
 	{
@@ -93,7 +91,6 @@ if(!empty($submit))
 	}    	
     
     $fwViewData['opr'] = $opr;
-		
 	//Location(BASE_URL . $XFA['home']);
 }
 
