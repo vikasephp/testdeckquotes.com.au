@@ -30,6 +30,19 @@ if(!empty($submit))
 		$detail['fr_upload_user'] = $_SESSION['user']['user_name'];
 	}
 	
+	//
+	if(!empty($detail['fr_smtm_chatgpt'])) {
+		$detail['fr_smtm_date'] = date('d-m-Y');
+		$detail['fr_smtm_user'] = $_SESSION['user']['user_name'];
+	}
+	
+	if(!empty($detail['fr_ss_chatgpt'])) {
+		$detail['fr_ss_date'] = date('d-m-Y');
+		$detail['fr_ss_user'] = $_SESSION['user']['user_name'];
+	}
+	//
+	
+	
 	if($_FILES['transcript']['name'])
 		{
 			$docfile_1 = $_FILES['transcript']['name'];
@@ -56,7 +69,7 @@ if(!empty($submit))
 	}
 		
 		
-	if($_FILES['meetingminutes']['name'])
+	  if($_FILES['meetingminutes']['name'])
 		{
 			$docfile_1 = $_FILES['meetingminutes']['name'];
 			$docfile_1 =  preg_replace('/[^A-Z0-9._]/i', '_', $docfile_1);
@@ -65,6 +78,9 @@ if(!empty($submit))
 			upload($docfile_1, $temp_name_1);
 		}	
 	
+
+		
+			
 	   if($this_id > 0)
     	{
 		

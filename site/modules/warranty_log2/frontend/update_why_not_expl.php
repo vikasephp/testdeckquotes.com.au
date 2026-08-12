@@ -6,6 +6,7 @@ if (isset($_POST['notes']['wa_why_not_resp_expl'])) {
 	
 	$wa_id = intval($_POST['notes']['wa_id']);
     $wa_why_not_resp_expl = trim($_POST['notes']['wa_why_not_resp_expl']);
+	$wa_why_not_resp_expl = str_replace("'", "\\'", $wa_why_not_resp_expl);
 
     $sql_1 = "UPDATE warranty_log SET wa_why_not_resp_expl = '".$wa_why_not_resp_expl."' WHERE wa_id = ".$wa_id;
 	$dataT = $fwDb->queryOne($sql_1);

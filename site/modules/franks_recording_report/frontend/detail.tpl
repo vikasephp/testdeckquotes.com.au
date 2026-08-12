@@ -75,7 +75,7 @@ setTimeout('parent.close_win();', 500);
   </td>      
   </tr>
   
-   <tr>
+  <tr>
   <th> Upload Meeting Minutes File </th> 
   <td> <input type="file" name="meetingminutes" />
   </td>      
@@ -85,7 +85,31 @@ setTimeout('parent.close_win();', 500);
     <th>Notes</th>
     <td><input type="text" name="{{$TABLE}}[fr_notes]" style ="width:800px" value="{{$detail.fr_notes}}" /></td>
     </tr>
+    
+    
+    <tr>
+    <th>Sales Meeting ChatGPT Chat Link</th>
+    <td><input type="text" name="{{$TABLE}}[fr_smtm_chatgpt]" style ="width:800px" value="{{$detail.fr_smtm_chatgpt}}" /></td>
+    </tr>
+    
+      <tr>
+      <th> Sales Meeting Live Word Document </th> 
+      <td> <input type="text" name="{{$TABLE}}[fr_smtm_word_doc]" style ="width:800px" value="{{$detail.fr_smtm_word_doc}}" />
+      </td>      
+      </tr>
       
+       <tr>
+       <th>Sales Summary ChatGPT Chat Link</th>
+       <td><input type="text" name="{{$TABLE}}[fr_ss_chatgpt]" style ="width:800px" value="{{$detail.fr_ss_chatgpt}}" /></td>
+       </tr>
+        
+       <tr>
+      <th>Sales Summary Live Word Document </th> 
+      <td> <input type="text" name="{{$TABLE}}[fr_ss_word_doc]" style ="width:800px" value="{{$detail.fr_ss_word_doc}}" />
+      </td>      
+      </tr> 
+        
+          
      <tr>
         <td colspan="2" style="text-align:center;">
           <input type="submit" name="subAddDetail" value="Save" class="vsml" />

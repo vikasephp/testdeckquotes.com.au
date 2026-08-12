@@ -109,6 +109,10 @@ function add_procedure()
                    <th class="topmenu" align="center" valign="middle" width="10%">Transcript Link</th>
 				   <th class="topmenu" align="center" valign="middle" width="10%">Action AI Transcript</th>
                    <th class="topmenu" align="center" valign="middle" width="10%">Meeting Minutes</th>
+                  
+                   <th class="topmenu" align="center" valign="middle" width="10%">Sales Meeting Transcript Main</th>
+                   <th class="topmenu" align="center" valign="middle" width="10%">Sales Summary</th>
+                   
                    <th class="topmenu" align="center" valign="middle" width="20%">Notes</th>
                    <th class="topmenu" align="center" valign="middle" width="10%">Meeting Summary Emailed</th>
                    <th class="topmenu" align="center" valign="middle" width="5%">Action</th>   
@@ -158,6 +162,32 @@ function add_procedure()
          <br />
         {{$item.fr_upload_user}} <br />{{$item.fr_upload_date}} {{/if}}
          </td>
+         
+         
+         <td>
+         {{if $item.fr_smtm_chatgpt}}
+         	<a href="{{$item.fr_smtm_chatgpt}}" target="_blank">Chat GPT Chat Link </a><br />
+         {{/if}}   
+         
+         {{if $item.fr_smtm_word_doc}} <br />
+        		<a href="{{$item.fr_smtm_word_doc}}" target="_blank"> Sales Meeting Live Word Doc </a>
+         {{/if}}
+         {{$item.fr_smtm_date}}<br />{{$item.fr_smtm_user}}
+         </td>
+         
+         <td>
+          {{if $item.fr_ss_chatgpt|trim != ''}}
+         	<a href="{{$item.fr_ss_chatgpt}}" target="_blank">Chat GPT Chat Link </a><br />
+         {{/if}}  
+         
+         {{if $item.fr_ss_word_doc}} <br />
+       			<a href="{{$item.fr_ss_word_doc}}" target="_blank"> Sales Summary Live Word Doc </a>
+         {{/if}}
+         
+           {{$item.fr_ss_date}}<br />{{$item.fr_ss_user}}
+         </td>
+         
+         
         <td>{{$item.fr_notes}}</td>
         
         <td>
