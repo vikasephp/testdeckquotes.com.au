@@ -172,7 +172,10 @@ function add_procedure()
          {{if $item.fr_smtm_word_doc}} <br />
         		<a href="{{$item.fr_smtm_word_doc}}" target="_blank"> Sales Meeting Live Word Doc </a>
          {{/if}}
+		 
+		 {{if $item.fr_smtm_chatgpt or $item.fr_smtm_word_doc}}
          {{$item.fr_smtm_date}}<br />{{$item.fr_smtm_user}}
+		 {{/if}}
          </td>
          
          <td>
@@ -184,7 +187,9 @@ function add_procedure()
        			<a href="{{$item.fr_ss_word_doc}}" target="_blank"> Sales Summary Live Word Doc </a>
          {{/if}}
          
+		 {{if $item.fr_ss_chatgpt or $item.fr_ss_word_doc}}
            {{$item.fr_ss_date}}<br />{{$item.fr_ss_user}}
+		  {{/if}}
          </td>
          
          
