@@ -64,6 +64,7 @@
             });
         });
     }
+
 </script>
 <h3 class="page-title">{{$title}}</h3>
 <br />
@@ -194,7 +195,7 @@
                         {{ /foreach }}
                     </select>
                 </td>
-                <td data-col="send_letter" style="text-align: center;">
+                <td data-col="send_letter" style="text-align: center; {{if $item.cld_email_sent eq 1}}background:#00bf6f;{{/if}}">
                     <a href="{{$BASE_URL}}{{$BASEFOLDER}}.compose_letter/{{$ID}}/{{$item.$ID}}?letter_type={{ $typedata[$item.cld_letter_type_id].name }}" class="various">
                        <button type="button" class="btn btn-info" style="padding: 5px 10px; font-size: 12px;">Send Letter</button>
                     </a>
@@ -204,7 +205,7 @@
                 </td>
                 <td data-col="uploaded_file">
                     {{ if $item.cld_file_name }}
-                    <a href="/{{ $BASEFOLDER }}.download_content?file_name={{$item.cld_file_name}}&module_name={{ $BASEFOLDER }}.home" target="_blank">Link</a>
+                    <a href="{{$BASE_URL}}{{$BASEFOLDER}}.view_uploaded_file?file_name={{$item.cld_file_name|escape:'url'}}&module_name={{$BASEFOLDER}}.home" target="_blank" title="{{$item.cld_file_name|escape:'html'}}">Link</a>
                     <!-- <a href="/{{ $BASEFOLDER }}.delete_cld_file_name/{{ $ID }}/{{ $item.$ID }}" onclick="javascript:if(!confirm('Are you sure want to delete?')) return false;" title="Delete"><img src="{{$BASE_URL}}/images/delete_icon.png" width="20" /></a> -->
                     {{ /if }}
                 </td>

@@ -79,13 +79,16 @@ if ($recordId > 0) {
     // Find matching email template
     $matchingTemplate = findEmailTemplateByLetterType($letterType, $emailTemplates);
     
-    $custsql = "Select business_sellers.bs_business_id, bus_customers.bcust_id, bus_customers.bcust_fname, bus_customers.bcust_lname, bus_customers.bcust_misc_email1, bus_customers.bcust_misc_email2, bus_customers.bcust_misc_email3, bus_customers.bcust_misc_email4, bus_customers.bcust_misc_email5, bus_customers.bcust_misc_send_market_email from business_sellers LEFT JOIN bus_customers on business_sellers.bs_customers_id = bus_customers.bcust_id";
+    $custsql = "Select business_sellers.bs_business_id, bus_customers.bcust_id, bus_customers.bcust_fname, bus_customers.bcust_lname, bus_customers.bcust_misc_email1, bus_customers.bcust_misc_email2, bus_customers.bcust_misc_email3, bus_customers.bcust_misc_email4, bus_customers.bcust_misc_email5, bus_customers.bcust_misc_send_market_email, bus_customers.bcust_misc_moble from business_sellers LEFT JOIN bus_customers on business_sellers.bs_customers_id = bus_customers.bcust_id";
     $custdetail  = $fwDb->query($custsql);
     $clientArr = [];
     $allEmails = [];
     $seenEmails = [];
     $customerNames = [];
     $emailNameMap = [];
+    $customerPrimaryEmail = '';
+    $customerMobile = '';
+    $gotFirstCustomer = false;
     $emailColumns = ['bcust_misc_email1', 'bcust_misc_email2', 'bcust_misc_email3', 'bcust_misc_email4', 'bcust_misc_email5', 'bcust_misc_send_market_email'];
     foreach ($custdetail as $cust) {
         // Collect emails from every client linked to this project (cld_bsn_id)
@@ -93,6 +96,12 @@ if ($recordId > 0) {
             $fullName = trim(($cust['bcust_fname'] ?? '') . ' ' . ($cust['bcust_lname'] ?? ''));
             if ($fullName !== '') {
                 $customerNames[] = $fullName;
+            }
+            // Primary email + mobile: first linked client only (for [Email] / [Mobile] placeholders)
+            if (!$gotFirstCustomer) {
+                $gotFirstCustomer = true;
+                $customerPrimaryEmail = trim((string)($cust['bcust_misc_email1'] ?? ''));
+                $customerMobile = trim((string)($cust['bcust_misc_moble'] ?? ''));
             }
             foreach ($emailColumns as $column) {
                 if (!empty($cust[$column])) {
@@ -153,6 +162,11 @@ if ($recordId > 0) {
             $email_content = str_replace('[last name]', "", $email_content);
 
         }
+        // Always replace [Email] / [Mobile] (even if blank) so placeholders never remain in content.
+        // Allow optional spaces / HTML wrappers around the token (common in email HTML templates).
+        $email_content = preg_replace('/\[\s*(?:<\/?[^>]+>\s*)*Email(?:\s*<\/?[^>]+>)*\s*\]/iu', $customerPrimaryEmail, $email_content);
+        $email_content = preg_replace('/\[\s*(?:<\/?[^>]+>\s*)*Mobile(?:\s*<\/?[^>]+>)*\s*\]/iu', $customerMobile, $email_content);
+        $email_content = str_replace(array('&#91;Email&#93;', '&#91;Mobile&#93;', '&lsqb;Email&rsqb;', '&lsqb;Mobile&rsqb;'), array($customerPrimaryEmail, $customerMobile, $customerPrimaryEmail, $customerMobile), $email_content);
     }
 }
 
@@ -426,6 +440,16 @@ if ($send || $draft) {
         // Insert log entry in letter_email_log
         $logTable = new Fw_Db_Table('letter_email_log');
         $logTable->insertRow($logData);
+		
+		//Update central_letter_database and update the value to 1 
+		$cldTable = new Fw_Db_Table('central_letter_database');
+		$cldId = (int)$formRecordId;
+		if ($cldId > 0) {
+			$cldTable->setWhere("cld_id = " . $cldId);
+			$cldTable->updateRow([
+				'cld_email_sent' => 1
+			]);
+		}
 
         $emailLogData = [
             'custom_id' => $customId,

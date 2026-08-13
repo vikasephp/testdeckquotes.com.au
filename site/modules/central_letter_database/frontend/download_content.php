@@ -26,14 +26,26 @@ if (!empty($postedData['file_name']) && !empty($postedData['module_name'])) {
         fwrite($txt, $file_raw_data);
         fclose($txt);
 
+        $safeName = str_replace(array('"', "\r", "\n"), '', basename($file));
+        $contentType = !empty($file_data->headers['type']) ? $file_data->headers['type'] : 'application/octet-stream';
+
+        /* view=1 => redirect to /download_files/{filename} so browser PDF toolbar shows the real name
+           (Chrome uses the URL path, not Content-Disposition, for the PDF title) */
+        $viewInline = !empty($postedData['view']) && ($postedData['view'] == '1' || $postedData['view'] == 'inline');
+
+        if ($viewInline) {
+            $base = defined('BASE_URL') ? rtrim(BASE_URL, '/') : '';
+            header('Location: ' . $base . '/download_files/' . rawurlencode($safeName));
+            exit();
+        }
+
         header('Content-Description: File Transfer');
-        header('Content-Disposition: attachment; filename=' . basename($_SERVER['DOCUMENT_ROOT'] . '/download_files/' . $file));
+        header('Content-Disposition: attachment; filename="' . $safeName . '"');
         header('Expires: 0');
         header('Cache-Control: must-revalidate');
         header('Pragma: public');
         header('Content-Length: ' . filesize($_SERVER['DOCUMENT_ROOT'] . '/download_files/' . $file));
-
-        header("Content-Type: " . $file_data->headers['type']);
+        header('Content-Type: ' . $contentType);
         readfile($_SERVER['DOCUMENT_ROOT'] . '/download_files/' . $file);
         exit();
     } catch (ErrorException $ex) {
