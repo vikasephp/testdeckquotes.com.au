@@ -29,6 +29,7 @@
 <!-- / END -->
 <script type="text/javascript" src="{{$BASE_URL}}js/calendar/datepicker.js"></script>
 <script type="text/javascript" src="{{$BASE_URL}}css/default/load.js"></script>
+<script type="text/javascript" src="{{$BASE_URL}}js/gcons_ckeditor5_force.js?v=20250818c"></script>
 <link type="text/css" rel="stylesheet" href="{{$BASE_URL}}js/calendar/datepicker.css">
 <link rel="stylesheet" type="text/css" href="{{$BASE_URL}}js/tabview/tabcontent.css" />
 <script type="text/javascript" src="{{$BASE_URL}}js/jquery.min.js"></script>
@@ -938,6 +939,7 @@ nav ul li { background:#154f6c !important ;}
                <li><a href="{{$BASE_URL}}block_assessment_report.home">Block Assessment Report</a></li>
                <li><a href="{{$BASE_URL}}entity_referal_report.home">Entity Referal Report</a></li>
                <li><a href="{{$BASE_URL}}cou_component_document_report.home">COU Component Document Report</a></li>
+               <li><a href="{{$BASE_URL}}cou_component_escalation_report.home">COU Component Escalation Report</a></li>
           </ul>
       </li>
      <li>
@@ -1413,6 +1415,7 @@ nav ul li { background:#154f6c !important ;}
                    <li><a href="{{$BASE_URL}}central_letter_database.home">Central Letter Database</a></li>	
               </ul>
           </li>
+
           
           <li>
               <label for="drop-109" class="toggle">Real Estate</label>
@@ -1532,6 +1535,23 @@ nav ul li { background:#154f6c !important ;}
 							<li style="width:180px;"><a href="{{$BASE_URL}}planning_knowledge_library.home">Planning Knowledge Library</a></li>
 						</ul>
 					</li>
+                         <li>
+                              <label for="drop-business-document" class="toggle">Business Documents</label>
+                              <a href="javascript:void();">Business Documents</a>
+                              <input type="checkbox" id="drop-business-document" />
+                              <ul>
+                                   <li><a href="{{$BASE_URL}}business_document.home">Business Documents</a></li>
+                                   <li><a href="{{$BASE_URL}}business_document.view_type">Manage Document Types</a></li>
+                              </ul>
+                         </li>
+                         <li>
+                              <label for="drop-business-document" class="toggle">Central planning clearing center</label>
+                              <a href="javascript:void();">Central planning clearing center</a>
+                              <input type="checkbox" id="drop-business-document" />
+                              <ul>
+                                   <li><a href="{{$BASE_URL}}central_planning_clearing_center.home">Central planning clearing center</a></li>
+                              </ul>
+                         </li>
 				</ul>
 			</nav>   
 		</td>

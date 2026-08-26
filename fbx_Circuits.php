@@ -779,6 +779,9 @@ $Fusebox['circuits']['entity_referal_report'] = './site/modules/entity_referal_r
 //Cou component document Report
 $Fusebox['circuits']['cou_component_document_report'] = './site/modules/cou_component_document_report/frontend';
 
+//COU Component Escalation Report
+$Fusebox['circuits']['cou_component_escalation_report'] = './site/modules/cou_component_escalation_report/frontend';
+
 //Work In Progress Report
 $Fusebox['circuits']['work_in_progress_report'] = './site/modules/work_in_progress_report/frontend';
 
@@ -1173,3 +1176,9 @@ $Fusebox['circuits']['alert_escalation_report'] = './site/modules/alert_escalati
 
 //Warranty Priority List
 $Fusebox['circuits']['warranty_priority_list'] = './site/modules/warranty_priority_list/frontend';
+
+// Business Documents
+$Fusebox['circuits']['business_document'] = './site/modules/business_document/frontend';
+
+// Central Planning Clearing Center
+$Fusebox['circuits']['central_planning_clearing_center'] = './site/modules/central_planning_clearing_center/frontend';
