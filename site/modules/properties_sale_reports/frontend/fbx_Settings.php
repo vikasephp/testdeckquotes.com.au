@@ -232,6 +232,13 @@ function upload_public_doc($filename, $tmpname, $module = 'business.home')
     return $obj->upload($filename, $tmpname);
 }
 
+function getUploadUrl($filename, $module)
+{
+    require_once(LIB_DIR . 'CloudEphpClass.php');
+	$obj = new CloudEphpClass($module);
+	return $obj->download($filename, false);
+}
+
 function get_file_raw_data($folder_path, $object_name)
 {
     $filetoinclude = $_SERVER['DOCUMENT_ROOT'] . '/file_upload/server/s3/S3.php';

@@ -2,11 +2,15 @@
 
 $bsn_id = (int)$fwRequest->getParam('bsn_id', 0);
 $bsn_name = '';
+$bsn_buyer_report_cover_image = '';
 
 if ($bsn_id > 0) {
-    $sql = 'SELECT bsn_name FROM business WHERE bsn_id = ' . $bsn_id;
+    $sql = 'SELECT bsn_name, bsn_buyer_report_cover_image FROM business WHERE bsn_id = ' . $bsn_id;
     $result = $fwDb->queryOne($sql);
-    $bsn_name = $result['bsn_name'];
+    if(!empty($result)) {
+        $bsn_name = $result['bsn_name'];
+        $bsn_buyer_report_cover_image = $result['bsn_buyer_report_cover_image'];
+    }
 }
 
 $fwViewData['bsn_id'] = $bsn_id;
@@ -23,80 +27,80 @@ $data_psri_inv = $fwDb->query($sql_psri_inv);
 // Save Invoice Sent Record
 $inv_sent = $fwRequest->getParam('inv_sent', '');
 if (!empty($inv_sent)) {
-	$dt = date('d-m-Y h:i:sa');
-	$user = $_SESSION['user']['user_name'];
-	$key = array_keys($inv_sent);
-	$ky = $key[0];
+    $dt = date('d-m-Y h:i:sa');
+    $user = $_SESSION['user']['user_name'];
+    $key = array_keys($inv_sent);
+    $ky = $key[0];
 
-	$invDetail['psri_sent'] = $inv_sent[$ky];
-	$invDetail['psri_sent_user'] = $user;
-	$invDetail['psri_sent_date'] = $dt;
+    $invDetail['psri_sent'] = $inv_sent[$ky];
+    $invDetail['psri_sent_user'] = $user;
+    $invDetail['psri_sent_date'] = $dt;
 
-	$invTable->setWhere('psri_id = ' . $ky);
-	$detail = $invTable->updateRow($invDetail);
-	$redirectUrl = $_SERVER['REQUEST_URI'];
-	header("Location: $redirectUrl");
-	exit;
+    $invTable->setWhere('psri_id = ' . $ky);
+    $detail = $invTable->updateRow($invDetail);
+    $redirectUrl = $_SERVER['REQUEST_URI'];
+    header("Location: $redirectUrl");
+    exit;
 }
 //End Invoice Sent Record
 
 // Save Invoice Paid Record
 $inv_paid = $fwRequest->getParam('inv_paid', '');
 if (!empty($inv_paid)) {
-	$dt = date('d-m-Y h:i:sa');
-	$user = $_SESSION['user']['user_name'];
-	$key = array_keys($inv_paid);
-	$ky = $key[0];
+    $dt = date('d-m-Y h:i:sa');
+    $user = $_SESSION['user']['user_name'];
+    $key = array_keys($inv_paid);
+    $ky = $key[0];
 
-	$invDetail['psri_paid'] = $inv_paid[$ky];
-	$invDetail['psri_paid_user'] = $user;
-	$invDetail['psri_paid_date'] = $dt;
+    $invDetail['psri_paid'] = $inv_paid[$ky];
+    $invDetail['psri_paid_user'] = $user;
+    $invDetail['psri_paid_date'] = $dt;
 
-	$invTable->setWhere('psri_id = ' . $ky);
-	$detail = $invTable->updateRow($invDetail);
-	$redirectUrl = $_SERVER['REQUEST_URI'];
-	header("Location: $redirectUrl");
-	exit;
+    $invTable->setWhere('psri_id = ' . $ky);
+    $detail = $invTable->updateRow($invDetail);
+    $redirectUrl = $_SERVER['REQUEST_URI'];
+    header("Location: $redirectUrl");
+    exit;
 }
 //End Invoice Paid Record
 
 if (!empty($data_psri_inv)) {
-	if (!(isset($pagenum))) {
-		$pagenum = 1;
-	}
-	$rows = count($data_psri_inv);
-	$page_rows = 300;
-	$last = ceil($rows / $page_rows);
-	if ($pagenum <= 1) {
-		$pagenum = 1;
-	} elseif ($pagenum > $last) {
-		$pagenum = $last;
-	}
-	$fwViewData['last'] = $last;
-	$fwViewData['lastone'] = $last - 1;
-	$fwViewData['lasttow'] = $last - 2;
-	$fwViewData['pagenum'] = $pagenum;
-	$pagenatedatanext = $pagenum;
-	$pagenatedataprev = $pagenum;
-	for ($i = 0; $i < 9; $i++) {
-		$paginate[$pagenatedatanext] = $pagenatedatanext;
-		$pagenatedatanext++;
-	}
-	$fwViewData['paginatenext'] = $paginate;
-	$pagenatedataprev = $pagenum;
-	for ($i = 0; $i < 9; $i++) {
-		$paginateprev[$pagenatedataprev] = $pagenatedataprev;
-		$pagenatedataprev--;
-	}
-	$fwViewData['paginateprev'] = array_reverse($paginateprev);
-	$fwViewData['start_sn'] = ($pagenum - 1) * $page_rows + 1;
+    if (!(isset($pagenum))) {
+        $pagenum = 1;
+    }
+    $rows = count($data_psri_inv);
+    $page_rows = 300;
+    $last = ceil($rows / $page_rows);
+    if ($pagenum <= 1) {
+        $pagenum = 1;
+    } elseif ($pagenum > $last) {
+        $pagenum = $last;
+    }
+    $fwViewData['last'] = $last;
+    $fwViewData['lastone'] = $last - 1;
+    $fwViewData['lasttow'] = $last - 2;
+    $fwViewData['pagenum'] = $pagenum;
+    $pagenatedatanext = $pagenum;
+    $pagenatedataprev = $pagenum;
+    for ($i = 0; $i < 9; $i++) {
+        $paginate[$pagenatedatanext] = $pagenatedatanext;
+        $pagenatedatanext++;
+    }
+    $fwViewData['paginatenext'] = $paginate;
+    $pagenatedataprev = $pagenum;
+    for ($i = 0; $i < 9; $i++) {
+        $paginateprev[$pagenatedataprev] = $pagenatedataprev;
+        $pagenatedataprev--;
+    }
+    $fwViewData['paginateprev'] = array_reverse($paginateprev);
+    $fwViewData['start_sn'] = ($pagenum - 1) * $page_rows + 1;
 
-	$max = 'limit ' . ($pagenum - 1) * $page_rows . ',' . $page_rows;
+    $max = 'limit ' . ($pagenum - 1) * $page_rows . ',' . $page_rows;
 
-	$sql_psri_inv2 =  $sql_psri_inv . " " . $max;
-	if ($sql_psri_inv2) {
-		$fwViewData['list'] = $fwDb->query($sql_psri_inv2);
-	}
+    $sql_psri_inv2 =  $sql_psri_inv . " " . $max;
+    if ($sql_psri_inv2) {
+        $fwViewData['list'] = $fwDb->query($sql_psri_inv2);
+    }
 }
 
 $psr_complete = $fwRequest->getParam('psr_complete', []);
@@ -127,7 +131,7 @@ if (!empty($psr_complete) && is_array($psr_complete)) {
         $psrtcTable = new Fw_Db_Table("properties_sale_reports_tab_completed");
         $psrtcTable->setWhere(
             'psrtc_bsn_id = ' . $bsn_id .
-            ' AND psrtc_uid_id = ' . $psrlctl_uid
+                ' AND psrtc_uid_id = ' . $psrlctl_uid
         );
 
         if ($psrtcTable->rowExists()) {
@@ -145,14 +149,14 @@ if (!empty($psr_complete) && is_array($psr_complete)) {
 $psruo_offer_sent = $fwRequest->getParam('psruo_offer_sent', '');
 if (!empty($psruo_offer_sent)) {
 
-	$psruo_id = (int)$psruo_offer_sent['psruo_id'];
+    $psruo_id = (int)$psruo_offer_sent['psruo_id'];
     $val_os   = $psruo_offer_sent['psruo_offer_sent'];
 
     $detail = array();
     $detail['psruo_offer_sent'] = $val_os;
-	
+
     $detail['psruo_offer_sent_user'] = $_SESSION['user']['user_name'];
-	$detail['psruo_offer_sent_date'] = date('d-m-Y');
+    $detail['psruo_offer_sent_date'] = date('d-m-Y');
 
     $tablepsruo = new Fw_Db_Table('properties_sale_reports_under_offer');
     $tablepsruo->setWhere("psruo_id = $psruo_id");
@@ -163,7 +167,7 @@ if (!empty($psruo_offer_sent)) {
 
     $redirectUrl = $_SERVER['REQUEST_URI'];
     header("Location: $redirectUrl");
-    exit; 	
+    exit;
 }
 
 
@@ -331,29 +335,31 @@ $merge = $fwRequest->getParam('merge_public_doc', '');
 
 if (!empty($merge)) {
 
-    $sql_public_document = "SELECT file_name FROM ( SELECT doc_file_name AS file_name, doc_name_id FROM document_check_list WHERE doc_bsn_id = 3486 AND doc_name_id IN (471, 766, 773, 770, 769, 768, 774) UNION ALL SELECT psrpd_file AS file_name, 0 AS doc_name_id FROM psr_public_documents WHERE psr_bsn_id = 3486 ) AS files ORDER BY FIELD(doc_name_id, 471, 766, 773, 770, 769, 768, 774, 0)";
+    $sql_public_document = "SELECT file_name FROM ( SELECT doc_file_name AS file_name, doc_name_id FROM document_check_list WHERE doc_bsn_id = {$bsn_id} AND doc_name_id IN (471, 766, 773, 770, 769, 768, 774) UNION ALL SELECT psrpd_file AS file_name, 0 AS doc_name_id FROM psr_public_documents WHERE psr_bsn_id = {$bsn_id} ) AS files ORDER BY FIELD( doc_name_id, 471, 766, 773, 770, 769, 768, 774, 0 )";
     $data = $fwDb->query($sql_public_document);
 
     if (empty($data)) {
         exit('No documents found to merge.');
     }
 
-    $pdf = new PDFMerger;
+    $pdfMerger = new PDFMerger;
 
-    /*Temp local folder*/
+    /*Temporary folder*/
     $publicDocumentPath = BASE_DIR . FILE_PATH . 'files/public_document/';
 
     if (!is_dir($publicDocumentPath)) {
         mkdir($publicDocumentPath, 0777, true);
     }
 
+    /*Remove previous temporary files*/
     deleteFiles($publicDocumentPath);
+
+    /*Final merged PDF filename*/
     $fn = 'public_document_' . time() . '.pdf';
 
     /*S3 folder*/
     $folder_path = 'files/document_check_list_files/';
 
-    /*Download each PDF and add it to merger*/
     foreach ($data as $document) {
 
         if (empty($document['file_name'])) {
@@ -367,37 +373,165 @@ if (!empty($merge)) {
             continue;
         }
 
-        $localFile = $publicDocumentPath . $fileName;
+        $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
 
-        if (!copy($source, $localFile)) {
+        if ($extension === 'pdf') {
+            $localPdf = $publicDocumentPath . uniqid('pdf_', true) . '.pdf';
+            if (copy($source, $localPdf)) {
+                $pdfMerger->addPDF($localPdf);
+            }
+        }
+
+        /*Convert JPG / JPEG / PNG / WEBP to PDF*/ elseif (in_array($extension, ['jpg', 'jpeg', 'png', 'webp'])) {
+            $imagePdf = convertImageToPdf($source, $publicDocumentPath);
+            if ($imagePdf && file_exists($imagePdf)) {
+                $pdfMerger->addPDF($imagePdf);
+            }
+        } else {
+            // Ignore DOC, DOCX, etc.
             continue;
         }
 
-        $pdf->addPDF($localFile);
+        /*Remove the temporary S3 download*/
+        if (file_exists($source)) {
+            unlink($source);
+        }
     }
 
-    /* Path for merged PDF */
+    /*Final merged PDF*/
     $mergedFile = $publicDocumentPath . $fn;
 
-    $pdf->merge('file', $mergedFile);
+    /*Merge all PDFs*/
+    try {
+        $pdfMerger->merge('file', $mergedFile);
+    } catch (Exception $e) {
+        deleteFiles($publicDocumentPath);
+        exit('Unable to merge PDF: ' . $e->getMessage());
+    }
 
-    if (!file_exists($mergedFile)) {
+    /*Check merged file*/
+    if (!file_exists($mergedFile) || filesize($mergedFile) == 0) {
         deleteFiles($publicDocumentPath);
         exit('Unable to create merged PDF.');
     }
 
-    /*Download merged PDF*/
+    /*Send PDF directly to browser*/
+    if (ob_get_length()) {
+        ob_end_clean();
+    }
+
     header('Content-Type: application/pdf');
     header('Content-Disposition: attachment; filename="' . $fn . '"');
     header('Content-Length: ' . filesize($mergedFile));
     header('Cache-Control: private, max-age=0, must-revalidate');
     header('Pragma: public');
-
     readfile($mergedFile);
 
-    /*delete temporary files after download*/
+    /*Remove temporary files*/
     deleteFiles($publicDocumentPath);
     exit;
+}
+
+/*Function to Convert Image to PDF*/
+function convertImageToPdf($imagePath, $outputFolder)
+{
+    if (!file_exists($imagePath)) {
+        return false;
+    }
+
+    if (!class_exists('TCPDF')) {
+        require_once(BASE_DIR . 'tcpdf/tcpdf.php');
+    }
+
+    /*Create unique PDF filename*/
+    $pdfFile = $outputFolder . uniqid('image_', true) . '.pdf';
+
+    /*Create TCPDF document*/
+    $imagePdf = new TCPDF(
+        'P',
+        PDF_UNIT,
+        PDF_PAGE_FORMAT,
+        true,
+        'UTF-8',
+        false
+    );
+
+    /*Remove header/footer*/
+    $imagePdf->setPrintHeader(false);
+    $imagePdf->setPrintFooter(false);
+
+    /*Set margins*/
+    $imagePdf->SetMargins(0, 0, 0);
+    $imagePdf->SetAutoPageBreak(false, 0);
+
+    /*Get image dimensions*/
+    $imageInfo = getimagesize($imagePath);
+    if ($imageInfo === false) {
+        return false;
+    }
+
+    $imageWidth = $imageInfo[0];
+    $imageHeight = $imageInfo[1];
+
+    /*A4 dimensions in mm*/
+    $a4Width = 210;
+    $a4Height = 297;
+
+    /*Determine orientation*/
+    if ($imageWidth > $imageHeight) {
+        $orientation = 'L';
+        $pageWidth = 297;
+        $pageHeight = 210;
+    } else {
+        $orientation = 'P';
+        $pageWidth = 210;
+        $pageHeight = 297;
+    }
+
+    /*Re-create PDF with correct orientation*/
+    unset($imagePdf);
+
+    $imagePdf = new TCPDF($orientation, PDF_UNIT, 'A4', true, 'UTF-8', false);
+
+    $imagePdf->setPrintHeader(false);
+    $imagePdf->setPrintFooter(false);
+    $imagePdf->SetMargins(0, 0, 0);
+    $imagePdf->SetAutoPageBreak(false, 0);
+
+    /* Add page */
+    $imagePdf->AddPage();
+
+
+    /*
+     * Calculate image size to fit A4
+     * while maintaining aspect ratio.
+     */
+    $scaleX = $pageWidth / $imageWidth;
+    $scaleY = $pageHeight / $imageHeight;
+
+    $scale = min($scaleX, $scaleY);
+
+    $displayWidth = $imageWidth * $scale;
+    $displayHeight = $imageHeight * $scale;
+
+    /*
+     * Center image on page
+     */
+    $x = ($pageWidth - $displayWidth) / 2;
+    $y = ($pageHeight - $displayHeight) / 2;
+
+    /*Add image*/
+    $imagePdf->Image($imagePath, $x, $y, $displayWidth, $displayHeight, '', '', '', false, 300, '', false, false, 0, false, false, false);
+
+    /* Save PDF to temporary folder */
+    $imagePdf->Output($pdfFile, 'F');
+
+    /*Verify PDF*/
+    if (!file_exists($pdfFile) || filesize($pdfFile) == 0) {
+        return false;
+    }
+
+    return $pdfFile;
 }
 
 function deleteFiles($dir)
@@ -428,36 +562,37 @@ $psren_Table->setOrderBy("str_to_date(Nullif(psre_date_of_enqury, ''), '%d-%m-%Y
 $fwViewData['data_enquiries_table'] = $psren_Table->getAllRows(); */
 
 $clear_enquiry_filter = $fwRequest->getParam('clear_enquiry_filter', '');
-if($clear_enquiry_filter){
-	$en_where .= ' and 1 = 1';
-	unset($_SESSION['enquiry_active_status']);
-	$fwViewData['enquiry_active_status'] = '';
+if ($clear_enquiry_filter) {
+    $en_where .= ' and 1 = 1';
+    unset($_SESSION['enquiry_active_status']);
+    $fwViewData['enquiry_active_status'] = '';
 }
 
 $enquiry_active_status = $fwRequest->getParam('search_enquiry_active_status', '');
-if($enquiry_active_status):
-	$en_where .= " and psre.psre_status = 'Active' ";
-	$_SESSION['enquiry_active_status'] = $enquiry_active_status;
-	$fwViewData['enquiry_active_status']=$_SESSION['enquiry_active_status'];
-elseif($_SESSION['enquiry_active_status'] && $pagenum > 0):
-	$en_where .= " and psre.psre_status = 'Active' ";
-	$fwViewData['enquiry_active_status']=$_SESSION['enquiry_active_status'];
+if ($enquiry_active_status):
+    $en_where .= " and psre.psre_status = 'Active' ";
+    $_SESSION['enquiry_active_status'] = $enquiry_active_status;
+    $fwViewData['enquiry_active_status'] = $_SESSION['enquiry_active_status'];
+elseif ($_SESSION['enquiry_active_status'] && $pagenum > 0):
+    $en_where .= " and psre.psre_status = 'Active' ";
+    $fwViewData['enquiry_active_status'] = $_SESSION['enquiry_active_status'];
 endif;
 
-$sql_enquiries = "Select psre.*, psr_enquiry_notes.latest_note_date from properties_sale_reports_enquiries psre left join (SELECT psren_psre_id, MAX(psren_created_at) AS latest_note_date FROM psr_enquiry_notes GROUP BY psren_psre_id) psr_enquiry_notes ON psr_enquiry_notes.psren_psre_id = psre.psre_id where psre_bsn_id = ".$bsn_id." " .$en_where. " order by str_to_date(Nullif(psre_date_of_enqury, ''), '%d-%m-%Y') desc";
-$fwViewData['data_enquiries_table'] = $fwDb->query($sql_enquiries);
+$sql_enquiries = "Select psre.*, psr_enquiry_notes.latest_note_date from properties_sale_reports_enquiries psre left join (SELECT psren_psre_id, MAX(psren_created_at) AS latest_note_date FROM psr_enquiry_notes GROUP BY psren_psre_id) psr_enquiry_notes ON psr_enquiry_notes.psren_psre_id = psre.psre_id where psre_bsn_id = " . $bsn_id . " " . $en_where . " order by str_to_date(Nullif(psre_date_of_enqury, ''), '%d-%m-%Y') desc";
+$data_enquiries_table = $fwDb->query($sql_enquiries);
+$fwViewData['data_enquiries_table'] = $data_enquiries_table;
 
 $psre_document_sent = $fwRequest->getParam('psre_document_sent', '');
 if (!empty($psre_document_sent)) {
 
-	$psre_id = (int)$psre_document_sent['psre_id'];
+    $psre_id = (int)$psre_document_sent['psre_id'];
     $val_os  = $psre_document_sent['psre_document_sent'];
 
     $detail_en = array();
     $detail_en['psre_document_sent'] = $val_os;
-	
+
     $detail_en['psre_document_sent_user'] = $_SESSION['user']['user_name'];
-	$detail_en['psre_document_sent_date'] = date('d-m-Y');
+    $detail_en['psre_document_sent_date'] = date('d-m-Y');
 
     $psren_Table->setWhere("psre_id = $psre_id");
 
@@ -467,7 +602,273 @@ if (!empty($psre_document_sent)) {
 
     $redirectUrl = $_SERVER['REQUEST_URI'];
     header("Location: $redirectUrl");
-    exit; 	
+    exit;
+}
+
+require_once(BASE_DIR.'tcpdf/config/lang/eng.php');
+require_once(BASE_DIR.'tcpdf/tcpdf.php');
+$PDF_PAGE_ORIENTATION = "R";
+//$PDF_PAGE_ORIENTATION = "L";
+
+class MYPDF extends TCPDF {
+   
+    // Page footer
+    public function Footer() {
+
+        $this->SetY(-15);
+    
+        $this->SetFont('helvetica', 'I', 8);
+      
+		$this->Cell(0, 10, "Buyer Feedback Report", 'T', 0, 'L');
+		if ($this->getRTL()) {
+			$this->SetX($this->original_rMargin);
+			$this->Cell(0, 0, $pagenumtxt, 'T', 0, 'L');
+		} else {
+			$this->SetX($this->original_lMargin);
+			$this->Cell(0, 0, $pagenumtxt, 'T', 0, 'R');
+		}
+		
+        $this->Cell(0, 10, 'Page '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
+		
+    }
+}
+
+$sql = "SELECT psre_id, psre_enquiry_name, psre_enquiry_name_last, psre_email_address, psre_status, psre_date_of_enqury, psr_enquiry_notes.latest_note_date FROM properties_sale_reports_enquiries psre LEFT JOIN (SELECT psren_psre_id, MAX(psren_created_at) AS latest_note_date FROM psr_enquiry_notes GROUP BY psren_psre_id) psr_enquiry_notes ON psr_enquiry_notes.psren_psre_id = psre.psre_id WHERE psre_bsn_id = $bsn_id ORDER BY psre_status ASC, str_to_date(NULLIF(psre_date_of_enqury, ''), '%d-%m-%Y') DESC;";
+$data_enquiries_table = $fwDb->query($sql);
+$buyer_feedback_report = $fwRequest->getParam('buyer_feedback_report', '');
+$navyColor = '#161750';
+if (!empty($buyer_feedback_report) && !empty($data_enquiries_table)) {
+    $psreIds = [];
+    $totalBuyers = count($data_enquiries_table);
+    $activeBuyers = 0;
+    $inactiveBuyers = 0;
+    foreach($data_enquiries_table as $row) {
+        $psreIds[] = $row['psre_id'];
+        if($row['psre_status'] === 'Active') {
+            $activeBuyers++;
+        } elseif($row['psre_status'] === 'Inactive') {
+            $inactiveBuyers++;
+        }
+    }
+    $sql = "SELECT psr_enquiry_notes.*, users.user_name FROM `psr_enquiry_notes` LEFT JOIN users ON psr_enquiry_notes.psren_created_by = users.user_id WHERE psr_enquiry_notes.psren_psre_id IN (".implode(',', $psreIds). ") ORDER BY psr_enquiry_notes.psren_created_at DESC";
+    $rows = $fwDb->query($sql);
+    $notesData = [];
+    foreach($rows as $row) {
+        if(!isset($notesData[$row['psren_psre_id']])) {
+            $notesData[$row['psren_psre_id']] = [];
+        }
+        $notesData[$row['psren_psre_id']][] = $row;
+    }
+
+    $query = "SELECT BS.bs_business_id, BS.bs_customers_id, BC.bcust_fname, BC.bcust_lname FROM business_sellers AS BS INNER JOIN bus_customers AS BC ON BC.bcust_id = BS.bs_customers_id WHERE BS.bs_business_id = {$bsn_id}";
+    $result = $fwDb->query($query);
+    $customersData = '';
+    foreach ($result as $row) {
+        $customersData .= ('<span style="display: block;">' . $row['bcust_fname'] . ' ' . $row['bcust_lname'] . '</span>');
+    }
+
+    if (!is_dir(BASE_DIR . 'buyer_feedback_report/')) {
+		mkdir(BASE_DIR . 'buyer_feedback_report/', 0777, TRUE);
+	}
+
+    $html = '';
+	$last_key = end(array_keys($data_enquiries_table));
+
+    // $html .= '<hr />';
+    $html .= '<table cellpadding="2" cellspacing="0" style="vertical-align: middle;">';
+		$html .= '<tr>';
+            $html .= '<th><h2>Buyer Feedback Report</h2></th>';
+		$html .= '</tr>';
+		$html .= '<tr>';
+            $html .= ('<td>' . $bsn_name . '</td>');
+		$html .= '</tr>';
+		$html .= '<tr>';
+            $html .= ('<td>' . date('d-M-Y') . '</td>');
+		$html .= '</tr>';
+	$html .= '</table>';
+    // $html .= '<hr />';
+    // $html .= '<br />';
+    // $html .= '<br />';
+    $html .= '<br />';
+
+    // https://static.zdassets.com/agent/assets/react/js/standalone.b9ec7570..html#key=4f2981d9-ccf3-4cde-831a-431b39ac9a2f&botId=6a8405bdfcf782d218722f3a&dir=ltr&locale=en-us&origin=https%3A%2F%2Ftesting-69206.zendesk.com
+    // support@testing-69206.zendesk.com
+
+    if(!empty($bsn_buyer_report_cover_image)) {
+        $html .= '<table width="100%" cellpadding="0" cellspacing="0">';
+            $bsn_buyer_report_cover_image = getUploadUrl($bsn_buyer_report_cover_image, 'properties_sale_reports.buyer_report_cover_image');
+            $html .= ('<tr><td colspan="3">' . '<img src="' . $bsn_buyer_report_cover_image . '">' . '</td></tr>');
+        $html .= '</table>';
+        $html .= '<br />';
+    }
+
+    $html .= '<table width="100%" cellpadding="5" cellspacing="0">';
+        $html .= ('<tr style="background-color: ' . $navyColor . '; color: #fff;">');
+            // $html .= '<td width="1%"></td>';
+            $html .= ('<td width="90" style="border: 1pt solid ' . $navyColor . ';"><img src="' . BASE_URL . 'images/buyer_feedback_report/frank_mini.png" width="80" /></td>');
+            $html .= ('<td width="330" style="border: 1pt solid ' . $navyColor . ';">');
+                $html .= '<br /><br /><br />';
+                $html .= ('<b>Presented by:</b>');
+                $html .= '<br />';
+                $html .= 'Frank Walmsley';
+                $html .= '<br />';
+                $html .= '0400 446 605';
+                $html .= '<br />';
+                $html .= 'clientservices@cgfb.com.au';
+            $html .= '</td>';
+            $html .= ('<td width="auto" style="text-align: right; border: 1pt solid ' . $navyColor . ';">');
+                $html .= '<br /><br /><br />';
+                $html .= ('<b>Presented to:</b>');
+                $html .= '<br />';
+                $html .= $customersData;
+            $html .= '</td>';
+            // $html .= '<td width="8%"></td>';
+        $html .= '</tr>';
+    $html .= '</table>';
+    $html .= '<br />';
+    $html .= '<br />';
+
+    $html .= '<table style="width: 100%;" cellpadding="5" cellspacing="0" align="center">';
+        $html .= '<tr>';
+            $html .= ('<td><img src="' . BASE_URL . 'images/buyer_feedback_report/total_buyers.jpg" height="80" /><br><span style="font-size: 10pt;">Total Buyers</span><br><span style="font-weight: bold; font-size: 12pt;">' . $totalBuyers . '</span></td>');
+            $html .= ('<td><img src="' . BASE_URL . 'images/buyer_feedback_report/active_buyers.jpg" height="80" /><br><span style="font-size: 10pt;">Active Buyers</span><br><span style="font-weight: bold; font-size: 12pt;">' . $activeBuyers . '</span></td>');
+            $html .= ('<td><img src="' . BASE_URL . 'images/buyer_feedback_report/inactive_buyers.jpg" height="80" /><br><span style="font-size: 10pt;">Inactive Buyers</span><br><span style="font-weight: bold; font-size: 12pt;">' . $inactiveBuyers . '</span></td>');
+        $html .= '</tr>';
+    $html .= '</table>';
+
+
+    $html .= '<br pagebreak="true" />';
+    // $html .= '<br />';
+    // $html .= '<br />';
+
+    foreach($data_enquiries_table as $index => $row) {
+        $enquiries = $notesData[$row['psre_id']] ?? [];
+
+        $html .= '<table style="width: 100%;" cellpadding="7" cellspacing="0">';
+            // $html .= ('<tr><th>' . "{$row['psre_enquiry_name']} {$row['psre_enquiry_name_last']} - {$row['psre_email_address']}" . '</th></tr>');
+            // $html .= ('<tr><th>' . "{$row['psre_enquiry_name']} {$row['psre_enquiry_name_last']}" . '</th></tr>');
+            $bgColor = $row['psre_status'] === 'Active' ? $navyColor : 'red';
+            $html .= ('<tr><td style="color: #fff; background-color: ' . $bgColor . ';">' . $row['psre_enquiry_name'] . ' ' . $row['psre_enquiry_name_last'] . ' - ' . $row['psre_status'] . '</td></tr>');
+            // $html .= ('<tr><td style="color: #fff; background-color: #484c4f;">' . $row['psre_enquiry_name'] . ' ' . $row['psre_enquiry_name_last'] . ': <strong>' . count($enquiries) . '</strong> - ' . $row['psre_status'] . '</td></tr>');
+        $html .= '</table>';
+        if(count($enquiries)) {
+            $html .= '<br />';
+            $html .= '<table style="width: 100%;" cellpadding="0" cellspacing="7" border="0">';
+            foreach($enquiries as $key => $value) {
+                // $html .= '<tr>';
+                //     $html .= '<table cellpadding="0" cellspacing="0" border="0">';
+                //     $html .= '</table>';
+                // $html .= '</tr>';
+                $html .= '<tr>';
+                    $html .= '<table cellpadding="10" cellspacing="0" border="0" width="100%">';
+                        $html .= ('<tr><td width="130">' . date('D j M Y', strtotime($value['psren_created_at'])) . '</td><td width="auto" style="border: 0pt solid #446; border-left-width: 2pt;">' .  "{$value['psren_notes']}" . '</td></tr>');
+                    $html .= '</table>';
+                $html .= '</tr>';
+                // $html .= ('<tr style="border: 0pt solid #446;"><td style="border: 0pt solid #446; border-left-width: 2pt;">' . date('D j M Y', strtotime($value['psren_created_at'])) . ' ' .  "{$value['psren_notes']}" . '</td></tr>');
+            }
+            $html .= '</table>';
+        }
+        if ($index <> $last_key) {
+            $html .= '<br pagebreak="true" />';
+        }
+        // $html .= '<br />';
+        // $html .= '<br />';
+        // $html .= '<br />';
+
+        /* $html .= '<div style="margin-bottom: 30px;">';
+            $html .= ('<h4 style="margin: 0px !important; padding: 0px !important;">' . "{$row['psre_enquiry_name']} {$row['psre_enquiry_name_last']} - {$row['psre_email_address']}" . '</h4>');
+            $html .= ('<div style="color: #fff; background-color: #484c4f; width: 100%;">Enquiries: <strong>' . count($enquiries) . '</strong></div>');
+            foreach($enquiries as $key => $value) {
+                $html .= '<div style="padding: 10px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); overflow: hidden; background-color: #fff; border: 1px solid #ddd;">';
+                    $html .= ('<span style="margin: 0px !important; padding: 0px !important;">' . "{$value['psren_notes']}" . '</span>');
+                $html .= '</div>';
+            }
+        $html .= '</div>'; */
+        // if ($index <> $last_key) {
+        //     $html .= '<br pagebreak="true" />';
+        // }
+    }
+
+    $nameoffile = 'buyer_feedback_report';
+    $heading = 'Buyer Feedback Report';
+    // $filename = $nameoffile . "_" . $fname . "_" . date('d_m_Y') . "_" . rand(0, 1000) . ".pdf";
+    $filename = 'buyer_feedback_report_' . time() . '.pdf';
+    $headtext = $heading . " - " . date("d/m/Y");
+    // create new PDF document
+    $pdf = new MYPDF($PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+    // set document information
+    $pdf->SetCreator(PDF_CREATOR);
+    $pdf->SetAuthor('Auction Advantage');
+    //$pdf->SetTitle('Answer - ".date("d/m/Y")."<br>TurnKeyStudios Project Sales');
+    $pdf->SetTitle("Auction Advantage");
+    $pdf->SetSubject($heading);
+    $pdf->SetKeywords('Auction Advantage, PDF');
+
+    /*
+    Auction Advantage
+    Unit 11/160 Lysaght Street, Mitchell ACT 2911, Australia
+    Phone:  1300 145 561 | Fax: 1300 979 657
+    */
+    // set default header data
+    $pdf->SetHeaderData('auction_advantage_main_logo.png', 40, 'Auction Advantage', "Unit 11/160 Lysaght Street, Mitchell ACT 2911, Australia\nPhone:  1300 145 561 | Fax: 1300 979 657");
+    // $pdf->SetHeaderData('auction_advantage_logo.png', PDF_HEADER_LOGO_WIDTH, $headtext, "Auction Advantage");
+
+    // set header and footer fonts
+    $pdf->setHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+    $pdf->setFooterFont(array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+
+    // set default monospaced font
+    $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+    //set margins
+    $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+    $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+    $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+
+    //set auto page breaks
+    $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+
+    //set image scale factor
+    $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+
+    //set some language-dependent strings
+    $pdf->setLanguageArray($l);
+
+    // ---------------------------------------------------------
+
+    // set font
+    $pdf->SetFont('helvetica', '23', 10);
+
+    // add a page
+    $pdf->AddPage();
+
+    //set some language-dependent strings
+    $pdf->setLanguageArray($l);
+
+    // -------------------------------------------------------------------
+
+    // add a page
+    //$pdf->AddPage();
+
+    // set JPEG quality
+    // $pdf->setJPEGQuality(105);
+    // output the HTML content
+    $pdf->writeHTML($html, true, false, true, false, '');
+
+//     $vbody = <<<EOF
+//     $html
+// EOF;
+
+//     $pdf->writeHTML($vbody, true, false, true, false, '');
+
+    //Close and output PDF document
+    $filepath = ('buyer_feedback_report/' . $filename);
+    $filepath_save = BASE_DIR . $filepath;
+    $filepath_url = BASE_URL . $filepath;
+
+    ob_end_clean();
+    $pdf->Output($filepath_save, 'F');
+    echo "<script>window.open('$filepath_url', '_blank','toolbar=yes, width=800, height=550'); window.focus();</script>";
 }
 
 //SMS Tab Code
@@ -481,6 +882,6 @@ $sql_sms_temp = "SELECT * from psr_enquiry_sms_templates";
 $data_sms_temp = $fwDb->query($sql_sms_temp);
 $smsTemp = [];
 foreach ($data_sms_temp as $template) {
-	$smsTemp[$template['psrest_id']] = $template['psrest_name'];
+    $smsTemp[$template['psrest_id']] = $template['psrest_name'];
 }
 $fwViewData['smsTemp'] = $smsTemp;
