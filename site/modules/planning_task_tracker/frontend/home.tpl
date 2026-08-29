@@ -857,11 +857,11 @@
 								</script>
 							</td>
 							<td data-col="hia_meeting">
-								<form name="mlist_l" method="post" action="">
+								<form name="mlist_hiaMeeting" method="post" action="">
 									<input type="text" name="bsn_hia_handover_meeting[{{$item.bsn_id}}]"
-										class="w16em dateformat-d-ds-m-ds-Y dtpic" id="demo2_{{$item.bsn_id}}"
+										class="w16em dateformat-d-ds-m-ds-Y dtpic" id="demo3_{{$item.bsn_id}}"
 										value="{{$item.bsn_hia_handover_meeting}}" />
-									<input type="submit" value="Set" name="latest" class="set" />
+									<input type="submit" value="Set" name="hia_meeting" class="set" />
 								</form>
 								{{if $item.bsn_hia_handover_meeting}} {{$item.bsn_hia_handover_meeting_at}} <br />
 								{{$item.bsn_hia_handover_meeting_by}} {{/if}}
