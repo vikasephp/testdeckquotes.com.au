@@ -64,8 +64,7 @@
 	<div style="float:right;">
 		<input type="submit" name="show_open" value="Open" />
 		<input type="submit" name="show_close" value="Closed" />
-		<input type="button" name="Add New " value="Add New"
-			onclick="javascript:add_new('{{$BASE_URL}}{{$XFA.detail}}');" />
+		<input type="button" name="Add New " value="Add New" onclick="javascript:add_new('{{$BASE_URL}}{{$XFA.detail}}');" />
 	</div>
 </form>
 
@@ -140,7 +139,7 @@
 						<input type="hidden" name="sync" value="{{$item.tc_id}}" />
 						<label class="switch">
 							<input class="switch-input" type="checkbox" name="sync" value="{{$item.tc_id}}"
-								onclick="this.form.submit();" {{if $item.tc_sync eq 1 }} checked="checked" {{/if}}>
+								onclick="this.form.submit();" {{if $item.tc_sync eq 1 }} checked="checked" {{/if}} />
 							<span class="switch-label" data-on="Yes" data-off="No"></span>
 							<span class="switch-handle"></span> <br />
 						</label>

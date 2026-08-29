@@ -114,6 +114,51 @@ if(!empty($showhidden)) {
 $where = " WHERE business.bsn_status like '%|3|%' ";	
 }
 
+$clear = $fwRequest->getParam('clear', '');
+if ($clear) {
+	unset($_SESSION['cipr_search_proj']);
+	unset($_SESSION['cipr_search_location']);
+}
+
+$location_search = $fwRequest->getParam('location_search', '');
+$search_proj = $fwRequest->getParam('search_proj', '');
+$search_location = $fwRequest->getParam('search_location', '');
+if ($clear) {
+	$search_proj = '';
+	$search_location = '';
+} elseif ($location_search) {
+	if ($search_proj !== '') {
+		$_SESSION['cipr_search_proj'] = $search_proj;
+	} else {
+		unset($_SESSION['cipr_search_proj']);
+	}
+	if ($search_location !== '') {
+		$_SESSION['cipr_search_location'] = $search_location;
+	} else {
+		unset($_SESSION['cipr_search_location']);
+	}
+}
+
+$fwViewData['search_proj'] = '';
+$fwViewData['search_location'] = '';
+if (!empty($_SESSION['cipr_search_proj'])) {
+	$sp = addslashes($_SESSION['cipr_search_proj']);
+	$where .= " AND (business.bsn_name LIKE '%" . $sp . "%' OR business.bsn_address LIKE '%" . $sp . "%') ";
+	$fwViewData['search_proj'] = $_SESSION['cipr_search_proj'];
+}
+if (isset($_SESSION['cipr_search_location']) && $_SESSION['cipr_search_location'] !== '') {
+	$snId = (int)$_SESSION['cipr_search_location'];
+	$snRow = $fwDb->queryOne("SELECT sn_id, sn_option FROM cipr_sn_th WHERE sn_id = " . $snId);
+	$snLabel = strtolower(trim((string)$snRow['sn_option']));
+	// Unset rows are 0/NULL; the Sth/Nth dropdown shows the first option (Northside) for those
+	if (strpos($snLabel, 'north') !== false) {
+		$where .= " AND (business_sellers.bs_cipr_sn = " . $snId . " OR business_sellers.bs_cipr_sn = 0 OR business_sellers.bs_cipr_sn IS NULL) ";
+	} else {
+		$where .= " AND business_sellers.bs_cipr_sn = " . $snId . " ";
+	}
+	$fwViewData['search_location'] = $_SESSION['cipr_search_location'];
+}
+
 // Sava Hide From Report
 $hide = $fwRequest->getParam('hide', '');
 if(!empty($hide)) {
@@ -353,6 +398,14 @@ if($sql2)
 {  
 
  $setdata2 = $fwDb->query($sql2);
+
+$delayMap = array();
+$delayRows = $fwDb->query("SELECT tc_project, SUM(IFNULL(tc_days_delay,0)+0) AS total_days FROM timeline_center GROUP BY tc_project");
+if (is_array($delayRows)) {
+	foreach ($delayRows as $drow) {
+		$delayMap[trim($drow['tc_project'])] = $drow['total_days'];
+	}
+}
  
 foreach($setdata2 as $k => $v)
 {
@@ -532,6 +585,28 @@ foreach($setdata2 as $k => $v)
 			$setdata2[$k]['boxsent'] = $data302['bt_completed_date'];	
 		}
 		$setdata2[$k]['total_delay'] = $totletData['tot_lett'];
+
+		$projName = trim($v['bsn_name']);
+		$autoDays = 0;
+		if ($projName != '' && isset($delayMap[$projName])) {
+			$autoDays = $delayMap[$projName];
+		} elseif ($projName != '') {
+			foreach ($delayMap as $tcProj => $days) {
+				if ($tcProj != '' && (stripos($tcProj, $projName) !== false || stripos($projName, $tcProj) !== false)) {
+					$autoDays = $days;
+					break;
+				}
+			}
+		}
+		$autoDays = (int)$autoDays;
+		$setdata2[$k]['bsn_cip_total_days_added'] = $autoDays;
+		if ((int)$v['bsn_cip_total_days_added'] != $autoDays) {
+			$dtAuto = date('d-m-Y');
+			$userAuto = addslashes($_SESSION['user']['user_name']);
+			$fwDb->queryOne("UPDATE business SET bsn_cip_total_days_added = " . $autoDays . ", bsn_cip_daysadded_date = '" . $dtAuto . "', bsn_cip_daysadded_user = '" . $userAuto . "' WHERE bsn_id = " . (int)$v['bsn_id']);
+			$setdata2[$k]['bsn_cip_daysadded_date'] = $dtAuto;
+			$setdata2[$k]['bsn_cip_daysadded_user'] = $_SESSION['user']['user_name'];
+		}
 		
 		
 		
@@ -553,6 +628,13 @@ $fwViewData['title'] = "Construction Report";
   
   $sql_3 = "Select * from cipr_sn_th";
   $fwViewData['snData'] = $fwDb->query($sql_3);
+
+  $sql_proj = "SELECT DISTINCT business.bsn_name FROM business_sellers
+		Inner Join bus_customers ON business_sellers.bs_customers_id = bus_customers.bcust_id
+		Inner Join business ON business_sellers.bs_business_id = business.bsn_id
+		WHERE business.bsn_status like '%|3|%' and bus_customers.bcust_cip_hide = 0
+		ORDER BY business.bsn_name";
+  $fwViewData['project_data'] = $fwDb->query($sql_proj);
  
  $table_toplink->setWhere("tl_slug = 'construction_in_progress_report'");
 $fwViewData['proc_detail'] = $table_toplink->getRow();

@@ -196,7 +196,7 @@ function close_win()
 <h3 class="page-title">Construction In Progress Report</h3>
 <br />
 
-<div style="float:left; margin-left:10px; text-align:left;">
+<div style="float:left; margin-left:10px; text-align:left; padding-bottom:2px;">
 <input type="button" name="proc_panel" value="Procedure Panel" onclick="javascript:add_procedure();" /> &nbsp;
 <input type="button" name="type_options" value="Type Options" onclick="javascript:add_type();" /> 
 <form name="hidden_show" method="post" action="">
@@ -207,17 +207,40 @@ function close_win()
 <input type="button" name="Add New" value="Stage Admin" onclick="javascript:add_stage();" /> 
 <input type="button" name="Add New" value="Sth/Nth Admin" onclick="javascript:add_sn();" /> 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<span style="border:2px solid  #F60; padding:10px; margin-bottom:8px;">
+<span style="border:2px solid #F60; padding:10px; display:inline-block; margin-bottom:4px;">
  <input type="submit" name="last_audit" value="Audit Manager" />&nbsp;&nbsp;
 {{if $amData.la_user}}<strong> {{$amData.la_user}} &nbsp; {{$amData.la_date}}</strong> {{/if}} </span>
 </form>
 </div>
+<div style="clear:both; width:100%; margin: 6px 0 12px 10px;">
+<div style="float:left; text-align:left;">
+<form name="mshort" method="post" action="">
+<strong>Project search :</strong>
+<datalist id="cipr_project">
+	{{foreach from=$project_data key="keyp" item="itemp"}}
+	<option value="{{$itemp.bsn_name}}">{{$itemp.bsn_name}}</option>
+	{{/foreach}}
+</datalist>
+<input type="text" list="cipr_project" name="search_proj" value="{{$search_proj}}" style="width:350px;" placeholder="Search for Address" />
+&nbsp;
+<strong>Location search :</strong>
+<select name="search_location" style="width:150px;">
+	<option value="">Select Location</option>
+	{{foreach from=$snData key="keysnf" item="itemsnf"}}
+	<option value="{{$itemsnf.sn_id}}" {{if $search_location eq $itemsnf.sn_id}} selected="selected" {{/if}}>{{$itemsnf.sn_option}}</option>
+	{{/foreach}}
+</select>
+<input type="submit" value="Search" name="location_search" />
+<input type="submit" name="clear" value="Clear All Filter" />
+</form>
+</div>
 <div style="float:right;">
-
 <form name="hidden_show" method="post" action="">
 <input type="button" value="Export To XLS" onclick="document.location.href='{{$BASE_URL}}construction_in_progress_report.home/export/1'" /> &nbsp;
 <input type="submit" name="showhidden" value="Show Hidden" />
 </form>
+</div>
+<div style="clear:both;"></div>
 </div>
 
 <div style="float:left; width:100%; margin-top:5px;">
@@ -387,29 +410,13 @@ function close_win()
        <td>{{$item.days2}}</td>
        
          <td>
-	<input type="text" value="{{$item.bsn_cip_total_days_added}}" onkeyup="update_days({{$item.bsn_id}}, this.value)" />
-         
-	 <script language="javascript">
-         
-	 function update_days(id,value)
-		{
-		var tana2 = "#tana_"+id;
-		 $.ajax({
-			   type: "GET",
-			   url: "{{$BASE_URL}}construction_in_progress_report.update_days/id/"+id+"/value/"+value,
-				   success: function(result){
-					    $(tana2).html(result);
-					    //location.reload();
-			   }
-			 });
-		}
-	
-       </script>
-        
+	<strong>{{$item.bsn_cip_total_days_added}}</strong>
+         <!--
          <br />
          <div id="tana_{{$item.bsn_id}}">{{$item.bsn_cip_daysadded_date}} <br />
          {{$item.bsn_cip_daysadded_user}}
           </div>
+         -->
          
          <!--<form name ="tda" method="post" action="" id="myForm4" enctype="multipart/form-data">
          <input type="text" name="bsn_cip_daysadded_date[{{$item.bsn_id}}]"  class="w16em dateformat-d-ds-m-ds-Y dtpic" id="demo11_{{$item.bsn_id}}" value="{{$item.bsn_cip_daysadded_date}}"  /> 
@@ -567,7 +574,7 @@ function close_win()
   {{if $last > 1}}
   <table width="90%" border="0" cellpadding="0" cellspacing="0">
     <tr> {{if $list}}
-      <td align="center"><div class='pagination'> {{if $pagenum == 1}} <span class='disabled'>« previous</span> {{else}} <a class="pagination" href="{{$BASE_URL}}{{$XFA.home}}/pagenum/{{math equation="x - y" x=$pagenum y=1}}" title="Previous">« previous</a> {{/if}}
+      <td align="center"><div class='pagination'> {{if $pagenum == 1}} <span class='disabled'>ï¿½ previous</span> {{else}} <a class="pagination" href="{{$BASE_URL}}{{$XFA.home}}/pagenum/{{math equation="x - y" x=$pagenum y=1}}" title="Previous">ï¿½ previous</a> {{/if}}
           
           {{if $pagenum != 1}} <span class="paginate"><a class="pagination"  href="{{$BASE_URL}}{{$XFA.home}}/pagenum/1" title="{{$page_num}} Page">1</a></span> {{else}}<span class='current'>1</span> {{/if}}{{if $pagenum != 2}} <span class="paginate"><a class="pagination"  href="{{$BASE_URL}}{{$XFA.home}}/pagenum/2" title="{{$page_num}} Page">2</a></span> {{else}}<span class='current'>2</span> {{/if}}
           {{if $paginateprev.0 > 3}}
@@ -602,7 +609,7 @@ function close_win()
           {{else}}
           {{if $pagenum == $last}} <span class='current'>{{$last}}</span> {{else}} <a class="pagination"  href="{{$BASE_URL}}{{$XFA.home}}/pagenum/{{$last}}" title="{{$last}} Page">{{$last}}</a> {{/if}}
           {{/if}}
-          {{if $pagenum == $last}} <span class='disabled'>next »</span> {{else}} <a class="pagination" href="{{$BASE_URL}}{{$XFA.home}}/pagenum/{{math equation="x + y" x=$pagenum y=1}}" title="Next">next »</a></div>
+          {{if $pagenum == $last}} <span class='disabled'>next ï¿½</span> {{else}} <a class="pagination" href="{{$BASE_URL}}{{$XFA.home}}/pagenum/{{math equation="x + y" x=$pagenum y=1}}" title="Next">next ï¿½</a></div>
         {{/if}} </td>
       {{else}}
       <td align="center" height="300">Record Not found... </td>
