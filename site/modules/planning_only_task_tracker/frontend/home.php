@@ -254,6 +254,22 @@ if (!empty($bs_ptt_last_spoken)) {
 }
 //End Last Spoken
 
+// Save HIA Meeting Handover
+$hia_handover_meeting = $fwRequest->getParam('bsn_hia_handover_meeting', '');
+if (!empty($hia_handover_meeting)) {
+	$hia_handover = $fwRequest->getParam('bsn_hia_handover_meeting', '');
+
+	$key_hia = array_keys($hia_handover);
+	$ky_hia = $key_hia[0];
+	$hia_Detail['bsn_hia_handover_meeting'] = $hia_handover[$ky_hia];
+	$hia_Detail['bsn_hia_handover_meeting_at'] = date('d-m-Y');
+	$hia_Detail['bsn_hia_handover_meeting_by'] = $_SESSION['user']['user_name'];
+
+	$tablebusiness->setWhere('bsn_id = ' . $ky_hia);
+	$detail_hia = $tablebusiness->updateRow($hia_Detail);
+}
+//End Meeting Handover
+
 
 $sqlH = "Select distinct bst_task_id, bst_ptt_summary from busness_status_task
 	where bst_business_status_id = 2 order by bst_order";
@@ -342,8 +358,7 @@ $sql = "SELECT  business_sellers.bs_business_id, business_sellers.bs_customers_i
 		business_sellers.bs_ptt_last_spoken, business_sellers.bs_ptt_last_spoken_date, business_sellers.bs_ptt_last_spoken_user,
 		business_sellers.bs_ptt_pc_option , business_sellers.bs_ptt_pc_user, business_sellers.bs_ptt_pc_date, business.bsn_ptt_opi,
 		business.bsn_ptt_opi_date, business.bsn_ptt_opi_user, business_sellers.bs_ptt_addto_phr, 
-		business.bsn_ptt_override, business.bsn_ptt_override_user, business.bsn_ptt_planning_plans, business.bsn_ptt_pp_date, business.bsn_ptt_pp_user,
-		business_sellers.bs_ptt_atop_user, business_sellers.bs_ptt_atop_date, business_sellers.bs_pott_hide
+		business.bsn_ptt_override, business.bsn_ptt_override_user, business.bsn_ptt_planning_plans, business.bsn_ptt_pp_date, business.bsn_ptt_pp_user, business.bsn_hia_handover_meeting, business.bsn_hia_handover_meeting_at, business.bsn_hia_handover_meeting_by, business_sellers.bs_ptt_atop_user, business_sellers.bs_ptt_atop_date, business_sellers.bs_pott_hide
 		from business_sellers 		
 		Inner Join bus_customers ON business_sellers.bs_customers_id = bus_customers.bcust_id 
 		Inner Join business ON business_sellers.bs_business_id = business.bsn_id  
