@@ -400,6 +400,7 @@
 						<th class="topmenu" align="center" valign="middle" style="width:490px;">Traffic Light</th>
 						<th class="topmenu" align="center" valign="middle" style="width:150px;">Plans Changed</th>
 						<!--<th class="topmenu" align="center" valign="middle" style="width:150px;">Letter Text</th>-->
+						<th class="topmenu" align="center" valign="middle" style="width:150px;">HIA Handover Meeting</th>
 						{{foreach from=$colhead key="keyh" item="itemh"}}
 						<th class="topmenu" align="center" valign="middle" style="width:100px;">{{$itemh.bst_task_id}}
 						</th>
@@ -419,7 +420,7 @@
 				{{if $list}}
 				<tbody>
 					<tr>
-					<td colspan="29"></td>
+					<td colspan="30"></td>
 					{{foreach from=$colhead key="keyp" item="itemp"}}
 					<td><input type="text" name="{{$itemp.bst_task_id}}" value="{{$itemp.bst_ptt_summary}}"
 							style="width:100px;" onkeyup="update_ts({{$itemp.bst_task_id}},this.value)" /></td>
@@ -854,6 +855,16 @@
 										});
 									}
 								</script>
+							</td>
+							<td data-col="hia_meeting">
+								<form name="mlist_l" method="post" action="">
+									<input type="text" name="bsn_hia_handover_meeting[{{$item.bsn_id}}]"
+										class="w16em dateformat-d-ds-m-ds-Y dtpic" id="demo2_{{$item.bsn_id}}"
+										value="{{$item.bsn_hia_handover_meeting}}" />
+									<input type="submit" value="Set" name="latest" class="set" />
+								</form>
+								{{if $item.bsn_hia_handover_meeting}} {{$item.bsn_hia_handover_meeting_at}} <br />
+								{{$item.bsn_hia_handover_meeting_by}} {{/if}}
 							</td>
 							{{foreach from=$item.task key="keyh" item="itemh"}}
 							{{if $itemh}}

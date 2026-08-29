@@ -238,6 +238,22 @@ if (!empty($latest_csbd)) {
 }
 //End Latest CSBD
 
+// Save HIA Meeting Handover
+$hia_handover_meeting = $fwRequest->getParam('bsn_hia_handover_meeting', '');
+if (!empty($hia_handover_meeting)) {
+	$hia_handover = $fwRequest->getParam('bsn_hia_handover_meeting', '');
+
+	$key_hia = array_keys($hia_handover);
+	$ky_hia = $key_hia[0];
+	$hia_Detail['bsn_hia_handover_meeting'] = $hia_handover[$ky_hia];
+	$hia_Detail['bsn_hia_handover_meeting_at'] = date('d-m-Y');
+	$hia_Detail['bsn_hia_handover_meeting_by'] = $_SESSION['user']['user_name'];
+
+	$tablebusiness->setWhere('bsn_id = ' . $ky_hia);
+	$detail_hia = $tablebusiness->updateRow($hia_Detail);
+}
+//End Meeting Handover
+
 // Save Last Spoken
 $bs_ptt_last_spoken = $fwRequest->getParam('bs_ptt_last_spoken', '');
 if (!empty($bs_ptt_last_spoken)) {
@@ -338,7 +354,7 @@ $sql = "SELECT  business_sellers.bs_business_id, business_sellers.bs_customers_i
 		business_sellers.bs_tl_user, business_sellers.bs_tl_date, business.bsn_ptt_letter_text,
 		business_sellers.bs_ptt_sub_status, business.bsn_ptt_letter_text_date, business_sellers.bs_ptt_sub_status_date,
 		business_sellers.bs_ptt_sub_status_user, business.bsn_ptt_letter_text_user, business_sellers.bs_ptt_sub_status_order,
-		business.bsn_original_csbd_date, business.bsn_original_csbd_user , business.bsn_latest_csbd_date, business.bsn_latest_csbd_user,
+		business.bsn_original_csbd_date, business.bsn_original_csbd_user , business.bsn_latest_csbd_date, business.bsn_latest_csbd_user, business.bsn_hia_handover_meeting, business.bsn_hia_handover_meeting_at, business.bsn_hia_handover_meeting_by, 
 		business_sellers.bs_ptt_last_spoken, business_sellers.bs_ptt_last_spoken_date, business_sellers.bs_ptt_last_spoken_user,
 		business_sellers.bs_ptt_pc_option , business_sellers.bs_ptt_pc_user, business_sellers.bs_ptt_pc_date, business.bsn_ptt_opi,
 		business.bsn_ptt_opi_date, business.bsn_ptt_opi_user, business_sellers.bs_ptt_addto_phr, 
