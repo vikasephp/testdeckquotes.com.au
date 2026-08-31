@@ -2614,6 +2614,70 @@ if (!empty($userData)) {
 		$lists = $fwDb->query($sql2);
 
 		foreach ($lists as $list):
+		
+			$wa_id = (int)$list['wa_id'];
+			
+			$supplier_sql = "SELECT w.wa_id, TRIM( SUBSTRING_INDEX( SUBSTRING_INDEX( REPLACE( REGEXP_REPLACE( TRIM(TRAILING '<br>' FROM w.wa_include_supplier), '<a[^>]*>|</a>', '' ), '<br>', '|' ), '|', n.n ), '|', -1 ) ) AS supplier FROM warranty_log w JOIN ( SELECT 1 AS n UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 ) n WHERE w.wa_id = " . $wa_id . "
+			AND n.n <= 1 + ( LENGTH(TRIM(TRAILING '<br>' FROM w.wa_include_supplier)) - LENGTH( REPLACE( TRIM(TRAILING '<br>' FROM w.wa_include_supplier), '<br>', '' ) ) ) / LENGTH('<br>');";
+			
+			$supplier_result = $fwDb->query($supplier_sql);
+			
+			$suppliers = array();
+
+			foreach ($supplier_result as $supplier_row) {
+
+				$supplier_name = trim($supplier_row['supplier']);
+
+				if ($supplier_name != '') {
+					$suppliers[] = $supplier_name;
+				}
+			}
+			
+			$update_sql = "SELECT ws_supplier_name FROM warranty_supplier_update WHERE ws_wa_id = " . $wa_id;
+			$update_result = $fwDb->query($update_sql);
+			
+			$total_suppliers = count($suppliers);
+			$suppliers_with_updates = 0;
+
+			foreach ($suppliers as $supplier_name) {
+
+				$has_update = false;
+
+				foreach ($update_result as $update_row) {
+
+					$update_supplier = trim($update_row['ws_supplier_name']);
+
+					if ($update_supplier != '' &&
+						stripos($update_supplier, $supplier_name) === 0) {
+
+						$has_update = true;
+						break;
+					}
+				}
+
+				if ($has_update) {
+					$suppliers_with_updates++;
+				}
+			}
+			
+			if (isset($list['wa_status']) && trim($list['wa_status']) == 'Closed') {
+
+				// Closed = GREEN
+				$list['supplier_background_color'] = '#00CC33';
+
+			} elseif (
+				$total_suppliers > 0 &&
+				$suppliers_with_updates == $total_suppliers
+			) {
+
+				// ALL suppliers have updates = ORANGE
+				$list['supplier_background_color'] = 'orange';
+
+			} else {
+
+				// One or more suppliers missing updates = RED
+				$list['supplier_background_color'] = 'red';
+			}
 
 			$setdata2[] = $list;
 		endforeach;

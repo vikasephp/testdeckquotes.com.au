@@ -816,7 +816,7 @@
 						<img style="height:26px; width:26px; margin: 0 auto;display: block; padding-top: 4px;" src="{{$BASE_URL}}css/admin/images/attention_sign2.png" title="Urgent Attention is Required"/>
 					{{/if}}
 				</td>
-				<td {{if $item.wa_status eq 'Closed'}}style="background:#00CC33;"{{/if}}>
+				<td style="background:{{$item.supplier_background_color}};">
 					<input type="text" name="dt" class="w16em dateformat-d-ds-m-ds-Y dtpic" id="demo452_{{$item.wa_id}}" value="{{$item.wa_schedule_date}}" onchange="update_schedule_date({{$item.wa_id}}, 'wa_schedule_date', this.value);" onblur="update_schedule_date({{$item.wa_id}}, 'wa_schedule_date', this.value);"/>
 					<div id="sd_{{$item.wa_id}}">
 					{{if $item.wa_schedule_date and $item.wa_schedule_date_by}}
