@@ -98,6 +98,22 @@ if ($add_to_phr) {
 	}
 }
 
+// Save HIA Meeting Handover
+$hia_handover_meeting = $fwRequest->getParam('bsn_hia_handover_meeting', '');
+if (!empty($hia_handover_meeting)) {
+	$hia_handover = $fwRequest->getParam('bsn_hia_handover_meeting', '');
+
+	$key_hia = array_keys($hia_handover);
+	$ky_hia = $key_hia[0];
+	$hia_Detail['bsn_hia_handover_meeting'] = $hia_handover[$ky_hia];
+	$hia_Detail['bsn_hia_handover_meeting_at'] = date('d-m-Y');
+	$hia_Detail['bsn_hia_handover_meeting_by'] = $_SESSION['user']['user_name'];
+
+	$tablebusiness->setWhere('bsn_id = ' . $ky_hia);
+	$detail_hia = $tablebusiness->updateRow($hia_Detail);
+}
+//End Meeting Handover
+
 $filter_alert_projects = $fwRequest->getParam('filter_alert_projects', '');
 $show_only_alert_records = false;
 if ($filter_alert_projects) {
@@ -253,22 +269,6 @@ if (!empty($bs_ptt_last_spoken)) {
 	$detail_l = $table->updateRow($lDetail);
 }
 //End Last Spoken
-
-// Save HIA Meeting Handover
-$hia_handover_meeting = $fwRequest->getParam('bsn_hia_handover_meeting', '');
-if (!empty($hia_handover_meeting)) {
-	$hia_handover = $fwRequest->getParam('bsn_hia_handover_meeting', '');
-
-	$key_hia = array_keys($hia_handover);
-	$ky_hia = $key_hia[0];
-	$hia_Detail['bsn_hia_handover_meeting'] = $hia_handover[$ky_hia];
-	$hia_Detail['bsn_hia_handover_meeting_at'] = date('d-m-Y');
-	$hia_Detail['bsn_hia_handover_meeting_by'] = $_SESSION['user']['user_name'];
-
-	$tablebusiness->setWhere('bsn_id = ' . $ky_hia);
-	$detail_hia = $tablebusiness->updateRow($hia_Detail);
-}
-//End Meeting Handover
 
 
 $sqlH = "Select distinct bst_task_id, bst_ptt_summary from busness_status_task
