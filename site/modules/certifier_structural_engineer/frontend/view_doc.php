@@ -5,6 +5,7 @@ $cse_id = $fwRequest->getParam('cse_id', '');
 $bsn_id = $fwRequest->getParam('bsn_id', '');
 
 $fwViewData['bsn_id'] = $bsn_id;
+$fwViewData['cse_id'] = $cse_id;
 
 $sql_1 = "select cse_project from  certifier_structural_engineer where cse_id = ".$cse_id;
 $proj = $fwDb->queryOne($sql_1);
@@ -30,19 +31,7 @@ if(!empty($savedrop)) {
     $fwViewData['detail'] = $detail;
 	
 	
-$thisTable = new Fw_Db_Table("ss_required_doc");
-
-$docdata = $thisTable->getAllRows(); 
-
-foreach($docdata as $k=> $v)
-{
-	
-	$sql_A = "select doc_not_required, doc_file_name from document_check_list where doc_bsn_id = ".$bsn_id. " and  doc_name_id  = ".$v['ss_doc_id'];
-	$aaa = $fwDb->queryOne($sql_A);
-	
-	
-	$docdata[$k]['doc_not_required'] = $aaa['doc_not_required'];
-	$docdata[$k]['doc_file_name'] = $aaa['doc_file_name'];
-}
-
-$fwViewData['docdata'] = $docdata;
+require_once dirname(__FILE__) . '/cse_extra_docs.php';
+$fwViewData['insp_type'] = 'se_presheet';
+$fwViewData['return_fuse'] = 'view_doc';
+$fwViewData['docdata'] = cse_load_extra_docs($fwDb, $bsn_id, 'se_presheet');

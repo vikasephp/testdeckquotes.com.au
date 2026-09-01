@@ -24,9 +24,10 @@ if($yesno)
 
 if(!empty($submit))
 {
-    	$detail = $fwRequest->getParam($TABLE, array());
+    $detail = $fwRequest->getParam($TABLE, array());
 	$this_id = (int)$detail[$ID];
-
+	
+	
 	unset($detail[$ID]);
 			
 		if($_FILES['survey_result']['name'])
@@ -47,9 +48,21 @@ if(!empty($submit))
     	}
 	else
 	{
-		 $opr = $tableqa->insertRow($detail); 
+		
+			$tableqa->setWhere("cse_project Like '%" . $detail['cse_project']."%'");
+
+			if (!$tableqa->rowExists()) {
+				 $detail['cse_qa'] = 1;
+				 $opr = $tableqa->insertRow($detail); 
+			} else {
+				 $fwViewData['error'] = 'Project Already Exists';		
+			}
+		 
+		 
 	}    	
-		 $fwViewData['opr'] = $opr;
+		if (!empty($opr)) {
+			$fwViewData['opr'] = 1;
+		}
 		
 		//Location(BASE_URL . $XFA['home']);
 }
@@ -73,8 +86,3 @@ else
 $sql = "SELECT  bsn_id, bsn_name from business where bsn_sub_status = 'Open'";
 $fwViewData['projdetail'] = $fwDb->query($sql);
  	
-//$sql_c = "Select * from roofing_occupancy";
-//$fwViewData['occdetail'] = $fwDb->query($sql_c);
-
-//$sql_ow = "Select * from roofing_they_want";
-//$fwViewData['rtwdetail'] = $fwDb->query($sql_ow);

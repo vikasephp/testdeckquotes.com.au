@@ -10,8 +10,8 @@ require_once(MODULES_DIR . 'frontend.init.php');
 $fwAuthGroup->forceLogin();
 
 // module names
-$MODULE_SINGULAR = 'Certifier Structural Engineer';
-$MODULE_PLURAL =   'Certifier Structural Engineer';
+$MODULE_SINGULAR = 'Certifier and Structural Engineer Inspection Management';
+$MODULE_PLURAL =   'Certifier and Structural Engineer Inspection Management';
 
 $fwViewData['MODULE_SINGULAR'] = $MODULE_SINGULAR;
 $fwViewData['MODULE_PLURAL'] = $MODULE_PLURAL;

@@ -59,7 +59,7 @@ function add_new(url)
   
 <form name="detail" method="post" action=""  enctype="multipart/form-data">
 <div style="float:right; margin-right:10px; background: #09F; color:#FFF !important; padding:6px; margin-bottom:5px;"> 
-<a href="{{$BASE_URL}}certifier_structural_engineer.add_doc/bsn_id/{{$bsn_id}}" class="various" title="Edit" style="color:#FFF; text-decoration:none; font-size:14px;"> Add New Document </a>
+<a href="{{$BASE_URL}}certifier_structural_engineer.add_doc/bsn_id/{{$bsn_id}}/cse_id/{{$cse_id}}/insp_type/se_presheet/return/view_doc" style="color:#FFF; text-decoration:none; font-size:14px;"> Add New Document </a>
 </div>
 
 <table id="list-table" width="99%">
@@ -70,13 +70,13 @@ function add_new(url)
         <tr>
         <td>{{$item.ss_document}}</td>
         <td {{if  $item.doc_not_required eq 1}} style="background:#999;"
-            {{elseif $item.doc_file_name}} style="background:#00CC33;"  {{else}} style="background:#F00;" {{/if}} id = "floorf{{$item.bsn_id}}">
+            {{elseif $item.doc_file_name}} style="background:#00CC33;"  {{else}} style="background:#F00;" {{/if}} id = "cond{{$item.doc_name_id}}">
             
         {{if $item.doc_file_name}}
         <a href="/certifier_structural_engineer.download_content?file_name={{$item.doc_file_name}}&module_name=certifier_structural_engineer.home" target="_blank">Download</a><br />
         {{/if}}  
             
-        <select name="slab_insp[cse_comm_notice]" >
+        <select name="slab_insp[cse_comm_notice]" onChange="update_doc_checklist({{$bsn_id}}, this.value, {{$item.doc_name_id}})">
         <option value="0" {{if $item.doc_not_required eq 0 }} selected="selected" {{/if}}>Required</option>
         <option value="1" {{if $item.doc_not_required eq 1 }} selected="selected" {{/if}}>Not Required</option>
         </select> 
@@ -88,16 +88,43 @@ function add_new(url)
         
         <td> 
              
-         <a href="{{$BASE_URL}}certifier_structural_engineer.delete_doc/ss_id/{{$item.ss_id}}/bsn_id/{{$bsn_id}}" onclick="javascript:if(!confirm('Are you sure want to delete the Doc?')) return false;" title="Delete">     <img style="height: 16px;; width:16px" src="{{$BASE_URL}}css/admin/images/deletecross.png"/></a>
+         <a href="{{$BASE_URL}}certifier_structural_engineer.delete_doc/ss_id/{{$item.ss_id}}/bsn_id/{{$bsn_id}}/cse_id/{{$cse_id}}/return/view_doc" onclick="javascript:if(!confirm('Are you sure want to delete the Doc?')) return false;" title="Delete">     <img style="height: 16px;; width:16px" src="{{$BASE_URL}}css/admin/images/deletecross.png"/></a>
          </td> 
          
         </tr>
      {{/foreach}}
        
      
+     <script>
+			function update_doc_checklist(id,value,docid)
+			{
+				 var cond = '#cond'+docid;
+				 
+				 //alert(id);
+				// alert(value);
+				// alert(docid);
+				
+				 $.ajax({
+					   type: "GET",
+					   url: "{{$BASE_URL}}certifier_structural_engineer.update_doc_checklist/bsn_id/"+id+"/value/"+value+"/doc_id/"+docid+"/insp_type/se_presheet",
+						   success: function(result){
+							
+							if(value == 0 ) {
+								$(cond).css("background","#F00");
+							} else {
+								$(cond).css("background","#999"); 
+							}
+							if (parent.cseRefreshSummary) {
+								parent.cseRefreshSummary(id);
+							}
+						}
+						
+					});
+			}
+		</script>
 
 </table><br /><br />
- <input type="submit" name="savedrop" value="submit"   />
+
  <input type="button" name="btnCancelDetail" value="Close" onclick="javascript:closepop();" class="vsml" />
 </form>
     
@@ -108,7 +135,13 @@ function add_new(url)
 		
 		function closepop()
 		{
-	     setTimeout('parent.close_win();', 500);
+			if (parent.close_win) {
+				parent.close_win();
+			} else if (parent.jQuery && parent.jQuery.fancybox) {
+				parent.jQuery.fancybox.close();
+			} else if (parent.location) {
+				parent.location.reload();
+			}
 		}
 		
 		

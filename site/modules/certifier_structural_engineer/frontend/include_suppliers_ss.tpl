@@ -64,7 +64,7 @@ function view_task(id)
 	{{assign var = countn value = 1}}
        {{foreach from=$contactdetail key="key" item="item"}}
        <td>
-<input type="checkbox" name="supplier[{{$item.co_id}}]" {{foreach from=$incsup key="key2" item="item2"}} {{if $item2 eq $item.co_company_name}} checked="checked" data-original="1" {{/if}} {{/foreach}} />
+<input type="checkbox" name="supplier[{{$item.co_id}}]" {{foreach from=$incsup key="key2" item="item2"}} {{if $item2.sa_supplier eq $item.co_company_name}} checked="checked" data-original="1" {{/if}} {{/foreach}} />
       
        	 {{$item.co_company_name}}</td>
        
@@ -78,7 +78,7 @@ function view_task(id)
       {{/foreach}}
 </tr> 
 </table><br /><br />
-<input type="button" name="btnCancelDetail" value="Close" onclick="javascript:closepop();" class="vsml" />
+<input type="button" name="btnCancelDetail" value="Close" onclick="javascript:parent.$.fancybox.close();" class="vsml" />
 </form>
     
     <script type="text/javascript">

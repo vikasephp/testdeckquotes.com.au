@@ -1,19 +1,86 @@
 <?php
 $pagenum = $fwRequest->getparamget('pagenum',0);
+
+$print_merge_footing = $fwRequest->getParam('print_merge_footing', '');
+if ($print_merge_footing != '') {
+	$mergeFile = dirname(__FILE__) . '/print_spr_footing_merge.php';
+	if (file_exists($mergeFile)) {
+		require_once $mergeFile;
+	}
+}
+
 $table = new Fw_Db_Table('certifier_structural_engineer');
+require_once dirname(__FILE__) . '/cse_extra_docs.php';
+
+$ajax_pending = $fwRequest->getParam('ajax_pending', '');
+if ($ajax_pending != '') {
+	$bsn_id = (int)$fwRequest->getParam('bsn_id', 0);
+	$stage = (int)$fwRequest->getParam('stage', 0);
+	$payload = cse_ajax_pending_payload($fwDb, $bsn_id, $stage);
+	while (ob_get_level()) {
+		ob_end_clean();
+	}
+	header('Content-Type: application/json');
+	echo json_encode($payload);
+	exit;
+}
+
+
+// Add bsn_name from construction in progress report
+
+$sql = "SELECT   business.bsn_name , business_sellers.bs_cipr_sn
+		from business_sellers 		
+		Inner Join bus_customers ON business_sellers.bs_customers_id = bus_customers.bcust_id 
+		Inner Join business ON business_sellers.bs_business_id = business.bsn_id  WHERE business.bsn_status like '%|3|%' and bus_customers.bcust_cip_hide = 0  
+		group by business_sellers.bs_business_id  Order by STR_TO_DATE(business.bsn_cip_com_on_date, '%d-%m-%Y' ) DESC";
+
+
+$busData = $fwDb->query($sql);
+
+foreach($busData as $k=>$v)
+{
+	$table->setWhere("cse_project =  '" . $v['bsn_name']."'");
+	if (!$table->rowExists()) {
+		$detail = array();
+		$detail['cse_project'] = $v['bsn_name'];
+		$detail['cse_location'] = ($v['bs_cipr_sn'] == 0) ? 'North' : 'South';
+		$detail['cse_qa'] = 1;
+		$table->insertRow($detail);
+		
+	}
+	
+}
+
+
+// End of Add
+
+
+
  
 $fwViewData['show'] =  1;
 $where =  " where cse_stage = 1";
 $fwViewData['report'] =  "Floor System";
 
+$wherehide =  " and  cse_hide = 0";
+$whereH = '';
 
-if(!empty($show_hidden))
-{
-	$where =  " where cs_stage = 0";
-	$_SESSION['where'] = $where;	
+// Certifier Show Hidden: show rows hidden on THIS report (cse_hide = 1)
+$showhidden = $fwRequest->getParam('showhidden', '');
+if(!empty($showhidden)) {
+	$_SESSION['cse_show_hidden'] = 1;
+	$wherehide = " and  cse_hide = 1";
 }
 
-
+// CIPR Hide always stays hidden on Certifier, even after Show Hidden
+$whereCiprHide = " AND cse_project NOT IN (
+	SELECT DISTINCT business.bsn_name
+	FROM business_sellers
+	Inner Join bus_customers ON business_sellers.bs_customers_id = bus_customers.bcust_id
+	Inner Join business ON business_sellers.bs_business_id = business.bsn_id
+	WHERE bus_customers.bcust_cip_hide = 1
+	AND business.bsn_name IS NOT NULL
+	AND business.bsn_name != ''
+)";
 
 
 if(isset($_SESSION['show']))  { $fwViewData['show'] = $_SESSION['show'] ; }
@@ -25,6 +92,7 @@ if($floorsystem) {
 	unset($_SESSION['show']);
 	unset($_SESSION['where']);
 	unset($_SESSION['report']);
+	unset($_SESSION['cse_show_hidden']);
 	
 	$fwViewData['show'] =  1;
 	$fwViewData['report'] =  "Floor System";
@@ -41,6 +109,7 @@ if($presheet) {
 	unset($_SESSION['show']);
 	unset($_SESSION['where']);
 	unset($_SESSION['report']);
+	unset($_SESSION['cse_show_hidden']);
 	
 	$fwViewData['show'] =  2;
 	$fwViewData['report'] =  "Pre Sheet";
@@ -58,6 +127,7 @@ if($final) {
 	unset($_SESSION['show']);
 	unset($_SESSION['where']);
 	unset($_SESSION['report']);
+	unset($_SESSION['cse_show_hidden']);
 	
 	$fwViewData['show'] =  3;
 	$fwViewData['report'] =  "Final";
@@ -78,14 +148,36 @@ if($move_cal)
 	 $ky = $keys[0];
 	 $val = $move_cal[$ky];
 	
-	  $detail['cse_stage'] = $val;
+	  $moveData = array();
+	  $moveData['cse_stage'] = $val;
+	  $moveData['cse_qa'] = 1;
+	  $moveData['cse_qa_user'] = '';
+	  $moveData['cse_qa_date'] = '';
+	  $table->setWhere("cse_id = ".$ky);
+	  if($table->rowExists())
+	  {
+		 $this_id = $table->updateRow($moveData);
+	  }
+	  $fwViewData['show'] =  1;	  	
+}
+
+$hide = $fwRequest->getParam('hide', '');
+if($hide)
+{
+	 $keys = array_keys($hide);
+	 $ky = $keys[0];
+	 $val = $hide[$ky];
+	
+	  $detail['cse_hide'] = $val;
 	  $table->setWhere("cse_id = ".$ky);
 	  if($table->rowExists())
 	  {
 		 $this_id = $table->updateRow($detail);
 	  }
-	  $fwViewData['show'] =  1;	  	
+	 // $fwViewData['show'] =  1;	  	
 }
+
+
 
 $move_last = $fwRequest->getParam('move_last', '');
 if($move_last)
@@ -94,11 +186,15 @@ if($move_last)
 	 $ky = $keys[0];
 	 $val = $move_last[$ky];
 	
-	  $detail['cse_stage'] = $val;
+	  $moveData = array();
+	  $moveData['cse_stage'] = $val;
+	  $moveData['cse_qa'] = 1;
+	  $moveData['cse_qa_user'] = '';
+	  $moveData['cse_qa_date'] = '';
 	  $table->setWhere("cse_id = ".$ky);
 	  if($table->rowExists())
 	  {
-		 $this_id = $table->updateRow($detail);
+		 $this_id = $table->updateRow($moveData);
 	  }
 	  $fwViewData['show'] =  2;	  	
 }
@@ -114,11 +210,15 @@ if($move_final)
 	 $ky = $keys[0];
 	 $val = $move_final[$ky];
 	
-	  $detail['cse_stage'] = $val;
+	  $moveData = array();
+	  $moveData['cse_stage'] = $val;
+	  $moveData['cse_qa'] = 1;
+	  $moveData['cse_qa_user'] = '';
+	  $moveData['cse_qa_date'] = '';
 	  $table->setWhere("cse_id = ".$ky);
 	  if($table->rowExists())
 	  {
-		 $this_id = $table->updateRow($detail);
+		 $this_id = $table->updateRow($moveData);
 	  }
 	  $fwViewData['show'] =  3;	  	
 }
@@ -159,12 +259,43 @@ else:
 endif;
 
 
+$qa_search = $fwRequest->getParam('qa_search', '');
+$location_search = $fwRequest->getParam('location_search', '');
+$search_qa_param = $fwRequest->getParam('search_qa', '');
+if ($qa_search || $location_search || $floorsystem || $presheet || $final) {
+	if ($search_qa_param === 'yes' || $search_qa_param === 'no') {
+		$_SESSION['search_qa'] = $search_qa_param;
+	} else {
+		unset($_SESSION['search_qa']);
+	}
+}
+
+$search_qa = !empty($_SESSION['search_qa']) ? $_SESSION['search_qa'] : '';
+$fwViewData['search_qa'] = $search_qa;
+
+if ($search_qa === 'yes') {
+	$whereand .= " AND certifier_structural_engineer.cse_qa = 0";
+} elseif ($search_qa === 'no') {
+	$whereand .= " AND (certifier_structural_engineer.cse_qa = 1 OR certifier_structural_engineer.cse_qa IS NULL)";
+}
+
+
 $clear = $fwRequest->getParam('clear', '');
 if($clear) {
 	unset($_SESSION['search_proj']);
 	unset($fwViewData['search_proj']);
 	$fwViewData['search_proj'] = '';
+	unset($_SESSION['search_qa']);
+	unset($fwViewData['search_qa']);
+	$fwViewData['search_qa'] = '';
 	unset($whereand);
+	$whereand = '';
+	unset($_SESSION['cse_show_hidden']);
+	$wherehide = " and  cse_hide = 0";
+}
+
+if (!empty($_SESSION['cse_show_hidden'])) {
+	$wherehide = " and  cse_hide = 1";
 }
 
  if(isset($_SESSION['where'])) { $where = $_SESSION['where']; }
@@ -172,10 +303,12 @@ if($clear) {
 
 $hidden = $fwRequest->getParam('hidden', '');
 if(!empty($hidden)) {
-	$where = " WHERE cse_stage = 3 OR cse_stage = 4";
+	//$where = " WHERE cse_stage = 3 OR cse_stage = 4";
+	$whereH = "  OR cse_stage = 4";
 }
 
-$matsql = "SELECT ".$TABLE.".* FROM ".$TABLE." ".$where." ".$whereand ;
+$matsql = "SELECT ".$TABLE.".* FROM ".$TABLE." ".$where." ".$whereH." ".$whereand. " ".$wherehide." ".$whereCiprHide ;
+
 
 
 if($matsql){$userData = $fwDb->query($matsql);}
@@ -264,65 +397,23 @@ foreach((array)$listsnew as $k=>$v)
 	$listsnew[$k]['doc_file_name648'] = $data648['doc_file_name'];
 	
 	
-	$where2 = '';
-	$where3 = '';
-
-	
-	$sql_116 = "select doc_not_required, doc_file_name from document_check_list where doc_bsn_id = ".$data['bsn_id']. " and  	doc_name_id  = 116 ";
+	$sql_116 = "select doc_not_required, doc_file_name from document_check_list where doc_bsn_id = ".$data['bsn_id']. " and  	doc_name_id  = 116";
     $data116 = $fwDb->queryOne($sql_116);
 	
-	$sql_235 = "select doc_not_required, doc_file_name from document_check_list where doc_bsn_id = ".$data['bsn_id']. " and  	doc_name_id  = 235 ";
+	$sql_235 = "select doc_not_required, doc_file_name from document_check_list where doc_bsn_id = ".$data['bsn_id']. " and  	doc_name_id  = 235";
     $data235 = $fwDb->queryOne($sql_235);
 	
-	$sql_653 = "select doc_not_required, doc_file_name from document_check_list where doc_bsn_id = ".$data['bsn_id']. " and  	doc_name_id  = 653 ";
+	$sql_653 = "select doc_not_required, doc_file_name from document_check_list where doc_bsn_id = ".$data['bsn_id']. " and  	doc_name_id  = 653";
     $data653 = $fwDb->queryOne($sql_653);
 	
-	$sql_478 = "select doc_not_required, doc_file_name from document_check_list where doc_bsn_id = ".$data['bsn_id']. " and  	doc_name_id  = 478 ";
+	$sql_478 = "select doc_not_required, doc_file_name from document_check_list where doc_bsn_id = ".$data['bsn_id']. " and  	doc_name_id  = 478";
     $data478 = $fwDb->queryOne($sql_478);
 	
-	$sql_148 = "select doc_not_required, doc_file_name from document_check_list where doc_bsn_id = ".$data['bsn_id']. " and  	doc_name_id  = 148 ";
+	$sql_148 = "select doc_not_required, doc_file_name from document_check_list where doc_bsn_id = ".$data['bsn_id']. " and  	doc_name_id  = 148";
     $data148 = $fwDb->queryOne($sql_148);
-	
-	if($data653['doc_not_required'] == 0 || $data148['doc_not_required'] == 0 || $data240['doc_not_required'] == 0) {
-		if($data116['doc_not_required'] == 0) {
-				$where2 .= " 116, ";	
-		}
-	}
-	
-	if($data653['doc_not_required'] == 0 || $data148['doc_not_required'] == 0 || $data240['doc_not_required'] == 0 || $data648['doc_not_required'] == 0) {
-		if($data235['doc_not_required'] == 0) {
-				$where2 .= " 235, ";	
-		}	
-	}
-	
-	
-	if( $data148['doc_not_required'] == 0 || $data240['doc_not_required'] == 0 ) {
-		if($data653['doc_not_required'] == 0) {
-				$where2 .= " 653, ";	
-		}
-	}
-	
-	if( $data148['doc_not_required'] == 0  ) {
-		if($data478['doc_not_required'] == 0) {
-				$where2 .= " 478, ";	
-		}
-	}
-	
-	if( $data240['doc_not_required'] == 0 || $data648['doc_not_required'] == 0 ) {
-		if($data148['doc_not_required'] == 0) {
-				$where2 .= " 148, ";	
-		}
-	}
-	
-	$whereT = ' And doc_name_id IN (' .$where2 .'0)' ; 
-	
-	$sqlUC = "Select count(*) as tot from document_check_list
-		      where document_check_list.doc_bsn_id = ". $data['bsn_id'] . " ". $whereT ." 
-			  And ( doc_file_name IS NULL OR TRIM(doc_file_name) = '')";
-			  
-			  
-	$dataUC = $fwDb->queryOne($sqlUC);
-	$listsnew[$k]['tot'] = $dataUC['tot'];
+
+	$bsnId = isset($data['bsn_id']) ? (int)$data['bsn_id'] : 0;
+	$listsnew[$k]['tot'] = cse_count_stage_pending($fwDb, $bsnId, 1);
 	
 	
 	
@@ -349,8 +440,11 @@ foreach((array)$listsnew as $k=>$v)
 	$dataOA = $dataA['openfooting'] + $dataB['openslab'] + $dataC['openfloor'];
 	
 	$listsnew[$k]['dataOA'] = $dataOA;
-	$listsnew[$k]['next'] = $dataUC['tot'] + $dataOA;
+	$listsnew[$k]['next'] = $listsnew[$k]['tot'] + $dataOA;
 	
+	$listsnew[$k]['openfooting']  = $dataA['openfooting'];
+	$listsnew[$k]['openslab']	 = $dataB['openslab'];
+	$listsnew[$k]['openfloor']    = $dataC['openfloor'];
 	
 	// Stage 2 Pre-Sheet starts
 	
@@ -383,75 +477,8 @@ foreach((array)$listsnew as $k=>$v)
 	
 	$sql_626 = "select doc_not_required, doc_file_name from document_check_list where doc_bsn_id = ".$data['bsn_id']. " and  	doc_name_id  = 626 ";
     $data626 = $fwDb->queryOne($sql_626);
-	
-	if($data152['doc_not_required'] == 0)
-	{
-		if($data261['doc_not_required'] == 0)
-		{
-			$where3 .= " 261, ";
-		}
-		
-		if($data289['doc_not_required'] == 0)
-		{
-			$where3 .= " 289, ";
-		}
-		
-		if($data155['doc_not_required'] == 0)
-		{
-			$where3 .= " 155, ";
-		}
-		
-		if($data295['doc_not_required'] == 0)
-		{
-			$where3 .= " 295, ";
-		}
-		
-		
-		if($data739['doc_not_required'] == 0)
-		{
-			$where3 .= " 739, ";
-		}
-		
-		if($data626['doc_not_required'] == 0)
-		{
-			$where3 .= " 626, ";
-		}
-	}
-	
-	
-	$whereS = ' And doc_name_id IN (' .$where3 .'0)' ; 
-	
-	
-	$sqlPS1 = "Select count(*) as totPS from document_check_list
-		      where document_check_list.doc_bsn_id = ". $data['bsn_id'] . " ". $whereS ." 
-			  And (doc_file_name IS NULL OR TRIM(doc_file_name) = '')";
-	
-	$dataPS1 = $fwDb->queryOne($sqlPS1);
-	
-		
-	
-	$sqlDocs = "Select * from ss_required_doc ";
-	$dataDocs = $fwDb->query($sqlDocs);
-	
-	$ctr = 0;
-	if($data667['doc_not_required'] == 0) 
-	{
-		foreach($dataDocs as $k1=>$v1)
-		{
-			
-			$sqlX = "select doc_not_required, doc_file_name from document_check_list where doc_bsn_id = ".$data['bsn_id']. " and  	doc_name_id  = ".$v1['ss_doc_id'];
-    		$dataX = $fwDb->queryOne($sqlX);
-			
-						
-			if($dataX['doc_not_required'] == 0 AND (trim($dataX['doc_file_name']) == ''  OR $dataX['doc_file_name'] == NULL ) )
-			{
-				$ctr = $ctr + 1;
-				
-			}
-		
-		}
-		
-	}
+
+	$listsnew[$k]['dataOB'] = cse_count_stage_pending($fwDb, $bsnId, 2);
 	
 	$sql99 = "select count(*) as  openps  
 		  from  construction_alert_report where car_type = 'Certifier - Pre-sheet' 
@@ -459,10 +486,8 @@ foreach((array)$listsnew as $k=>$v)
 		  
 	$data99 = $fwDb->queryOne($sql99);
 	
-	$listsnew[$k]['dataOB'] = $dataPS1['totPS'] + $ctr ;
-	
 	$listsnew[$k]['openps'] = $data99['openps'];
-	$listsnew[$k]['next2']  = $dataPS1['totPS'] + $ctr  + $data99['openps'];
+	$listsnew[$k]['next2']  = $listsnew[$k]['dataOB'] + $data99['openps'];
 	
 	
 	// final stage
@@ -476,21 +501,8 @@ foreach((array)$listsnew as $k=>$v)
 	
 	$listsnew[$k]['doc_not_required169'] = $data169['doc_not_required'];
 	$listsnew[$k]['doc_file_name169'] = $data169['doc_file_name'];
-	
-	
-	if($data169['doc_not_required'] == 0)
-	{
-		if($data663['doc_not_required'] == 0)
-		{
-			$where4 = " And doc_name_id = 663 ";
-		}
-	}
-	
-	$sqlPS2 = "Select count(*) as totPS2 from document_check_list
-		      where document_check_list.doc_bsn_id = ". $data['bsn_id'] . " ". $where4 ." 
-			  And (doc_file_name IS NULL OR TRIM(doc_file_name) = '')";
-			  
-	$dataPS2 = $fwDb->queryOne($sqlPS2);
+
+	$listsnew[$k]['finsum'] = cse_count_stage_pending($fwDb, $bsnId, 3);
 	
 	$sql55 = "select count(*) as  openfinal  
 		     from  construction_alert_report where car_type = 'Certifier – Final' 
@@ -498,10 +510,151 @@ foreach((array)$listsnew as $k=>$v)
 		  
 	$data55 = $fwDb->queryOne($sql55);
 	
-	$listsnew[$k]['finsum'] = $dataPS2['totPS2'];
 	$listsnew[$k]['alertfinal'] = $data55['openfinal'];	
-	$listsnew[$k]['finstage'] = $dataPS2['totPS2'] +  $data55['openfinal']; 
+	$listsnew[$k]['finstage'] = $listsnew[$k]['finsum'] +  $data55['openfinal']; 
 	
+	
+	//New Color Logs Starts
+	
+	$mw = 0;
+	$fi = 0;
+	$si = 0;
+	$fl = 0;
+	
+	//Piar Inspection
+	if($data116['doc_not_required'] == 0  AND empty(trim($data116['doc_file_name']))) {
+		$mw = 1;	
+	}
+	
+	if($data235['doc_not_required'] == 0  AND empty(trim($data235['doc_file_name']))) {
+		$mw = 1;	
+	}
+	
+	$listsnew[$k]['setcolor'] = $mw;
+	
+	//Footing Inspection
+	if($data235['doc_not_required'] == 0  AND empty(trim($data235['doc_file_name']))) {
+		$fi = 1;	
+	}
+	
+	if($data653['doc_not_required'] == 0  AND empty(trim($data653['doc_file_name']))) {
+		$fi = 1;	
+	}
+	
+	if($data478['doc_not_required'] == 0  AND ( empty(trim($data478['doc_file_name'])) OR $data478['doc_file_name'] == NULL )) {
+		$fi = 1;	
+	}
+	
+	
+	if($data116['doc_not_required'] == 0  AND empty(trim($data116['doc_file_name']))) {
+		$fi = 1;	
+	}
+	
+
+	//Slab Inspections
+	
+	
+	$listsnew[$k]['setcolorFI'] = $fi;
+	
+	if($data235['doc_not_required'] == 0  AND empty(trim($data235['doc_file_name']))) {
+		$si = 1;	
+	}
+	
+	if($data653['doc_not_required'] == 0  AND empty(trim($data653['doc_file_name']))) {
+		$si = 1;	
+	}
+	if($data116['doc_not_required'] == 0  AND empty(trim($data116['doc_file_name']))) {
+		$si = 1;	
+	}
+	
+	if($data148['doc_not_required'] == 0  AND empty(trim($data148['doc_file_name']))) {
+		$si = 1;	
+	}
+	
+	$listsnew[$k]['setcolorSI'] = $si;
+	
+	if($data148['doc_not_required'] == 0  AND empty(trim($data148['doc_file_name']))) {
+		$fl = 1;	
+	}
+	if($data235['doc_not_required'] == 0  AND empty(trim($data235['doc_file_name']))) {
+		$fl = 1;	
+	}
+	
+	
+	$listsnew[$k]['setcolorFL'] = $fl;
+	
+	// Pre Sheet 
+	
+	$ps = 0;
+	$fnl = 0;
+	
+	if($data261['doc_not_required'] == 0  AND empty(trim($data261['doc_file_name']))) {
+		$ps = 1;	
+	}
+	
+	
+	
+	if($data289['doc_not_required'] == 0  AND empty(trim($data289['doc_file_name']))) {
+		$ps = 1;	
+	}
+	
+	
+	if($data295['doc_not_required'] == 0  AND empty(trim($data295['doc_file_name']))) {
+		$ps = 1;	
+	}
+	
+	if($data155['doc_not_required'] == 0  AND empty(trim($data155['doc_file_name']))) {
+		$ps = 1;	
+	}
+	
+	
+	if($data739['doc_not_required'] == 0  AND empty(trim($data739['doc_file_name']))) {
+		$ps = 1;	
+	}
+	
+	if($data626['doc_not_required'] == 0  AND empty(trim($data626['doc_file_name']))) {
+		$ps = 1;	
+	}
+	
+	$listsnew[$k]['setcolorPS'] = $ps;
+	
+	// Final
+	
+	//New Color Loginc Ends
+	
+	if($data663['doc_not_required'] == 0  AND empty(trim($data663['doc_file_name']))) {
+		$fnl = 1;	
+	}
+	
+	$listsnew[$k]['setcolorFNL'] = $fnl;
+	
+	
+	// Adding more sections
+	
+	$sql_728 = "select doc_not_required, doc_file_name from document_check_list where doc_bsn_id = ".$data['bsn_id']. " and  	doc_name_id  = 728 ";
+    $data728 = $fwDb->queryOne($sql_728);
+	$listsnew[$k]['doc_file_name728'] = $data728['doc_file_name'];
+	$listsnew[$k]['doc_not_required728'] = $data728['doc_not_required'];
+	
+	$sql_730 = "select doc_not_required, doc_file_name from document_check_list where doc_bsn_id = ".$data['bsn_id']. " and  	doc_name_id  = 730 ";
+    $data730 = $fwDb->queryOne($sql_730);
+	$listsnew[$k]['doc_file_name730'] = $data730['doc_file_name'];
+	$listsnew[$k]['doc_not_required730'] = $data730['doc_not_required'];
+	
+	$sql_729 = "select doc_not_required, doc_file_name from document_check_list where doc_bsn_id = ".$data['bsn_id']. " and  	doc_name_id  = 729 ";
+    $data729 = $fwDb->queryOne($sql_729);
+	$listsnew[$k]['doc_file_name729'] = $data729['doc_file_name'];
+	$listsnew[$k]['doc_not_required729'] = $data729['doc_not_required'];
+	
+	$sql_731 = "select doc_not_required, doc_file_name from document_check_list where doc_bsn_id = ".$data['bsn_id']. " and  	doc_name_id  = 731 ";
+    $data731 = $fwDb->queryOne($sql_731);
+	$listsnew[$k]['doc_file_name731'] = $data731['doc_file_name'];
+	$listsnew[$k]['doc_not_required731'] = $data731['doc_not_required'];
+	
+	$sql_785 = "select doc_not_required, doc_file_name from document_check_list where doc_bsn_id = ".$data['bsn_id']. " and  	doc_name_id  = 785 ";
+    $data785 = $fwDb->queryOne($sql_785);
+	$listsnew[$k]['doc_file_name785'] = $data785['doc_file_name'];
+	$listsnew[$k]['doc_not_required785'] = $data785['doc_not_required'];
 
 }
 

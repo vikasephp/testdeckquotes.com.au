@@ -4,6 +4,7 @@ $table = new Fw_Db_Table("certifier_structural_engineer");
 $cse_id = $fwRequest->getParam('cse_id', '');
 $bsn_id = $fwRequest->getParam('bsn_id', '');
 $fwViewData['bsn_id'] = $bsn_id;
+$fwViewData['cse_id'] = $cse_id;
 
 $sql_1 = "select cse_project from  certifier_structural_engineer where cse_id = ".$cse_id;
 $proj = $fwDb->queryOne($sql_1);
@@ -70,5 +71,10 @@ if(!empty($savedrop)) {
     $table->setWhere("cse_id = ".$cse_id);
 	$detail = $table->getRow();
     $fwViewData['detail'] = $detail;
+
+require_once dirname(__FILE__) . '/cse_extra_docs.php';
+$fwViewData['insp_type'] = 'footing';
+$fwViewData['return_fuse'] = 'flooting_inspection_required';
+$fwViewData['docdata'] = cse_load_extra_docs($fwDb, $bsn_id, 'footing');
 	
 	

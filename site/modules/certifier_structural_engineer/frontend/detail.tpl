@@ -19,8 +19,7 @@ setTimeout('parent.close_win();', 500);
 <table id="list-table" width="95%">
     <input type="hidden" name="{{$TABLE}}[{{$ID}}]" value="{{$detail.$ID}}" /> 
     
-   {{if $error}} <tr><th colspan="2" style="color:#FF0000;">{{$error}}</th></tr>{{/if}}
-   
+      {{if $error}} <tr><th colspan="2" style="color:#FF0000;">{{$error}}</th></tr>{{/if}}
     <tr>
      <th style="width:20%">Project</th>
      <td>

@@ -1,10 +1,13 @@
 <script type="text/javascript" language="javascript" src="{{$BASE_URL}}js/form_validator/gen_validatorv31.js"></script>  
 <script type="text/javascript" src="{{$BASE_URL}}css/default/load.js"></script>
-<link rel="stylesheet" type="text/css" href="{{$BASE_URL}}css/default/cis-styles.css" />
+<link rel="stylesheet" type="text/css" href="{{$BASE_URL}}css/default/cis-styles2.css" />
 
 {{if $opr}}
 <script type="text/javascript">
-window.location.href = "{{$BASE_URL}}certifier_structural_engineer.view_doc/bsn_id/{{$bsn_id}}";
+if (parent && parent.cseRefreshSummary) {
+	parent.cseRefreshSummary({{$bsn_id}});
+}
+window.location.href = "{{$return_url}}";
 </script>
 {{/if}}
 
@@ -12,6 +15,10 @@ window.location.href = "{{$BASE_URL}}certifier_structural_engineer.view_doc/bsn_
 <h3 class="page-title">{{$title}} Document</h3>    
     
 <form name="detail" method="post" action=""  enctype="multipart/form-data">
+<input type="hidden" name="bsn_id" value="{{$bsn_id}}" />
+<input type="hidden" name="cse_id" value="{{$cse_id}}" />
+<input type="hidden" name="insp_type" value="{{$insp_type}}" />
+<input type="hidden" name="return" value="{{$return}}" />
 <table id="list-table" width="100%">
     <input type="hidden" name="type[ss_id]" value="{{$detail.ss_id}}" />
     
@@ -41,13 +48,13 @@ window.location.href = "{{$BASE_URL}}certifier_structural_engineer.view_doc/bsn_
 <script type="text/javascript">
 function closepop()
 {
-	window.location.href = "{{$BASE_URL}}certifier_structural_engineer.view_docb/bsn_id/{{$bsn_id}}";
+	window.location.href = "{{$return_url}}";
 }
 </script>
 
 <script type="text/javascript" language="javascript" >
 	var frmvalidator  = new Validator("detail");
 	frmvalidator.EnableMsgsTogether();
-	frmvalidator.addValidation("type[bacs_option]","req", "Please specify Option.");
+	frmvalidator.addValidation("type[ss_document]","req", "Please specify Document.");
 </script>
 </div>

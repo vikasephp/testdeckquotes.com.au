@@ -55,6 +55,59 @@ function add_procedure()
       });
 }
 
+function cseRefreshSummary(bsnId)
+{
+	if (!bsnId || !window.jQuery) {
+		return;
+	}
+	var stage = '{{$show}}';
+	$.ajax({
+		url: '{{$BASE_URL}}certifier_structural_engineer.home/ajax_pending/1/bsn_id/' + bsnId + '/stage/' + stage + '/random/' + Math.random(),
+		dataType: 'text',
+		success: function(raw) {
+			var data = null;
+			try {
+				var start = raw.indexOf('{');
+				var end = raw.lastIndexOf('}');
+				if (start >= 0 && end > start) {
+					data = $.parseJSON(raw.substring(start, end + 1));
+				}
+			} catch (e) {}
+			if (!data) {
+				return;
+			}
+			var pending = data.pending;
+			var needle = 'bsn_id/' + bsnId;
+			var $row = $('a[href*="' + needle + '"]').closest('tr');
+			if (!$row.length) {
+				$row = $('tr').filter(function() {
+					return (($(this).html() || '').indexOf(needle) !== -1);
+				}).first();
+			}
+			if (!$row.length) {
+				return;
+			}
+			$row.find('td').each(function() {
+				var html = $(this).html() || '';
+				if (/Pending Documents/i.test(html)) {
+					$(this).html(html.replace(/(Pending Documents[^0-9]*)(\d+)/i, '$1' + pending));
+				} else if (/Pending/i.test(html)) {
+					$(this).html(html.replace(/(Pending[^0-9]*)(\d+)/i, '$1' + pending));
+				}
+			});
+		}
+	});
+}
+window.cseRefreshSummary = cseRefreshSummary;
+
+function close_win()
+{
+	if (window.jQuery && jQuery.fancybox) {
+		jQuery.fancybox.close();
+	}
+	window.location.href = window.location.href;
+}
+
 </script>
 <h3 class="page-title">{{$title}}</h3><br />
 <h3 class="page-title">{{$report}}</h3><br />
@@ -68,6 +121,7 @@ function add_procedure()
 <input type="submit" name="presheet" value="Pre Sheet"  /> 
 <input type="submit" name="final" value="Final"  /> 
 
+
  <br/>
 <strong>Project search :</strong> 
 <datalist id='project'>
@@ -79,9 +133,22 @@ function add_procedure()
 </datalist>
 <input type="text"  list='project' name="search_proj" value="{{$search_proj}}" style="width:350px;" /><br />
 <strong>Location search :</strong> 
-<input type="text"  name="search_location" value="{{$search_location}}" style="width:150px;" />
+<!--<input type="text"  name="search_location" value="{{$search_location}}" style="width:150px;" />-->
+<select name="search_location" style="width:150px;">
+<option value="">Select Location</option>
+<option value="North" {{if $search_location eq 'North'}} selected="selected"{{/if}}>North</option>
+<option value="South" {{if $search_location eq 'South'}} selected="selected"{{/if}}>South</option>
+</select>
 <input type="submit" value="Search Location" name="location_search" />
+<strong>QA :</strong>
+<select name="search_qa" style="width:80px;">
+<option value="">All</option>
+<option value="yes" {{if $search_qa eq 'yes'}} selected="selected"{{/if}}>Yes</option>
+<option value="no" {{if $search_qa eq 'no'}} selected="selected"{{/if}}>No</option>
+</select>
+<input type="submit" value="Search QA" name="qa_search" />
 <input type="submit" name="clear" value="Clear All Filter">
+<input type="submit" name="update_color" value="Update Color" style="background:#C6C"  /> 
 </div>
 
 <div style="float:right; text-align:right;"> 

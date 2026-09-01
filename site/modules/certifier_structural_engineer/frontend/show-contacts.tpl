@@ -59,11 +59,12 @@ setTimeout('parent.close_win();', 500);
    <table id="list-table" class="nav-back" width="100%">
         <thead>
             <tr>
-                <th class="topmenu" align="center" valign="middle" width="10%">Position</th>   
-            	<th class="topmenu" align="center" valign="middle" width="10%">First Name</th>   
-                <th class="topmenu" align="center" valign="middle" width="10%">Surname</th> 
-                <th class="topmenu" align="center" valign="middle" width="12%">Primary Email</th> 
-                <th class="topmenu" align="center" valign="middle" width="10%">Include</th>  
+              
+                   <th class="topmenu" align="center" valign="middle" width="10%">Position</th>   
+            	   <th class="topmenu" align="center" valign="middle" width="10%">First Name</th>   
+                   <th class="topmenu" align="center" valign="middle" width="10%">Surname</th> 
+                  <th class="topmenu" align="center" valign="middle" width="12%">Primary Email</th> 
+                   <th class="topmenu" align="center" valign="middle" width="10%">Include</th>  
             </tr>
         </thead>
         <tbody>
@@ -71,12 +72,12 @@ setTimeout('parent.close_win();', 500);
         {{foreach from=$list key="key" item="item"}}
         <tr {{if $item.cs_is_primary eq 1 }}bgcolor="#FFFFCC" {{else}} bgcolor="#FFFFFF"  {{/if}}>
 			<td>
-				<!--{{$item.cs_position}}--> 
-				{{foreach from=$position key="key_pos" item="item_pos"}}
+				{{$item.cp_name}}
+				<!--{{foreach from=$position key="key_pos" item="item_pos"}}
 					{{if $item_pos.cp_id eq $item.cs_position_code}}
 						{{$item_pos.cp_name}}
 					{{/if}}
-				{{/foreach}}
+				{{/foreach}}-->
 			</td>
 			<td>{{$item.cs_first_name}} </td>
 			<td>{{$item.cs_surname}} </td>

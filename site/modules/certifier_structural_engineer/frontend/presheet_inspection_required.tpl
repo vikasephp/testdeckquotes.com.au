@@ -51,29 +51,38 @@ function add_new(url)
 
 
 <div align="center" style="min-height:350px; z-index:9999999;">
-    <h3 class="page-title"><br />Press Sheet Inspections - Required Documents</h3>    
+    <h3 class="page-title"><br />Pre Sheet Inspections - Required Documents</h3>    
 
 <div style="float:left; margin-bottom:10px; font-size:14px;">
 <strong>Project Address : {{$proj_name}}</strong>
 </div>
+<div style="float:right; margin-right:10px; background: #09F; color:#FFF !important; padding:6px; margin-bottom:5px;">
+<a href="{{$BASE_URL}}certifier_structural_engineer.add_doc/bsn_id/{{$bsn_id}}/cse_id/{{$cse_id}}/insp_type/{{$insp_type}}/return/{{$return_fuse}}" style="color:#FFF; text-decoration:none; font-size:14px;"> Add New Document </a>
+</div>
+<div style="clear:both;"></div>
   
 <form name="detail" method="post" action=""  enctype="multipart/form-data">
 
 <table id="list-table" width="99%">
 
+         <tr>
+        <th>Document</th>
+        <th>Required / Not Required</th>
+        <th>Supplier</th>
+        </tr>
         
         
         <tr>
         <td>Survey ID  </td>
         
         <td {{if  $data261.doc_not_required eq 1}} style="background:#999;"
-            {{elseif $data261.doc_file_name}} style="background:#00CC33;"  {{else}} style="background:#F00;" {{/if}} id = "floorf{{$item.bsn_id}}">
+            {{elseif $data261.doc_file_name}} style="background:#00CC33;"  {{else}} style="background:#F00;" {{/if}} id = "cond261">
             
              {{if $data261.doc_file_name}}
 			<a href="/certifier_structural_engineer.download_content?file_name={{$data261.doc_file_name}}&module_name=certifier_structural_engineer.home">Download</a><br />
             {{/if}}
             
-        <select name="flooting_insp[cse_comm_notice]" >
+        <select name="flooting_insp[cse_comm_notice]" onChange="update_doc_checklist({{$bsn_id}}, this.value, 261)" >
         <option value="0" {{if $data261.doc_not_required eq 0 }} selected="selected" {{/if}}>Required</option>
         <option value="1" {{if $data261.doc_not_required eq 1 }} selected="selected" {{/if}}>Not Required</option>
         </select> 
@@ -94,13 +103,13 @@ function add_new(url)
         <td style="width:40%">Wall and Roof Frame Detail Plans </td> 
         
         <td {{if  $data289.doc_not_required eq 1}} style="background:#999;"
-            {{elseif $data289.doc_file_name}} style="background:#00CC33;"  {{else}} style="background:#F00;" {{/if}} id = "floorf{{$item.bsn_id}}">
+            {{elseif $data289.doc_file_name}} style="background:#00CC33;"  {{else}} style="background:#F00;" {{/if}} id = "cond289">
             
             {{if $data289.doc_file_name}}
 			<a href="/certifier_structural_engineer.download_content?file_name={{$data289.doc_file_name}}&module_name=certifier_structural_engineer.home">Download</a><br />
             {{/if}}
             
-        <select name="flooting_insp[cse_flo_sepi]" >
+        <select name="flooting_insp[cse_flo_sepi]" onChange="update_doc_checklist({{$bsn_id}}, this.value, 289)" >
         <option value="0" {{if $data289.doc_not_required eq 0 }} selected="selected" {{/if}}>Required</option>
         <option value="1" {{if $data289.doc_not_required eq 1 }} selected="selected" {{/if}}>Not Required</option>
         </select>
@@ -120,13 +129,13 @@ function add_new(url)
         <td style="width:40%">Termite Protection Certificate – Penetration </td> 
         
         <td {{if  $data155.doc_not_required eq 1}} style="background:#999;"
-            {{elseif $data155.doc_file_name}} style="background:#00CC33;"  {{else}} style="background:#F00;" {{/if}} id = "floorf{{$item.bsn_id}}">
+            {{elseif $data155.doc_file_name}} style="background:#00CC33;"  {{else}} style="background:#F00;" {{/if}} id = "cond155">
             
             {{if $data155.doc_file_name}}
 			<a href="/certifier_structural_engineer.download_content?file_name={{$data155.doc_file_name}}&module_name=certifier_structural_engineer.home">Download</a><br />
             {{/if}}
             
-        <select name="flooting_insp[cse_flo_gfff]" >
+        <select name="flooting_insp[cse_flo_gfff]" onChange="update_doc_checklist({{$bsn_id}}, this.value, 155)" >
         <option value="0" {{if $data155.doc_not_required eq 0 }} selected="selected" {{/if}}>Required</option>
         <option value="1" {{if $data155.doc_not_required eq 1 }} selected="selected" {{/if}}>Not Required</option>
         </select>
@@ -148,13 +157,13 @@ function add_new(url)
         <td style="width:40%">Termite Protection Certificate – Perimeter  </td> 
         
         <td {{if  $data295.doc_not_required eq 1}} style="background:#999;"
-            {{elseif $data295.doc_file_name}} style="background:#00CC33;"  {{else}} style="background:#F00;" {{/if}} id = "floorf{{$item.bsn_id}}">
+            {{elseif $data295.doc_file_name}} style="background:#00CC33;"  {{else}} style="background:#F00;" {{/if}} id = "cond295">
             
             {{if $data295.doc_file_name}}
 			<a href="/certifier_structural_engineer.download_content?file_name={{$data295.doc_file_name}}&module_name=certifier_structural_engineer.home">Download</a><br />
             {{/if}}
             
-        <select name="flooting_insp[cse_se_design]" >
+        <select name="flooting_insp[cse_se_design]" onChange="update_doc_checklist({{$bsn_id}}, this.value, 295)" >
         <option value="0" {{if $data295.doc_not_required eq 0 }} selected="selected" {{/if}}>Required</option>
         <option value="1" {{if $data295.doc_not_required eq 1 }} selected="selected" {{/if}}>Not Required</option>
         </select>
@@ -174,13 +183,13 @@ function add_new(url)
         <td style="width:40%">Fire Rated Certificate  </td> 
         
         <td {{if  $data739.doc_not_required eq 1}} style="background:#999;"
-            {{elseif $data739.doc_file_name}} style="background:#00CC33;"  {{else}} style="background:#F00;" {{/if}} id = "floorf{{$item.bsn_id}}">
+            {{elseif $data739.doc_file_name}} style="background:#00CC33;"  {{else}} style="background:#F00;" {{/if}} id = "cond739">
             
             {{if $data739.doc_file_name}}
 			<a href="/certifier_structural_engineer.download_content?file_name={{$data739.doc_file_name}}&module_name=certifier_structural_engineer.home">Download</a><br />
             {{/if}}
             
-        <select name="flooting_insp[cse_se_design]" >
+        <select name="flooting_insp[cse_se_design]" onChange="update_doc_checklist({{$bsn_id}}, this.value, 739)" >
         <option value="0" {{if $data739.doc_not_required eq 0 }} selected="selected" {{/if}}>Required</option>
         <option value="1" {{if $data739.doc_not_required eq 1 }} selected="selected" {{/if}}>Not Required</option>
         </select>
@@ -201,13 +210,13 @@ function add_new(url)
         <td style="width:40%">Box Gutter and Rain Head Design  </td> 
         
         <td {{if  $data626.doc_not_required eq 1}} style="background:#999;"
-            {{elseif $data626.doc_file_name}} style="background:#00CC33;"  {{else}} style="background:#F00;" {{/if}} id = "floorf{{$item.bsn_id}}">
+            {{elseif $data626.doc_file_name}} style="background:#00CC33;"  {{else}} style="background:#F00;" {{/if}} id = "cond626">
             
             {{if $data626.doc_file_name}}
 			<a href="/certifier_structural_engineer.download_content?file_name={{$data626.doc_file_name}}&module_name=certifier_structural_engineer.home">Download</a><br />
             {{/if}}
             
-        <select name="flooting_insp[cse_se_design]" >
+        <select name="flooting_insp[cse_se_design]" onChange="update_doc_checklist({{$bsn_id}}, this.value, 626)" >
         <option value="0" {{if $data626.doc_not_required eq 0 }} selected="selected" {{/if}}>Required</option>
         <option value="1" {{if $data626.doc_not_required eq 1 }} selected="selected" {{/if}}>Not Required</option>
         </select>
@@ -222,16 +231,79 @@ function add_new(url)
         
         </tr>
      
+        {{foreach from=$docdata key="key" item="item"}}
+        <tr>
+        <td>{{$item.ss_document}}</td>
+        <td {{if $item.doc_not_required eq 1}} style="background:#999;"
+            {{elseif $item.doc_file_name}} style="background:#00CC33;" {{else}} style="background:#F00;" {{/if}} id="cond{{$item.doc_name_id}}">
+            {{if $item.doc_file_name}}
+			<a href="/certifier_structural_engineer.download_content?file_name={{$item.doc_file_name}}&module_name=certifier_structural_engineer.home">Download</a><br />
+            {{/if}}
+        <select onChange="update_doc_checklist({{$bsn_id}}, this.value, {{$item.doc_name_id}})">
+        <option value="0" {{if $item.doc_not_required eq 0 }} selected="selected" {{/if}}>Required</option>
+        <option value="1" {{if $item.doc_not_required eq 1 }} selected="selected" {{/if}}>Not Required</option>
+        </select>
+        </td>
+        <td style="width:40%">
+		{{foreach from=$item.suppliers item=rowS}}
+			{{$rowS.sa_include_supplier}}<br>
+		{{/foreach}}
+        <a href="{{$BASE_URL}}certifier_structural_engineer.include_suppliers/car_id/{{$item.ss_doc_id}}/bsn_id/{{$bsn_id}}" class="various kill_others">Include Supplier</a><br><br>
+        <a href="{{$BASE_URL}}certifier_structural_engineer.delete_doc/ss_id/{{$item.ss_id}}/bsn_id/{{$bsn_id}}/cse_id/{{$cse_id}}/return/{{$return_fuse}}" onclick="javascript:if(!confirm('Are you sure want to delete the Doc?')) return false;" title="Delete"><img style="height:16px; width:16px" src="{{$BASE_URL}}css/admin/images/deletecross.png"/></a>
+        </td>
+        </tr>
+        {{/foreach}}
 
 </table><br /><br />
 <!-- <input type="submit" name="savedrop" value="submit" onclick="if(!this.form.checkbox.checked){alert('Please confirm the QA is complete before saving.');return false}"  />-->
  <input type="button" name="btnCancelDetail" value="Close" onclick="javascript:closepop();" class="vsml" />
 </form>
     
-<!--    <form method="POST" action="http://www.cs.tut.fi/cgi-bin/run/~jkorpela/echo.cgi">
- <input type="checkbox" name="checkbox" value="check"  />
- <input type="submit" name="email_submit" value="submit" onclick="if(!this.form.checkbox.checked){alert('You must agree to the terms first.');return false}"  />
-</form>-->
+ 	<script>
+			function update_doc_checklist(id,value,docid)
+			{
+				 var cond = '#cond'+docid;
+				
+				 $.ajax({
+					   type: "GET",
+					   url: "{{$BASE_URL}}certifier_structural_engineer.update_doc_checklist/bsn_id/"+id+"/value/"+value+"/doc_id/"+docid+"/insp_type/{{$insp_type}}",
+						   success: function(result){
+							
+							if(value == 0 ) {
+								$(cond).css("background","#F00");
+							} else {
+								$(cond).css("background","#999"); 
+							}
+							if (parent.cseRefreshSummary) {
+								parent.cseRefreshSummary(id);
+							}
+						}
+						
+					});
+			}
+			$(function(){
+				$.ajax({
+					type: "GET",
+					url: "{{$BASE_URL}}certifier_structural_engineer.update_doc_checklist/bsn_id/{{$bsn_id}}/insp_type/{{$insp_type}}/list/1",
+					dataType: "json",
+					success: function(flags){
+						if (!flags) { return; }
+						$.each(flags, function(docid, notreq){
+							var cond = '#cond'+docid;
+							if (!$(cond).length) { return; }
+							$(cond).find('select').val(String(notreq));
+							if(notreq == 1 || notreq == '1') {
+								$(cond).css("background","#999");
+							} else if ($(cond).find('a').length) {
+								$(cond).css("background","#00CC33");
+							} else {
+								$(cond).css("background","#F00");
+							}
+						});
+					}
+				});
+			});
+		</script>
     
     
     <script type="text/javascript">
@@ -239,7 +311,11 @@ function add_new(url)
 		
 		function closepop()
 		{
-	     setTimeout('parent.close_win();', 500);
+			if (parent.close_win) {
+				parent.close_win();
+			} else if (parent.location) {
+				parent.location.reload();
+			}
 		}
 		
 		
