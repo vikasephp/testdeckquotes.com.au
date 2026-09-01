@@ -23,7 +23,7 @@ foreach($res as $row) {
 	$chkdata[$row['se_email']] = $row;
 }
 
-$qry = "SELECT cs_first_name, cs_surname, cs_primary_email from contacts";
+$qry = "SELECT cs_first_name, cs_surname, cs_primary_email, cs_mobile from contacts";
 $res = $fwDb->query($qry);
 $comData = [];
 foreach($res as $row) {
@@ -33,6 +33,7 @@ foreach($res as $row) {
 	$comData[$row['cs_primary_email']][] = [
 		'cs_first_name' => $row['cs_first_name'],
 		'cs_surname' => $row['cs_surname'],
+		'cs_mobile'     => $row['cs_mobile'],
 	];
 }
 
@@ -45,12 +46,18 @@ foreach ($list as $ck => $vc) {
 
 	if (count($comData[$vc['cs_primary_email']]) >= 2) {
 		$name1 = "";
+		$mobile1 = "";
 		foreach ($comData[$vc['cs_primary_email']] as $n => $m) {
-			$name1  .= implode(" ", $m) . ",";
+			//$name1  .= implode(" ", $m) . ",";
+			$name1 .= trim($m['cs_first_name'] . " " . $m['cs_surname']) . ",";
+			if (!empty($m['cs_mobile'])) {
+                $mobile1 .= $m['cs_mobile'] . ",";
+            }
 		}
 
 		$list[$ck]['cs_first_name'] = $name1;
 		$list[$ck]['cs_surname'] = '';
+		$list[$ck]['cs_mobile'] = $mobile1;
 	}
 }
 
