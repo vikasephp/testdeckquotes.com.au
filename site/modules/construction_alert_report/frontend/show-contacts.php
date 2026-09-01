@@ -13,7 +13,7 @@ $car_id = $fwRequest->getParam('car_id', '');
 $matsql = "SELECT contacts.* , companies.co_company_name, type_options.to_option  from contacts 
           	  Inner join companies ON contacts.cs_company = companies.co_id
 	  	  Left join type_options on contacts.cs_position = type_options.to_id
-	  	  where companies.co_id = " . $co_id . " AND length(cs_primary_email) > 0 group by cs_primary_email order by contacts.cs_is_primary desc ";
+	  	  where companies.co_id = " . $co_id . " AND length(cs_primary_email) > 0 AND contacts.cs_active = 1 group by cs_primary_email order by contacts.cs_is_primary desc ";
 $list = $fwDb->query($matsql);
 
 $qry = "SELECT se_email from supplier_email where se_car_id = " . $car_id;
@@ -23,7 +23,7 @@ foreach($res as $row) {
 	$chkdata[$row['se_email']] = $row;
 }
 
-$qry = "SELECT cs_first_name, cs_surname, cs_primary_email, cs_mobile from contacts";
+$qry = "SELECT cs_first_name, cs_surname, cs_primary_email, cs_mobile from contacts WHERE cs_active = 1";
 $res = $fwDb->query($qry);
 $comData = [];
 foreach($res as $row) {
@@ -81,7 +81,7 @@ if (!empty($add_emails)) {
 	$email2 = "";
 	$csid = "";
 	foreach ($emails as $k => $v) {
-		$sql_3 = "select	cs_id, cs_first_name, cs_surname, cs_primary_email from contacts where cs_id = " . $k;
+		$sql_3 = "select cs_id, cs_first_name, cs_surname, cs_primary_email from contacts where cs_id = " . $k." AND cs_active = 1";;
 		$data = $fwDb->queryOne($sql_3);
 
 		if ($v == 'on') {
