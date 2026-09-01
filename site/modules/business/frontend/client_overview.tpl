@@ -148,25 +148,34 @@
             <td>
                 <input type="text" name="client_overview[co_lease_purpose]" value="{{ $client_overview_data.co_lease_purpose }}">
             </td>
-            <th>Unimproved Value</th>
+			<th>Bushfire Risk Zone</th>
             <td>
-                <input type="text" name="client_overview[co_unimproved_value]" value="{{ $client_overview_data.co_unimproved_value }}">
+                <input id="co_bushfire_risk_yes" type="radio" name="client_overview[co_bushfire_risk_zone]" value="1" {{ if isset($client_overview_data.co_bushfire_risk_zone) && $client_overview_data.co_bushfire_risk_zone == 1 }} checked="checked" {{ /if }}>
+                <label for="co_bushfire_risk_yes">YES</label>
+                <input id="co_bushfire_risk_no" type="radio" name="client_overview[co_bushfire_risk_zone]" value="0" {{ if isset($client_overview_data.co_bushfire_risk_zone) && $client_overview_data.co_bushfire_risk_zone == 0 }} checked="checked" {{ /if }}>
+                <label for="co_bushfire_risk_no">NO</label>
             </td>
+            
         </tr>
         <tr>
             <th>Rates</th>
             <td>
                 <input type="text" name="client_overview[co_rates]" value="{{ $client_overview_data.co_rates }}">
             </td>
-            <th>Land Tax</th>
+			<th>Unimproved Value</th>
             <td>
-                <input type="text" name="client_overview[co_land_tax]" value="{{ $client_overview_data.co_land_tax }}">
+                <input type="text" name="client_overview[co_unimproved_value]" value="{{ $client_overview_data.co_unimproved_value }}">
             </td>
+            
         </tr>
         <tr>
             <th>Settlement date</th>
             <td>
                 <input type="text" name="client_overview[co_settlement_date]" class="w16em dateformat-d-ds-m-ds-Y dtpic" value="{{ $client_overview_data.co_settlement_date }}">
+            </td>
+			<th>Land Tax</th>
+            <td>
+                <input type="text" name="client_overview[co_land_tax]" value="{{ $client_overview_data.co_land_tax }}">
             </td>
         </tr>
         <tr>
