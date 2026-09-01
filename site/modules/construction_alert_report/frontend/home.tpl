@@ -426,7 +426,9 @@
 				<td>{{$item.bcust_fname}}&nbsp;{{$item.bcust_lname}}<br />{{$item.bcust_misc_moble}}</td>
 				<td>{{$item.car_date}}</td>
 				<td>{{$item.car_alert}}</td>
-				<td {{if $item.no_contact_assigned eq '1'}} style="background-color: red;"{{/if}}>
+			
+                <td {{if $item.no_contact_assigned eq '1' || empty($item.car_include_supplier)}} style="background-color: red;"{{/if}}>
+
 					<form name="recmet2" method="post" action="">
 						<input type="hidden" name="car_project" value="{{$item.car_project}}">
 						<input type="hidden" name="car_alert" value='{{$item.car_alert}}'>
@@ -555,6 +557,9 @@
 						{{$item.car_new_date_updated_by}}<br/>{{$item.car_new_date_updated_at|date_format:"%d-%m-%Y"}}
 						{{/if}}
 					</div>
+                    
+                    <a href="{{$BASE_URL}}construction_alert_report.view_history/car_id/{{$item.car_id}}" class="various">View History</a>
+                    
 					<script>
 						function update_two(id, value) {
 							var duedate = "#duedate_"+id;
@@ -567,6 +572,7 @@
 							});
 						}
 					</script>
+                    
 				</td>
                 
                 
@@ -612,14 +618,14 @@
 
 				</td>
 				<td> {{$item.car_created_by}}</td>
-				<td>
+                
+		<td {{if $item.car_status eq 'Closed'}} style="background:#3C3" {{elseif $item.car_status eq 'Pending' }} style="background:#F93" {{else}} style="background:#F00" {{/if}} >
 					{{if $item.car_status eq 'Pending'}}
 						<a href="{{$BASE_URL}}construction_alert_report.status_approve/car_id/{{$item.car_id}}"
 						class="various">Approve</a><br /><br />
-					{{else}}
-						{{if $item.car_status eq 'Closed'}}<br />{{$item.car_status_date}} {{/if}}
+				
 					{{/if}}
-                    
+                   
                     
                     <select name="type" style="width:150px;" Onchange="update_status({{$item.car_id}},this.value)">
 											
@@ -629,16 +635,19 @@
 					
 					</select>
 
-					{{if $item.car_status eq 'Closed'}}<br />{{$item.car_status_date}} {{/if}}
+					 <div id="statusdu_{{$item.car_id}}">
+					 {{$item.car_status_date}} <br /> {{$item.car_status_user}}
+                     </div>
                     
 					<script language="javascript">
 
 						function update_status(id, value) {
-
+							var statusdu = "#statusdu_"+id;
 							$.ajax({
 								type: "GET",
 								url: "{{$BASE_URL}}construction_alert_report.update_status/car_id/" + id + "/value/" + value,
 								success: function (result) {
+										$(statusdu).html(result);
 								}
 							});
 						}
@@ -650,10 +659,42 @@
 
 				<td>  
                 <form name="add_ae"  method ='post' action="">
-                <input type="hidden" value="{{$item.car_id}}" name="carid" />
-                <input type="submit" name="addtoae" value="Require Escalation" {{if $item.car_add_to_ae eq 1}} style="background:#0C3" {{else}} style="background:#F00" {{/if}} />
-                
+                  Escalation Required  
+                  <select name="type" style="width:100px;" Onchange="update_addtoesc({{$item.car_id}},this.value, this)">					
+						<option value="0"  {{if $item.car_add_to_ae eq '0'}} selected="selected" {{/if}}>No</option>
+                        <option value="1"  {{if $item.car_add_to_ae eq '1'}} selected="selected" {{/if}}>Yes</option>
+				  </select>
                 </form>
+                
+                <script language="javascript">
+
+						function update_addtoesc(id, value, selectElement) 
+						{
+							var reason;
+							if(value == 1) {
+								 reason = prompt("Please enter the reason for required escalation:");
+							}
+							
+							if(reason == '') {
+								alert('Please enter the reason for escalation');
+							    selectElement.value = '0';
+							}
+								var tana = '#tana'+id;		
+	
+								$.ajax({
+									type: "GET",
+									url: "{{$BASE_URL}}construction_alert_report.update_addtoesc/car_id/" + id + "/value/" + value + "/reason/" + reason,
+									success: function (result) {
+										$(tana).html(result);
+										
+										}
+								});
+							 
+						}
+
+				</script>
+                    
+                 <div id="tana{{$item.car_id}}"> {{if $item.car_add_to_ae eq '1'}}{{$item.car_escalation_date }}<br />{{$item.car_escalation_user}}{{/if}}</div>
                 
                  <a href="{{$BASE_URL}}{{$XFA.detail}}/{{$ID}}/{{$item.$ID}}" class="various" title="Edit">
                			

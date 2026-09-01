@@ -29,17 +29,17 @@ if ($clear) {
 
 $addtoae = $fwRequest->getParam('addtoae', '');
 if(!empty($addtoae)){
-	$carid = $fwRequest->getParam('carid', '');
-	$detail['car_add_to_ae'] = 'l';
-	
-	
+	$carid = (int)$fwRequest->getParam('carid', 0);
 	$table->setWhere('car_id = '.$carid);
-	if ($table->rowExists()) {
-
-		$sql = "Update construction_alert_report set car_add_to_ae  = 1 where car_id = " .$carid ;
-	    $fwDb -> queryOne($sql);
+	if ($carid > 0 && $table->rowExists()) {
+		$escDate = date('d-m-Y');
+		$usr = $_SESSION['user']['user_name'];
+		$sql = "UPDATE construction_alert_report
+			SET car_add_to_ae = 1, car_escalation_date = '" . addslashes($escDate) . "' , car_escalation_user = '". $usr ."'
+			WHERE car_id = " . $carid;
+		$fwDb->queryOne($sql);
 	}
-		Location(BASE_URL . $XFA['home']);
+	Location(BASE_URL . $XFA['home']);
 }
 
 
