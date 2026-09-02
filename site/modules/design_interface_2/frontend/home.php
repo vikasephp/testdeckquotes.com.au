@@ -28,7 +28,6 @@ if(!empty($update_link)){
 		'tl_link' => $proc,
 		]);
     }
-	
 	//$table_toplink->updateRow($tlDetail);
 }
 
@@ -193,7 +192,6 @@ $matsql = "Select design_interface_2.*, design_interface_edropbox_2.didb_filepat
 		   AND  design_interface_edropbox_2.didb_foldername like '%Team%'
 		   ".$where. " ORDER BY  design_interface_2.di_design_number  ASC";
 
-
 if($matsql){$userData = $fwDb->query($matsql);}
 
 
@@ -246,7 +244,7 @@ if (!(isset($pagenum))){ $pagenum = 1; }
 }
 
 
-
+if(!empty($userData)) {
 foreach($listsnew as $k => $v)
 {
 	$sql1 = "select design_interface_pricing_2.* from design_interface_pricing_2
@@ -293,6 +291,7 @@ foreach($listsnew as $k => $v)
 	$listsnew[$k]['planning_price'] = $data6['dip_value_entered'];
 	$listsnew[$k]['planning_date'] = changedate_d_m_Y($data6['dip_date']);
 	
+}
 }
 
 $fwViewData['list'] = $listsnew;

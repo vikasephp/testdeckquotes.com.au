@@ -151,6 +151,7 @@ function add_procedure()
             </tr>
         </thead>
 <tbody>
+{{if $list}}
  {{foreach from=$list key="key" item="item"}}
  <tr bgcolor="{{cycle values="#D3E8D6,WHITE" advance=true}}">
 
@@ -325,6 +326,9 @@ function add_procedure()
     </td>
  </tr>  
       {{/foreach}}
+{{else}}
+<tr bgcolor="WHITE"><td colspan="29" style="text-align: center;">No Record Matched</td></tr>
+{{/if}}
 </tbody>
     </table>
     
