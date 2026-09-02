@@ -75,11 +75,26 @@ function super_unique($array,$key)
     }
     $setData = super_unique($setData,'month');
     
-    foreach($setData as $idx => $row) {
-    if (preg_grep('/^$/', $row)) {
-        unset($setData[$idx]);
-    }
-}
+    /*foreach($setData as $idx => $row) {
+		if (preg_grep('/^$/', $row)) {
+			unset($setData[$idx]);
+		}
+	}*/
+	
+	foreach($setData as $idx => $row)
+	{
+		if(empty($row['month']))
+		{
+			unset($setData[$idx]);
+		}
+	}
+
+	$setData = array_values($setData);
+	
+	/* echo "<pre>";
+echo "COUNT = ".count($setData)."\n";
+print_r($setData);
+exit; */
     
 	$fwViewData['list'] = $setData;
 
