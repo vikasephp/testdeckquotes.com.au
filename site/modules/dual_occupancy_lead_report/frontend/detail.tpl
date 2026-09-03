@@ -81,20 +81,6 @@ setTimeout('parent.close_win();', 500);
 				<input type="text" name="dual_occupancy_lead_report[dolr_phone_number]" value="{{$detail.dolr_phone_number}}" style="width: 90%;" {{if $detail.dolr_phone_number}}readonly{{/if}}/>
 			</td>
 		</tr>
-			
-		<tr>
-			<th>Block Size(m²):</th>
-			<td>
-				<input type="text" name="dual_occupancy_lead_report[dolr_block_size]" value="{{$detail.dolr_block_size}}"/>
-			</td>
-		</tr>
-	 
-		<tr>
-			<th>Zoning</th>
-			<td>
-				<input type="text" name="dual_occupancy_lead_report[dolr_zoning]" value="{{$detail.dolr_zoning}}"/>
-			</td>
-		</tr>
 	   
 		<tr>
 			<td colspan="2" style="text-align:center;">

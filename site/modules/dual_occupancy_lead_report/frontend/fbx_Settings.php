@@ -16,7 +16,7 @@ $MODULE_PLURAL = 'Dual Occupancy Lead Report ';
 $fwViewData['MODULE_SINGULAR'] = $MODULE_SINGULAR;
 $fwViewData['MODULE_PLURAL'] = $MODULE_PLURAL;
 
-$fwViewData['BASEFOLDER'] = 'dual_occupancy_lead_report';
+$fwViewData['BASEFOLDER'] = $BASEFOLDER = 'dual_occupancy_lead_report';
 
 // module table and id
 $TABLE = 'dual_occupancy_lead_report';
@@ -28,6 +28,35 @@ $fwViewData['ID'] = $ID;
 $XFA['detail'] = $Fusebox['circuit'] . '.detail';
 $XFA['home'] = $Fusebox['circuit'] . '.home';
 $XFA['delete'] = $Fusebox['circuit'] . '.delete';
+
+//ATTRIBUTES
+$ATTRIBUTES = [
+	'zoning' => [
+		'name' => 'Zoning',
+		'table' => 'dual_occupancy_canberra_zoning',
+		'id' => 'docz_id',
+		'option_col' => 'docz_option',
+		'add_file' => 'add_zoning.tpl',
+		'add_file_name' => 'add_zoning',
+		'view_file' => 'view_zoning.tpl',
+		'view_file_name' => 'view_zoning',
+		'view_url' => BASE_URL . $BASEFOLDER . '.view_zoning',
+		'delete_file_name' => 'delete_zoning',
+	],
+	'size_class' => [
+		'name' => 'Size Class',
+		'table' => 'dual_occupancy_canberra_size_class',
+		'id' => 'docsc_id',
+		'option_col' => 'docsc_option',
+		'add_file' => 'add_sizeclass.tpl',
+		'add_file_name' => 'add_sizeclass',
+		'view_file' => 'view_sizeclass.tpl',
+		'view_file_name' => 'view_sizeclass',
+		'view_url' => BASE_URL . $BASEFOLDER . '.view_sizeclass',
+		'delete_file_name' => 'delete_sizeclass',
+	]
+];
+$fwViewData['ATTRIBUTES'] = $ATTRIBUTES;
 
 function get_file_raw_data($folder_path,$object_name)
 {

@@ -2,9 +2,29 @@
 $pagenum = $fwRequest->getparamget('pagenum',0);
 $fwViewData['ran'] =  rand(100000,999999);
 
+$heritage = $fwRequest->getParam('heritage', '');
+if ($heritage) {
+    $keys_2 = array_keys($heritage);
+    $ky_2 = $keys_2[0];
+    $val_2 = $heritage[$ky_2];
+    $detail['dolr_heritage'] = $val_2;
+	$detail['dolr_heritage_updated_by'] = $_SESSION['user']['user_name'];
+	$detail['dolr_heritage_updated_at'] = date('d-m-Y');
+	$table = new Fw_Db_Table($TABLE);
+    $table->setWhere("dolr_id = " . $ky_2);
+    if ($table->rowExists()) {
+        $this_id = $table->updateRow($detail);
+    }
+	$redirectUrl = $_SERVER['REQUEST_URI'];
+	header("Location: $redirectUrl");
+	exit;
+}
+
 $where = "WHERE 1=1 ";
-   
-$matsql = "SELECT ".$TABLE.".* FROM ".$TABLE." ".$where." ORDER BY ".$TABLE.".dolr_enquiry_date DESC, ".$TABLE.".".$ID." DESC";	
+
+//$matsql = "SELECT ".$TABLE.".* FROM ".$TABLE." ".$where." ORDER BY ".$TABLE.".dolr_enquiry_date DESC, ".$TABLE.".".$ID." DESC";	
+$matsql = "SELECT ".$TABLE.".* FROM ".$TABLE." ".$where." ORDER BY STR_TO_DATE(".$TABLE.".dolr_enquiry_date, '%d-%m-%Y') DESC";
+//echo $matsql;
 
 if($matsql){$userData = $fwDb->query($matsql);}
 
@@ -64,3 +84,10 @@ if (!(isset($pagenum))){ $pagenum = 1; }
 }
 
 $fwViewData['title'] = $MODULE_PLURAL;
+
+
+$sql_zoning = "SELECT * FROM dual_occupancy_canberra_zoning";
+$fwViewData['data_zoning'] = $data_zoning = $fwDb->query($sql_zoning);
+
+$sql_sc = "SELECT * FROM dual_occupancy_canberra_size_class";
+$fwViewData['data_sc'] = $data_sc = $fwDb->query($sql_sc);
