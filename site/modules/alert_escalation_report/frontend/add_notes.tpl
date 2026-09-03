@@ -26,12 +26,11 @@ window.location.href = "{{$BASE_URL}}alert_escalation_report.view_notes/car_id/{
      </td>
     </tr>
    
- <!--  <tr>
+     <tr>
      <th>Attachment Upload</th>
      <td><input type="file" name="supp_attach" /> </td>
-     </tr>-->
-    
- 
+     </tr>
+
     <tr>
         <td colspan="2" style="text-align:center;">
           <input type="submit" name="subAddDetail" value="Save" class="vsml" />

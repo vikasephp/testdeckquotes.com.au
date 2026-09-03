@@ -63,7 +63,7 @@ var viewurl = url;
 <table id="list-table" width="99%">
 <tr> 
 <th width="4%">SrNo</th>
-<th width="65%">Notes</th><th width="15%">Added By</th><th width="8%">Date Added </th><th width="8%">Action</th>
+<th width="65%">Notes</th><th width="15%">Added By</th><th width="8%">Date Added </th><th>Attachment</th><th width="8%">Action</th>
       
        {{assign var="ctr" value=$total}}
        
@@ -75,7 +75,15 @@ var viewurl = url;
         <td>{{$item.cn_notes}}</td>
         <td>{{$item.cn_added_by}}</td>
         <td>{{$item.cn_date}} </td>
-       
+        <td>
+          {{if $item.cn_attachment}}
+            {{ if $item.is_constructionalerts }}
+              <a href="https://constructionalerts.com.au/files/uploads/{{$item.cn_attachment}}" target="_blank">Download</a>
+            {{ else }}
+              <a href="{{$BASE_URL}}files/uploads/{{$item.cn_attachment}}" target="_blank">Download</a>
+            {{ /if }}
+          {{/if}}   
+        </td>
            
         <td> <a href="{{$BASE_URL}}alert_escalation_report.add_notes/cn_id/{{$item.cn_id}}/car_id/{{$car_id}}" class="various" title="Edit"> 
              <img style="height:20px; width:20px;" src="{{$BASE_URL}}css/admin/images/edit.png"/></a>&nbsp;&nbsp;

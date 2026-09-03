@@ -58,6 +58,9 @@
 		else if (type == 'add_detail') {
 			viewurl = "{{$BASE_URL}}{{ $BASEFOLDER }}.add_detail" + "/random/" + Math.random();
 		}
+		else if (type == 'send_email') {
+			viewurl = "{{$BASE_URL}}{{ $BASEFOLDER }}.send_email";
+		}
 		       
 	  
         $(document).ready(function () {
@@ -86,6 +89,7 @@
     <div style="float:left; text-align:left;">
         <div>
             <input type="button" name="proc_panel" value="Procedure Panel" onclick="javascript:open_popup('manage_procedure');" />
+            <input type="button" name="proc_panel" value="Send Email" onclick="javascript:open_popup('send_email');" />
         </div>
     </div>
    
@@ -100,7 +104,10 @@
                 <th class="topmenu" align="center" valign="middle">Problem</th>
                 <th class="topmenu" align="center" valign="middle">Photos</th>
                 <th class="topmenu" align="center" valign="middle">Escalation Notes</th>
-                <th class="topmenu" align="center" valign="middle">Send Email</th>
+                <th class="topmenu" align="center" valign="middle">Escalation Date</th>
+                <th class="topmenu" align="center" valign="middle">Escalation Reason</th>
+                <th class="topmenu" align="center" valign="middle">Escalation Photos</th>
+                <th class="topmenu" align="center" valign="middle">De-escalate</th>
             </tr>
         </thead>
         
@@ -120,7 +127,7 @@
                 {{if $item.car_image1}}
 						<div style="text-align:center;">
 							{{ if $item.car_image1_newdesign }}
-								  <a href="{{$BASE_URL}}{{ $BASEFOLDER }}.download_content?file_name={{$item.car_image1}}&module_name={{ $BASEFOLDER }}.home" target="_blank">
+								  <a href="{{$BASE_URL}}{{ $BASEFOLDER2 }}.download_content?file_name={{$item.car_image1}}&module_name={{ $BASEFOLDER2 }}.home" target="_blank">
                           
                                Photo 1</a>
 							{{ else }}
@@ -131,7 +138,7 @@
 					{{if $item.car_image2}}
 						<div style="text-align:center;">
 							{{ if $item.car_image2_newdesign }}
-								  <a href="{{$BASE_URL}}{{ $BASEFOLDER }}.download_content?file_name={{$item.car_image2}}&module_name={{ $BASEFOLDER }}.home" target="_blank">
+								  <a href="{{$BASE_URL}}{{ $BASEFOLDER2 }}.download_content?file_name={{$item.car_image2}}&module_name={{ $BASEFOLDER2 }}.home" target="_blank">
                               
                                Photo 2 </a>
 							{{ else }}
@@ -142,7 +149,7 @@
 					{{if $item.car_image3}}
 						<div style="text-align:center;">
 							{{ if $item.car_image3_newdesign }}
-								  <a href="{{$BASE_URL}}{{ $BASEFOLDER }}.download_content?file_name={{$item.car_image3}}&module_name={{ $BASEFOLDER }}.home" target="_blank">
+								  <a href="{{$BASE_URL}}{{ $BASEFOLDER2 }}.download_content?file_name={{$item.car_image3}}&module_name={{ $BASEFOLDER2 }}.home" target="_blank">
                             
                                Photo 3</a>
 							{{ else }}
@@ -153,7 +160,7 @@
 					{{if $item.car_image4}}
 						<div style="text-align:center;">
 							{{ if $item.car_image4_newdesign }}
-								  <a href="{{$BASE_URL}}{{ $BASEFOLDER }}.download_content?file_name={{$item.car_image4}}&module_name={{ $BASEFOLDER }}.home" target="_blank">
+								  <a href="{{$BASE_URL}}{{ $BASEFOLDER2 }}.download_content?file_name={{$item.car_image4}}&module_name={{ $BASEFOLDER2 }}.home" target="_blank">
                          
                                Photo 4 </a>
 							{{ else }}
@@ -164,7 +171,7 @@
 					{{if $item.car_image5}}
 						<div style="text-align:center;">
 							{{ if $item.car_image5_newdesign }}
-								  <a href="{{$BASE_URL}}{{ $BASEFOLDER }}.download_content?file_name={{$item.car_image5}}&module_name={{ $BASEFOLDER }}.home" target="_blank">
+								  <a href="{{$BASE_URL}}{{ $BASEFOLDER2 }}.download_content?file_name={{$item.car_image5}}&module_name={{ $BASEFOLDER2 }}.home" target="_blank">
                          
                               Photo 5</a>
 							{{ else }}
@@ -177,14 +184,48 @@
 		
 			                
                 <td>
-                <a href="{{$BASE_URL}}alert_escalation_report.view_notes/car_id/{{$item.car_id}}" class="various">Notes</a>
+                <a href="{{$BASE_URL}}alert_escalation_report.view_notes/car_id/{{$item.car_id}}" class="various">Notes</a><br />
+                {{$item.latest_notes}} - {{$item.cn_date}}
 					
 				</td>
-                
-				
-				<td >
-                   
+
+				<td align="center">{{$item.car_escalation_date}}</td>
+                <td align="center">{{$item.car_esc_reason}}</td>
+               <td>
+               
+                 {{foreach from=$item.photo_data key="key1" item="item1"}}
+                  {{if $item1.aep_photo}}
+                    <a href="/alert_escalation_report.download_content?file_name={{$item1.aep_photo}}&module_name=alert_escalation_report.home" target="_blank" /> Download</a>
+                   	 
+                     <a href="{{$BASE_URL}}alert_escalation_report.delete_photo/aep_id/{{$item1.aep_id}}" onclick="javascript:if(!confirm('Are you sure want to delete?')) return false;" title="Delete"><img src="{{$BASE_URL}}/images/delete_icon.png" width="20" />
+                     </a>
+                     <br />
+                     {{/if}}
+                    
+                {{/foreach}}
+					<form name="ps" method="post" enctype="multipart/form-data">
+						<input type="hidden" name="car_id" value="{{$item.car_id}}" />
+						<input type="file" name="esc_photo" />
+						<br />
+						<input type="submit" name="save_photo" title="Save" value="Upload" class="but">
+						&nbsp;
+					</form>
                 </td>
+                         
+				<td>
+					<form name="recmet3" method="post" action="">
+						<input type="hidden" name="deescalate[{{$item.car_id}}]" value="0" />
+						<label class="switch">
+							<input class="switch-input" type="checkbox" name="deescalate[{{$item.car_id}}]" value="0"
+								onclick="this.form.submit();" {{if $item.car_add_to_ae eq 1 }} checked="checked"
+								{{/if}}>
+							<span class="switch-label" data-on="Yes" data-off="No"></span>
+							<span class="switch-handle"></span> <br />
+						</label>
+					</form>
+				</td>
+				
+				
 				
             </tr>
 			{{assign var="bac_count" value=$bac_count+1}}
