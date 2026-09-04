@@ -19,6 +19,9 @@ if(!empty($submit))
 	$comment = addslashes($comment);
 	$bst_id =  $fwRequest->getparam('bst_id',0);
 	
+	
+	$sqldoc= "select doc_file_name from document_check_list where doc_name_id = 2 and doc_bsn_id = ".$bus_id;
+	$dataDoc = $fwDb->queryOne($sqldoc);
 
 	if($complete =='on') { $complete = 1; } else { $complete = 0; }
 
@@ -35,23 +38,122 @@ if(!empty($submit))
 	{
 		$user_id = $_SESSION['user']['user_id'];
 		
-		//$bsn_status_date = ($fwRequest->getParamget('bt_completed_date'))? changedate_Y_m_d($fwRequest->getParamget('bt_completed_date')) : 'now()';
-		
-	
 		$sql_update = "UPDATE business_tasks SET bt_complete = 1,
 		bt_completed_date = '".$bsn_status_date."', 
 		bt_completed_by = $user_id, 
 		bt_comment = '$comment'
-		WHERE bt_id = $taskId";
-		
-						
+		WHERE bt_id = $taskId";					
 	}
 	
+	//if($complete == '0')
+	//{
+	//	$fwDb -> queryOne($sql_update);
+	//}
 	
-	if(!empty($sql_update))
+
+	if($bst_id == 201) 
 	{
-		$fwDb -> queryOne($sql_update);
-		auto_email_auto_text($taskId);
+		
+		
+		if(!empty($dataDoc['doc_file_name']) AND $complete == '1')
+		{
+		
+			if(!empty($sql_update))
+			{
+				$fwDb -> queryOne($sql_update);
+				//auto_email_auto_text($taskId);
+			}
+			
+			// Start Email Sending MS 
+			
+			$sqlbus = "Select bsn_name, bsn_address from business where bsn_id = ".$bus_id;
+			$busdata = $fwDb->queryOne($sqlbus);
+			
+			$sql = "Select eml_email_content, eml_subject  from emaillibrary where eml_code = 'MS-0787'";
+			$emaildata = $fwDb->queryOne($sql);
+			
+			$sqlSign = "Select * from email_signature where es_id = 92" ;
+			$signature = $fwDb->query($sqlSign);
+			
+			$emaildata['eml_email_content'] = str_replace("[address]", $busdata['bsn_name'], $emaildata['eml_email_content']);
+			
+			$emaildata['eml_email_content'] .=  $signature[0]['es_signature'];
+			if ($signature[0]['es_logo']) {
+				$emaildata['eml_email_content'] .= "<img src='" . BASE_URL . "files/email_library/" . $signature[0]['es_logo'] . "'>";
+			}
+		
+		
+			$source = "https://deckquote.s3.amazonaws.com/files/document_check_list_files/" . $dataDoc['doc_file_name'];
+			$destination = BASE_DIR . FILE_PATH . "files/manoj/" . $dataDoc['doc_file_name'];
+			$source = get_file_data($dataDoc['doc_file_name']);
+		
+			copy($source, $destination);
+			
+			$finalatta = BASE_URL . FILE_PATH . "files/manoj/" . $dataDoc['doc_file_name'];
+			$file = BASE_DIR . FILE_PATH . "files/manoj/" . $dataDoc['doc_file_name'];
+			if (file_exists($file)) {
+							$fdata[] = $finalatta;
+							$doclogattach[] =$dataDoc['doc_file_name'];
+			}
+			
+			if (!empty($fdata)) {
+				//$attachmentsend = serialize($fdata);
+				$attachmentsend = $fdata;
+				
+			}
+	
+			$to = 'info@cgfb.com.au';
+			$toname = 'Frank';
+			$fromname = "Support Sales (CGFB)";
+			$from = "supportsales@cgfb.com.au";
+			$subject = $emaildata['eml_subject']. ' '. $busdata['bsn_name'];
+			$email_body = $emaildata['eml_email_content'];
+			
+			
+			require_once(LIB_DIR . 'EmailClass.php');
+			$emailObj = new EmailClass;
+			
+			$emailObj->subject = $subject;
+			$emailObj->message = $email_body;
+			$emailObj->addFrom($from, $fromname);
+			$emailObj->attachments = $attachmentsend;
+			//$emailObj->addTo($to, $toname);
+			
+			//$to = 'supportmanager@cgfb.com.au';
+			//$to = 'manojs@ephpsolutions.com';
+			$emailObj->addTo($to, $toname);
+			$emailObj->addCC('emailbackup@cgfb.com.au', $toname);	
+		
+		//send_email($toname,$to, $fromname, $from, $subject, $email_body, $attachmentsend);
+		//send_email($toname,'emailbackup@cgfb.com.au', $fromname, $from, $subject, $email_body, $attachmentsend);
+		
+			$response = $emailObj->sendEmail();
+			$fwViewData['msg'] = "Email MS-0787 Has Been Successfully Sent";
+		
+			$emailLog['elog_eml_code'] = 'MS-0787 - MS 22';
+			$emailLog['elog_to'] = $to;
+			$emailLog['elog_from'] = $from;
+			$emailLog['elog_subject'] = $subject;
+			$emailLog['elog_email_body'] = $email_body;
+			$emailLog['elog_bsn_id'] = $bus_id;
+			$emailLog['elog_business'] = $busdata['bsn_name'];
+			$emailLog['elog_attachment1'] = $dataDoc['doc_file_name'];
+			
+			$email_log_Table = new Fw_Db_Table('email_log');
+			$email_log_Table->insertRow($emailLog);
+				
+		
+		
+		} elseif($complete == 0) {
+			
+			$fwViewData['msg'] = 'Updated ......';
+			$fwDb -> queryOne($sql_update);	
+		} else {
+			
+			$fwViewData['msg'] = "Customer Project Needs Survey has not been uploaded. Please upload the survey document before completing Task UID 201.";
+		}
+	} else {
+		$fwDb -> queryOne($sql_update);	
 	}
 			
 }

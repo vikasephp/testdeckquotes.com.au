@@ -1,5 +1,8 @@
 {{if !empty($taskmsg)}}{{$taskmsg}}{{/if}}
 {{if !empty($resultStates) AND count($resultStates)>0}}
+
+
+
 <style>
 	.ddcolor {
 		color: #FFFFFF;
@@ -5878,8 +5881,11 @@
 
 					<!-- <a href="javascript:requestTaskEdit({{$item.bt_id}},'OpenEdit');"> <img style="height: 20px; width:20px" src="{{$BASE_URL}}css/admin/images/edit.png" title="Edit"/></a>&nbsp; -->
 
-					<a onclick="javascript:requestTaskDone({{$item.bt_id}});"><img style="height: 20px; width:20px;"
+					<a onclick="javascript:requestTaskDone({{$item.bt_id}},{{$item.bt_bsn_id}},{{$item.bt_task_id}});"><img style="height: 20px; width:20px;"
 							src="{{$BASE_URL}}css/admin/images/complete.png" title="Complete" /></a>
+                            
+                          
+                            
 
 					<a
 						href="javascript:modelwindow('{{$BASE_URL}}business.ps_qa/bus_id/{{$item.bt_bsn_id}}/tsid/{{$item.bt_task_status_id}}/tid/{{$item.bt_task_id}}','90%','90%', 'yes');">

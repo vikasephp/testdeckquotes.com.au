@@ -404,6 +404,7 @@ else {
 
 	$tablepersonresponsible = new Fw_Db_Table('person_responsible_detail');
 	$tablepersonresponsible->setWhere('prd_bsn_id = ' . $table_id);
+	$tablepersonresponsible->setOrderBy('prd_prm_id' . ' ASC');
 	$fwViewData['person_responsible_detail'] =  $tablepersonresponsible->getRows();
 
 

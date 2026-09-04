@@ -5,6 +5,15 @@
 <base href="{{$BASE_URL}}" />
 <link rel="stylesheet" type="text/css" href="{{$BASE_URL}}css/default/cis-styles.css" />
 <link rel="stylesheet" type="text/css" href="{{$BASE_URL}}js/tabview/tabcontent.css" />
+<style>
+html, body { height: auto !important; overflow: hidden; margin: 0; }
+.ck.ck-editor__main > .ck-editor__editable,
+.ck-editor__editable {
+	min-height: 120px;
+	max-height: 220px;
+	overflow-y: auto !important;
+}
+</style>
 <title>.:: {{$SITE_NAME}} - {{$title}} ::.</title>
 <script type="text/javascript" language="javascript" src="{{$BASE_URL}}/js/form_validator/gen_validatorv31.js"></script>
 <script type="text/javascript" src="{{$BASE_URL}}js/default.js"></script>
@@ -14,6 +23,7 @@
 
 	<script type="text/javascript">
            CKEDITOR.replace( 'editor1' );
+           CKEDITOR.replace( 'editor_que' );
            CKEDITOR.add  
         </script>
 
@@ -100,7 +110,7 @@ var http = getHTTPObject(); // We create the HTTP Object
 
 <body bgcolor="#FFFFFF">
 <form name="detail" method="post" action="{{$XFA.businessqa_detail}}" enctype="multipart/form-data" onsubmit="showTop();">
-<table width="97%" border="1" style="background-color:#FFFFFF;" id="none-table" style="height:800px;">
+<table width="97%" border="1" style="background-color:#FFFFFF;" id="none-table">
 <tr><td width="150" height="20">&nbsp;</td><th>
 <input type="hidden" name="{{$TABLE}}[bqa_id]" value="{{$detail.bqa_id}}" /> 
 <input type="hidden" name="{{$TABLE}}[bqa_cust_id]" value="{{$detail.bqa_cust_id}}" id="dt_id" />   
@@ -113,7 +123,7 @@ var http = getHTTPObject(); // We create the HTTP Object
 --><input type="hidden" class="xxlrg" name="{{$TABLE}}[bqa_cust_id]" value="{{$cid}}" style="width:400px;"/>
 
 <div id="divcustomersInfo" class="element"></div></th></tr>
-<tr><td>Question:</td><th colspan="3"><input type="text" name="{{$TABLE}}[bqa_que]" value="{{$detail.bqa_que}}" size="98" /></th></tr>
+<tr><td>Question:</td><th colspan="3"><textarea cols="60" rows="6" name="{{$TABLE}}[bqa_que]" id="editor_que">{{$detail.bqa_que}}</textarea></th></tr>
 <tr>
 <td>Attachment For Enquries</td>
 <td colspan="3" data-ques-attachment>
@@ -190,5 +200,56 @@ var http = getHTTPObject(); // We create the HTTP Object
 		// frmvalidator.addValidation("{{$TABLE}}[buse_cust_name]","req", "Please specify customer name.");
 		//  frmvalidator.addValidation("{{$TABLE}}[bqa_cust_id]","req", "Please specify customer name.");
 		  frmvalidator.addValidation("{{$TABLE}}[bqa_que]","req", "Please specify question."); 
+
+	var qaSizeWatched = false;
+	function resizeQaIframe() {
+		try {
+			if (!window.parent || !window.parent.document) {
+				return;
+			}
+			var frame = window.parent.document.getElementById('qaIframe');
+			if (!frame) {
+				return;
+			}
+			var form = document.forms.detail;
+			var h = form ? form.offsetHeight : 0;
+			if (!h) {
+				h = document.body.scrollHeight;
+			}
+			frame.style.height = (h + 20) + 'px';
+			frame.scrolling = 'no';
+		} catch (e) {}
+	}
+	function watchQaSize() {
+		resizeQaIframe();
+		if (qaSizeWatched) {
+			return;
+		}
+		var form = document.forms.detail;
+		if (!form) {
+			return;
+		}
+		qaSizeWatched = true;
+		if (typeof ResizeObserver !== 'undefined') {
+			var ro = new ResizeObserver(function () {
+				resizeQaIframe();
+			});
+			ro.observe(form);
+		}
+		if (window.GCONS_CKEditor5 && window.GCONS_CKEditor5.editors) {
+			Object.keys(window.GCONS_CKEditor5.editors).forEach(function (key) {
+				var ed = window.GCONS_CKEditor5.editors[key];
+				if (ed && ed.model && ed.model.document) {
+					ed.model.document.on('change:data', resizeQaIframe);
+				}
+			});
+		}
+	}
+	window.addEventListener('load', function () {
+		watchQaSize();
+		setTimeout(watchQaSize, 700);
+		setTimeout(resizeQaIframe, 1600);
+		setTimeout(resizeQaIframe, 3000);
+	});
 </script>      
 </body>

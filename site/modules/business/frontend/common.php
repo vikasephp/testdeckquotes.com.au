@@ -1098,17 +1098,35 @@ if ($requset) {
 
 		case "markTaskDone":
 			$bt_id = $fwRequest->getParamget('bt_id');
+			$bsn_id = $fwRequest->getParamget('bsn_id');
+			$tid = $fwRequest->getParamget('tid_id');
 			$user_id = $_SESSION['user']['user_id'];
 
-			$check_markdone = "SELECT * FROM business_tasks
-								WHERE bt_id = $bt_id AND bt_complete = 1";
+			
+				
+			$sqldoc= "select doc_file_name from document_check_list where doc_name_id = 2 and doc_bsn_id = ".$bsn_id;
+			$dataDoc = $fwDb->queryOne($sqldoc);
+			
+
+			$check_markdone = "SELECT * FROM business_tasks WHERE bt_id = $bt_id AND bt_complete = 1";
 
 			$done = $fwDb->query($check_markdone);
 
 			if (count($done) > 0) {
 				$taskmsg = "This Task is already been marked as Done.";
 				$fwViewData['taskmsg'] = $taskmsg;
-			} else {
+				
+			} elseif($tid == '201')
+			{
+					
+				if(empty($dataDoc['doc_file_name'])) {
+					
+					$taskmsg = "Customer Project Needs Survey has not been uploaded. Please upload the survey document before completing Task UID 201.";
+					$fwViewData['taskmsg'] = $taskmsg;
+					
+				} else {
+					
+					
 				$sql_markdone = "UPDATE business_tasks SET bt_complete = 1, bt_completed_date = now(), bt_completed_by = $user_id WHERE bt_id = $bt_id";
 
 				$fwDb->queryOne($sql_markdone);
@@ -1117,10 +1135,105 @@ if ($requset) {
 				$fwViewData['taskmsg'] = $taskmsg;
 
 				auto_email_auto_text($bt_id);
+				
+				//Start sending email
+				
+				$sqlbus = "Select bsn_name, bsn_address from business where bsn_id = ".$bsn_id;
+			$busdata = $fwDb->queryOne($sqlbus);
+			
+			$sql = "Select eml_email_content, eml_subject  from emaillibrary where eml_code = 'MS-0787'";
+			$emaildata = $fwDb->queryOne($sql);
+			
+			$sqlSign = "Select * from email_signature where es_id = 92" ;
+			$signature = $fwDb->query($sqlSign);
+			
+			$emaildata['eml_email_content'] = str_replace("[address]", $busdata['bsn_name'], $emaildata['eml_email_content']);
+			
+			$emaildata['eml_email_content'] .=  $signature[0]['es_signature'];
+			if ($signature[0]['es_logo']) {
+				$emaildata['eml_email_content'] .= "<img src='" . BASE_URL . "files/email_library/" . $signature[0]['es_logo'] . "'>";
+			}
+		
+		
+			$source = "https://deckquote.s3.amazonaws.com/files/document_check_list_files/" . $dataDoc['doc_file_name'];
+			$destination = BASE_DIR . FILE_PATH . "files/manoj/" . $dataDoc['doc_file_name'];
+			$source = get_file_data($dataDoc['doc_file_name']);
+		
+			copy($source, $destination);
+			
+			$finalatta = BASE_URL . FILE_PATH . "files/manoj/" . $dataDoc['doc_file_name'];
+			$file = BASE_DIR . FILE_PATH . "files/manoj/" . $dataDoc['doc_file_name'];
+			if (file_exists($file)) {
+							$fdata[] = $finalatta;
+							$doclogattach[] =$dataDoc['doc_file_name'];
+			}
+			
+			if (!empty($fdata)) {
+				//$attachmentsend = serialize($fdata);
+				$attachmentsend = $fdata;
+				
+			}
+	
+			$to = 'info@cgfb.com.au';
+			$toname = 'Frank';
+			$fromname = "Support Sales (CGFB)";
+			$from = "supportsales@cgfb.com.au";
+			$subject = $emaildata['eml_subject']. ' '. $busdata['bsn_name'];
+			$email_body = $emaildata['eml_email_content'];
+			
+			
+			require_once(LIB_DIR . 'EmailClass.php');
+			$emailObj = new EmailClass;
+			
+			$emailObj->subject = $subject;
+			$emailObj->message = $email_body;
+			$emailObj->addFrom($from, $fromname);
+			$emailObj->attachments = $attachmentsend;
+			//$emailObj->addTo($to, $toname);
+			
+			//$to = 'supportmanager@cgfb.com.au';
+			//$to = 'manojs@ephpsolutions.com';
+			$emailObj->addTo($to, $toname);
+			$emailObj->addCC('emailbackup@cgfb.com.au', $toname);	
+			
+			
+			$response = $emailObj->sendEmail();
+			$fwViewData['taskmsg'] = "This Task is successfully marked as Done. Email MS-0787 Has Been Successfully Sent";
+		
+			$emailLog['elog_eml_code'] = 'MS-0787 - MS 22';
+			$emailLog['elog_to'] = $to;
+			$emailLog['elog_from'] = $from;
+			$emailLog['elog_subject'] = $subject;
+			$emailLog['elog_email_body'] = $email_body;
+			$emailLog['elog_bsn_id'] = $bsn_id;
+			$emailLog['elog_business'] = $busdata['bsn_name'];
+			$emailLog['elog_attachment1'] = $dataDoc['doc_file_name'];
+			
+			$email_log_Table = new Fw_Db_Table('email_log');
+			$email_log_Table->insertRow($emailLog);
+			
+			// End Sending Email
+				
+				
+				
+				}
+				
+			} else {
+				
+				$sql_markdone = "UPDATE business_tasks SET bt_complete = 1, bt_completed_date = now(), bt_completed_by = $user_id WHERE bt_id = $bt_id";
+
+				$fwDb->queryOne($sql_markdone);
+
+				$taskmsg = "This Task is successfully marked as Done. ";
+				$fwViewData['taskmsg'] = $taskmsg;
+
+				auto_email_auto_text($bt_id);	
+				
 			}
 
+			
 			break;
-
+			
 		case "markTaskDoneProposal":
 
 			$bt_id = $fwRequest->getParamget('bt_id');

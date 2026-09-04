@@ -17,7 +17,9 @@
 <link rel="stylesheet" type="text/css" href="{{$BASE_URL}}js/rangeslider/rangeSlider.css" />
 <script type="text/javascript" src="{{$BASE_URL}}js/rangeslider/rangeSlider.js"></script>
 
-
+<script src="{{$BASE_URL}}js/ckeditor2/ckeditor.js"></script>
+<script src="{{$BASE_URL}}js/ckeditor2/samples/js/sample.js"></script>
+<link rel="stylesheet" type="text/css" href="{{$BASE_URL}}js/ckeditor2/samples/css/sample.css" />
 
 {{if $show_productpage}}
 	{{include file=$productpage}}	
@@ -2249,19 +2251,23 @@ function requestAddTaskRenovation(n)
 		{
 			if(http.status == 200)
 			{
-				var result = http.responseText;
+				var result = http.responseText.trim();;
+				alert(result);
 				document.getElementById('taskmsg').innerHTML = result;
 				requestAllTasks();
-
+				
 			}
 		}
 		
 	}
 	
 
-	function requestTaskDone(a)
+	function requestTaskDone(a,b,c)
 	{
 		var bt_id = a;
+		var bsn_id = b;
+		var tid = c;
+		
 		
 		if(bt_id>0)
 		{
@@ -2271,15 +2277,21 @@ function requestAddTaskRenovation(n)
 			}
 			else
 			{
-				var addStatusTaskUrl = "{{$BASE_URL}}{{$XFA.common}}?a_req=" + 'markTaskDone' + '&bt_id=' + bt_id + "&random=" + Math.random();
+				//var addStatusTaskUrl = "{{$BASE_URL}}{{$XFA.common}}?a_req=" + 'markTaskDone' + '&bt_id=' + bt_id + "&random=" + Math.random();
+				var addStatusTaskUrl = "{{$BASE_URL}}{{$XFA.common}}?a_req=" + 'markTaskDone' + '&bt_id=' + bt_id + '&bsn_id=' + bsn_id + '&tid_id=' + tid +"&random=" + Math.random();
+			
 				http.open('GET',addStatusTaskUrl,true);
 				http.onreadystatechange = responseTaskDone;
+				
 				http.send(null);
+				
 			}
 		}
+		
+			 
 	}
 	
-	
+
 	
 <!-- End - Mark task as Done -->	
 	
@@ -4116,10 +4128,10 @@ setTimeout('iframe5("businessenquiers", "{{$buyer_enquiry}}");', 2500);
             <th width="125">Budget:</th>
             <td><input type="text" name="{{$TABLE}}[bsn_advert_text]" value="{{$detail.bsn_advert_text}}" style="width:240px;" />             
             
-            <!-- <textarea  cols="70" name="{{$TABLE}}[bsn_advert_text]" rows="6">{{$detail.bsn_advert_text}}</textarea>-->
+            <!-- <textarea  cols="70" id="editor1" name="{{$TABLE}}[bsn_advert_text]" rows="6">{{$detail.bsn_advert_text}}</textarea>-->
             </td>
             <th  width="125">Description:</th><td>
-            <textarea  cols="70" name="{{$TABLE}}[bsn_description]" rows="3">{{$detail.bsn_description}}</textarea>
+            <textarea  cols="70" id="editor1" name="{{$TABLE}}[bsn_description]" rows="3">{{$detail.bsn_description}}</textarea>
             </td>
             </tr>
             
@@ -4200,7 +4212,7 @@ setTimeout('iframe5("businessenquiers", "{{$buyer_enquiry}}");', 2500);
              <input type="text" autocomplete="off"  name="{{$TABLE}}[bsn_cd_turnover]" value="{{$detail.bsn_cd_turnover}}" class="vsml" style="width:280px;" />
             </td>
             <th  width="125">Project Address:</th><td>
-            <textarea  cols="70" name="{{$TABLE}}[bsn_address]" rows="3">{{$detail.bsn_address}}</textarea>
+            <textarea  cols="70" id="editor1" name="{{$TABLE}}[bsn_address]" rows="3">{{$detail.bsn_address}}</textarea>
             </td>
             </tr>            
             </table>
@@ -4422,6 +4434,10 @@ setTimeout('iframe5("businessenquiers", "{{$buyer_enquiry}}");', 2500);
         
          
         </table>
+       
+        
+        
+        
         <table >
         
         <tr>
@@ -4641,7 +4657,7 @@ setTimeout('iframe5("businessenquiers", "{{$buyer_enquiry}}");', 2500);
               </tr>
               <tr>
                 <td>Marketing Note:&nbsp;</td>
-                <th  colspan="5"> <textarea  cols="100" name="{{$TABLE}}[bsn_marketing_note]" rows="6">{{$detail.bsn_marketing_note}}</textarea></th>
+                <th  colspan="5"> <textarea  cols="100" id="editor1" name="{{$TABLE}}[bsn_marketing_note]" rows="6">{{$detail.bsn_marketing_note}}</textarea></th>
               </tr>
             </table>
           </div>
@@ -4868,7 +4884,7 @@ setTimeout('iframe5("businessenquiers", "{{$buyer_enquiry}}");', 2500);
               <tr>
                 <th colspan="10" bgcolor="#FFFFFF"> <iframe name="qaIframe_list" id="qaIframe_list"  src="" frameborder="0" scrolling="yes" hspace=10 vspace=5 width="100%" onload="javascript:closeTop();" style="overflow-x: hidden; overflow-y: scroll; " ></iframe>
                   <div id="divaqsection">
-                    <iframe name="qaIframe" id="qaIframe" src="" frameborder="0" scrolling="no" height="800px;" hspace=10 vspace=5 width="100%" onload="javascript:closeTop();" ></iframe>
+                    <iframe name="qaIframe" id="qaIframe" src="" frameborder="0" scrolling="no" height="750px;" hspace=10 vspace=5 width="100%" onload="javascript:closeTop();" ></iframe>
                   </div></th>
               </tr>
               {{else}}
@@ -6444,7 +6460,7 @@ setTimeout('iframe5("businessenquiers", "{{$buyer_enquiry}}");', 2500);
             <tr> 
             <td colspan="3"> Project Story <br />
             
-            <textarea  cols="180" name="{{$TABLE}}[bsn_project_story]" rows="10">{{$detail.bsn_project_story}}</textarea>
+            <textarea  cols="180" id="editor1" name="{{$TABLE}}[bsn_project_story]" rows="10">{{$detail.bsn_project_story}}</textarea>
             </td>
             </tr>
             
@@ -7346,4 +7362,4 @@ requestPurchseOrder();
 </script>
 {{/if}}>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-{{/if}}
+{{/if}}>>>>>>>>>

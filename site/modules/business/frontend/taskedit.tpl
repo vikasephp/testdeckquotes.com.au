@@ -59,6 +59,10 @@ td {font-size:13px; }
     <br />
     <input type="submit" value="Update Task" name="updatetask" />
      <input type="button" value="Close" onclick='javascript:refresh_close();' />
+     <br />
+    
+      <div style="font-size:16px"> {{$msg}} </div>
+   
    
       </td>
   </tr>
