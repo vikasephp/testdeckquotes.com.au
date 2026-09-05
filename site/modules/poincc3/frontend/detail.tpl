@@ -7,7 +7,7 @@
 <script type="text/javascript" src="{{$BASE_URL}}js/tabview/tabcontent.js">  </script>
 
 <style>
-.projectAddress2, .projectAddress3, .projectAddress4, .projectAddress5, .projectAddress6, .projectAddress7, .projectAddress8, .projectAddress9, .projectAddress10 {
+.projectAddress2, .projectAddress3, .projectAddress4, .projectAddress5, .projectAddress6, .projectAddress7, .projectAddress8, .projectAddress9, .projectAddress10, .projectAddress11, .projectAddress12, .projectAddress13, .projectAddress14, .projectAddress15 {
     display: none;
 }
 </style>
@@ -255,6 +255,41 @@ setTimeout('parent.close_win();', 500);
             </td>
 		</tr>
 		
+		<tr class="projectAddress11" {{ if $detail.po_project_number11}}style="display:table-row;"{{/if}}>
+			<th> Project Address11:</th>
+            <td>
+            <input type="text" name="poincc[po_project_number11]" list="address" value="{{$detail.po_project_number11}}" style="width:300px;"/>            
+            </td>
+		</tr>
+		
+		<tr class="projectAddress12" {{ if $detail.po_project_number12}}style="display:table-row;"{{/if}}>
+			<th> Project Address12:</th>
+            <td>
+            <input type="text" name="poincc[po_project_number12]" list="address" value="{{$detail.po_project_number12}}" style="width:300px;"/>            
+            </td>
+		</tr>
+		
+		<tr class="projectAddress13" {{ if $detail.po_project_number13}}style="display:table-row;"{{/if}}>
+			<th> Project Address13:</th>
+            <td>
+            <input type="text" name="poincc[po_project_number13]" list="address" value="{{$detail.po_project_number13}}" style="width:300px;"/>            
+            </td>
+		</tr>
+		
+		<tr class="projectAddress14" {{ if $detail.po_project_number14}}style="display:table-row;"{{/if}}>
+			<th> Project Address14:</th>
+            <td>
+            <input type="text" name="poincc[po_project_number14]" list="address" value="{{$detail.po_project_number14}}" style="width:300px;"/>            
+            </td>
+		</tr>
+		
+		<tr class="projectAddress15" {{ if $detail.po_project_number15}}style="display:table-row;"{{/if}}>
+			<th> Project Address15:</th>
+            <td>
+            <input type="text" name="poincc[po_project_number15]" list="address" value="{{$detail.po_project_number15}}" style="width:300px;"/>            
+            </td>
+		</tr>
+		
 		<tr>
 			<th></th>
 			<td>
@@ -263,7 +298,7 @@ setTimeout('parent.close_win();', 500);
 			<script>
 			$(document).ready(function() {
 
-			var maxIndex = 10;
+			var maxIndex = 15;
 
 			$("#addProjectAddress").click(function() {
 
@@ -293,7 +328,7 @@ setTimeout('parent.close_win();', 500);
 					}
 				}
 
-				alert("Maximum 10 addresses allowed.");
+				alert("Maximum 15 addresses allowed.");
 			});
 
 		});
