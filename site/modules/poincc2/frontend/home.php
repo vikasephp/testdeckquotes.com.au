@@ -482,6 +482,7 @@ $fwViewData['totval'] = $datanew['inv_val'];
 $sql = "SELECT SQL_CALC_FOUND_ROWS null as row_name, " . $TABLE . ".* FROM " . $TABLE . " " . $where . $ord;
 //$sql = "select ".$TABLE.".* FROM ".$TABLE." ".$where . $ord;
 
+
 $fwViewData['sql'] = $sql;
 $expdata = $fwDb->query($sql);
 

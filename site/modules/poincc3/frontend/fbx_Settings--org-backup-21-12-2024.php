@@ -136,7 +136,7 @@ function assign_po_number_to_pdf($po_invoice_doc_name,$print_text)
 {
     $curl = curl_init();
 
-            //"url": "testdeckquotes.com.au/download_files/'.$po_invoice_doc_name.'",
+            //"url": "deckquotes.com.au/download_files/'.$po_invoice_doc_name.'",
             curl_setopt_array($curl, array(
             	CURLOPT_URL => 'https://api.pdf.co/v1/pdf/edit/add',
             	CURLOPT_RETURNTRANSFER => true,
@@ -151,7 +151,7 @@ function assign_po_number_to_pdf($po_invoice_doc_name,$print_text)
                 "encrypt": false,
                 "inline": true,
                 "name": "'.$po_invoice_doc_name.'", 
-                "url": "testdeckquotes.com.au/files/poincc3/po_files_list/'.$po_invoice_doc_name.'",
+                "url": "newdeckquote.com/files/poincc3/po_files_list/'.$po_invoice_doc_name.'",
                 "annotationsString": "430;5;0-;'.$print_text.';12+bold;Arial;FF0000;",
                 "imagesString": "",
                 "fieldsString": ""

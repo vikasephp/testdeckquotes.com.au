@@ -674,6 +674,7 @@
 		<input type="text" name="dt_due_date2" id="ddt2" value="{{$due_dt2_ss}}" class="w16em dateformat-d-ds-m-ds-Y"
 			style="width:70px;" />
 		&nbsp; &nbsp;<input type="submit" value="Search" name="due_date_search" />
+		
 		<br/>
 		
 		Search by P Or NP :
@@ -683,7 +684,6 @@
 			<option value="Project" {{if $search_by_p_or_np == 'Project' }}selected{{/if}}>Project</option>
 			<option value="Non-Project" {{if $search_by_p_or_np == 'Non-Project' }}selected{{/if}}>Non-Project</option>
 		</select>
-		
 
 	</div>
 
