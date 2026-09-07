@@ -52,7 +52,7 @@
 			<th class="topmenu" align="center" valign="middle">Uploaded Document</th>
 			<th class="topmenu" align="center" valign="middle">Link</th>
 			<th class="topmenu" align="center" valign="middle">Uploaded Date</th>
-			<th class="topmenu" align="center" valign="middle">Agent Box</th>
+			<!--<th class="topmenu" align="center" valign="middle">Agent Box</th>-->
 		</tr>
 	</thead>
 	<tbody>
@@ -71,7 +71,7 @@
 				{{$contract_for_sale_link_username}}<br/>{{$contract_for_sale_link_date}}
 				{{/if}}
 			</td>
-			<td>
+			<!--<td>
 				<form name="recmet3" method="post" action="">
 					<label class="switch">
 						<input class="switch-input" type="checkbox" name="report" />
@@ -79,7 +79,7 @@
 						<span class="switch-handle"></span> <br />
 					</label>
 				</form>
-			</td>
+			</td>-->
 		</tr>
 		<tr>
 			<td>Building and Compliance Report</td>
@@ -96,7 +96,7 @@
 				{{$building_comp_link_username}}<br/>{{$building_comp_link_date}}
 				{{/if}}
 			</td>
-			<td>
+			<!--<td>
 				<form name="recmet3" method="post" action="">
 					<label class="switch">
 						<input class="switch-input" type="checkbox" name="report" />
@@ -104,7 +104,7 @@
 						<span class="switch-handle"></span> <br />
 					</label>
 				</form>
-			</td>
+			</td>-->
 		</tr>
 		<tr>
 			<td>Floor Plan</td>
@@ -121,7 +121,7 @@
 				{{$floor_plan_link_username}}<br/>{{$floor_plan_link_date}}
 				{{/if}}
 			</td>
-			<td>
+			<!--<td>
 				<form name="recmet3" method="post" action="">
 					<label class="switch">
 						<input class="switch-input" type="checkbox" name="report" />
@@ -129,7 +129,7 @@
 						<span class="switch-handle"></span> <br />
 					</label>
 				</form>
-			</td>
+			</td>-->
 		</tr>
 		<tr>
 			<td>Rental Appraisal Letter</td>
@@ -146,7 +146,7 @@
 				{{$rental_valuation_link_username}}<br/>{{$rental_valuation_link_date}}
 				{{/if}}
 			</td>
-			<td>
+			<!--<td>
 				<form name="recmet3" method="post" action="">
 					<label class="switch">
 						<input class="switch-input" type="checkbox" name="report" />
@@ -154,7 +154,7 @@
 						<span class="switch-handle"></span> <br />
 					</label>
 				</form>
-			</td>
+			</td>-->
 		</tr>
 		<tr>
 			<td>Sales Appraisal Letter</td>
@@ -171,7 +171,7 @@
 				{{$sales_valuation_link_username}}<br/>{{$sales_valuation_link_date}}
 				{{/if}}
 			</td>
-			<td>
+			<!--<td>
 				<form name="recmet3" method="post" action="">
 					<label class="switch">
 						<input class="switch-input" type="checkbox" name="report" />
@@ -179,7 +179,7 @@
 						<span class="switch-handle"></span> <br />
 					</label>
 				</form>
-			</td>
+			</td>-->
 		</tr>
 		<tr>
 			<td>Suburb Flyover Report</td>
@@ -196,7 +196,7 @@
 				{{$suburb_flyover_link_username}}<br/>{{$suburb_flyover_link_date}}
 				{{/if}}
 			</td>
-			<td>
+			<!--<td>
 				<form name="recmet3" method="post" action="">
 					<label class="switch">
 						<input class="switch-input" type="checkbox" name="report" />
@@ -204,7 +204,7 @@
 						<span class="switch-handle"></span> <br />
 					</label>
 				</form>
-			</td>
+			</td>-->
 		</tr>
 		<tr>
 			<td>AirDNA income report</td>
@@ -221,7 +221,7 @@
 				{{$air_dna_link_username}}<br/>{{$air_dna_link_date}}
 				{{/if}}
 			</td>
-			<td>
+			<!--<td>
 				<form name="recmet3" method="post" action="">
 					<label class="switch">
 						<input class="switch-input" type="checkbox" name="report" />
@@ -229,7 +229,7 @@
 						<span class="switch-handle"></span> <br />
 					</label>
 				</form>
-			</td>
+			</td>-->
 		</tr>
 		{{if $pd_data}}
 		{{foreach from=$pd_data key="key" item="item"}}
@@ -251,7 +251,7 @@
 				{{$item.psrpd_updated_by}}
 				<br/>{{$item.psrpd_updated_date}}
 			</td>
-			<td>
+			<!--<td>
 				<form name="recmet3" method="post" action="">
 					<label class="switch">
 						<input class="switch-input" type="checkbox" name="report" />
@@ -259,7 +259,7 @@
 						<span class="switch-handle"></span> <br />
 					</label>
 				</form>
-			</td>
+			</td>-->
 		</tr>
 		{{/foreach}}
 		{{/if}}

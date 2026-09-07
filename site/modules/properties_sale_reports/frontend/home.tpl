@@ -174,7 +174,7 @@
                 <th class="topmenu" align="center" valign="middle" data-col="auction_date">Auction Date</th>
                 <th class="topmenu" align="center" valign="middle" data-col="all_homes_link">All homes Link</th>
                 <th class="topmenu" align="center" valign="middle" data-col="rea_link">REA Link</th>
-                <th class="topmenu" align="center" valign="middle" data-col="agent_box_link">Agent Box Link</th>
+                <th class="topmenu" align="center" valign="middle" data-col="agent_box_link">Auction Advantage Link</th>
 				<th class="topmenu" align="center" valign="middle" data-col="domains_link">Domains Link</th>
 				<th class="topmenu" align="center" valign="middle" data-col="project_hide">Project Hide</th>
 				<th class="topmenu" align="center" valign="middle" data-col="action">Action</th>
