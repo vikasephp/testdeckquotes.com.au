@@ -1,0 +1,48 @@
+URL TABLE — FileZilla install steps
+===================================
+
+1) DATABASE (phpMyAdmin)
+   - Open phpMyAdmin for the live deckquotes database
+   - Import / run this file:
+     public_html/site/modules/url_table/sql/url_table_install.sql
+   - This creates tables + default types: Document, Template
+
+2) UPLOAD MODULE FOLDER (FileZilla)
+   Upload this entire folder to the server:
+     LOCAL:  .../public_html/site/modules/url_table/
+     SERVER: /public_html/site/modules/url_table/
+
+3) REGISTER CIRCUIT (IMPORTANT — root file is on server only)
+   In FileZilla open:
+     public_html/fbx_Circuits.php
+   Add this line (near other modules such as phone_log / central_letter_database):
+
+     // URL Table / Document Publishing
+     $Fusebox['circuits']['url_table'] = './site/modules/url_table/frontend';
+
+   Save / upload the file.
+
+4) MENU
+   Local default.tpl already has a "URL Table" menu item.
+   Upload:
+     public_html/site/views/default/default.tpl
+   (Or if you prefer not to overwrite the whole menu file, manually add the URL Table
+    menu block from that file near Central Letter Database.)
+
+5) TEST
+   Login to the main site, open:
+     URL Table  (menu)  OR
+     https://www.deckquotes.com.au/url_table.home
+
+   - Create a URL Type if needed (Manage URL Types)
+   - Create New URL (Type + Name; HTML optional)
+   - Copy Link / Open live page
+   - Edit HTML later from the list
+
+NOTES
+-----
+- Live pages require login (same internal access idea as Phone Log / other modules).
+- Generated path example: /document/building-contract-procedure
+- Full open URL example:
+  https://www.deckquotes.com.au/url_table.page/type_slug/document/name_slug/building-contract-procedure
+- Later phases (not in this MVP): Word/PDF conversion, templates, public URLs.
