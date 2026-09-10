@@ -52,6 +52,19 @@
 <div style="float:left; text-align:left;">
 	&nbsp;&nbsp;<input type="button" name="proc_panel" value="Procedure Panel" onclick="javascript:add_procedure();" />
 	<br />
+	
+	<form name="mshort" action="{{$BASE_URL}}{{$XFA.home}}" method="post" style="display: inline-block;">
+		<span>&nbsp;&nbsp;&nbsp;<strong>Search By Project:</strong>&nbsp;&nbsp;</span>
+		<input type="text" name="project_name" value="{{$project_name}}" style="width:330px;" placeholder="Enter Project Name"/>
+		&nbsp;&nbsp;
+		<input type="submit" value="Search" name="search"  />
+	</form>
+	
+	<form name="mshort" action="{{$BASE_URL}}{{$XFA.home}}" method="post" style="display: inline-block;">
+		<input type="submit" value="Reset Search" name="clear"  />
+	</form>
+	<br/>
+ 
 	&nbsp;&nbsp;<input type="button" name="Add New" value="Add New Letter Code"
 		onclick="javascript:add_new('{{$BASE_URL}}timeline_report.add_letter_code');" /> &nbsp;
 	<input type="button" name="edit_cat" value="Edit Letter Code"

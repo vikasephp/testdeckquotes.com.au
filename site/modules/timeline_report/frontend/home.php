@@ -55,6 +55,23 @@ if(isset($_SESSION['show_close'])) {
 	$where = "WHERE tc_status = 'Closed'";
 }
 
+$clear = $fwRequest->getParam('clear', '');
+if (!empty($clear)) {
+    unset($_SESSION['project_name']);
+    $fwViewData['project_name'] = '';
+}
+
+$project_name = trim($fwRequest->getParam('project_name', ''));
+if ($project_name !== '') {
+    $_SESSION['project_name'] = $project_name;
+}
+
+if (!empty($_SESSION['project_name'])) {
+    $where .= " AND (timeline_center.tc_project LIKE '%" .$_SESSION['project_name'] ."%')";
+    $fwViewData['project_name'] = $_SESSION['project_name'];
+}
+
+
 $ord = " Order by STR_TO_DATE(timeline_center.tc_letter_email, '%d-%m-%Y' ) DESC ";
 
 $matsql = "SELECT timeline_center.* from timeline_center " . $where . $ord;
