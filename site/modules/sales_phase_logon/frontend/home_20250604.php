@@ -77,36 +77,14 @@ endif;
 // $fwViewData['lastLoginArr'] = $lastLoginArr;
 // db($lastLoginArr);
 
-$loginData = [];
-// $query = 'SELECT MAX(lu_login_date_time) AS lu_login_date_time, lu_bsn_id, lu_user_id FROM `logged_users` GROUP BY lu_bsn_id;';
-$query = 'SELECT * FROM `logged_users` WHERE lu_id IN (SELECT MAX(lu_id) AS lu_id FROM `logged_users` GROUP BY lu_bsn_id)';
-$result = $fwDb->query($query);
-foreach ($result as $row) {
-	$loginData[$row['lu_bsn_id']] = $row;
-}
-
-$custData = [];
-// $query = 'SELECT bcust_id, bcust_user_id, bcust_misc_email1 FROM `bus_customers`;';
-$query = 'SELECT user_id, user_email FROM `users`;';
-$result = $fwDb->query($query);
-foreach ($result as $row) {
-	$custData[$row['user_id']] = $row;
-}
-
-// $dpnData = [];
-// $query = 'SELECT dpn_id, dpn_bsn_id, dpn_sales_next_meeting_date, dpn_sales_next_meeting_time, dpn_sales_next_meeting_location, dpn_sales_next_meeting_zoom_link, dpn_sales_next_meeting_zoom_id FROM `document_proposal_name`';
-// $result = $fwDb->query($query);
-// foreach ($result as $row) {
-// 	$dpnData[$row['dpn_bsn_id']] = $row;
-// }
-
 $sql = "SELECT  business_sellers.bs_business_id, business_sellers.bs_customers_id, bus_customers.bcust_fname, bus_customers.bcust_lname,
         business.bsn_id, business.bsn_name,business.bsn_sub_status, business.bsn_status, business.bsn_address, business.bsn_type, 
-		bus_customers.bcust_id, bus_customers.bcust_user_id, bus_customers.bcust_misc_moble, bus_customers.bcust_misc_email1, business_sellers.bs_sales_phase_hide, business_sellers.bs_sales_phase_sales, business.bsn_pa_sales_flag, business.bsn_planning_last_login_date, business.bsn_sales_next_meeting_date, business.bsn_sales_next_meeting_time, business.bsn_sales_next_meeting_location, business.bsn_sales_next_meeting_zoom_link, business.bsn_sales_next_meeting_zoom_id, business.bsn_sales_next_meeting_where, business.bsn_splat_id
+		bus_customers.bcust_id, bus_customers.bcust_user_id, bus_customers.bcust_misc_moble, bus_customers.bcust_misc_email1, business_sellers.bs_sales_phase_hide, business_sellers.bs_sales_phase_sales, business.bsn_pa_sales_flag, business.bsn_planning_last_login_date
 		from business_sellers 		
 		Inner Join bus_customers ON business_sellers.bs_customers_id = bus_customers.bcust_id 
 		Inner Join business ON business_sellers.bs_business_id = business.bsn_id " . $where . " 
-		And   business.bsn_status like '%|1|%'  " . " order by business.bsn_status_sys_date DESC";
+		And   business.bsn_status like '%|1|%'  " . " order by business.bsn_status_sys_date DESC" ;
+
 
 if ($sql) {
 	$userData = $fwDb->query($sql);
@@ -185,28 +163,18 @@ if (!empty($userData)) {
 
 			// $link = "http://www.deckquotes.com.au/business.detail/bsn_id/" . $v['bsn_id'];
 			$link = 'https://planningapprovalscanberra.com.au/project/design-phase/' . $v['bsn_id'];
-			$planning_link = $BASE_URL . '/sales_phase_logon.planning/bsn_id/' . $v['bsn_id'];
 
 			$sqlus = "select count(*) as users from business_sellers where bs_business_id = " . $v['bs_business_id'];
 			$udata = $fwDb->queryOne($sqlus);
 
 
-			$setdata2[$k]['link'] = $planning_link;
-			// $setdata2[$k]['planning_link'] = $planning_link;
+			$setdata2[$k]['link'] = $link;
 
 			$setdata2[$k]['status'] = $status;
 			$setdata2[$k]['pt_name'] = $typedata['pt_name'];
 			$setdata2[$k]['users'] =  $udata['users'];
 
-			// $setdata2[$k]['last_logged_on'] = strtotime($v['bsn_planning_last_login_date']) > 0 ? date('d-m-Y h:i:sa', strtotime($v['bsn_planning_last_login_date'])) : '';
-
-			$setdata2[$k]['last_logged_on'] = strtotime($loginData[$v['bsn_id']]['lu_login_date_time']) > 0 ? (date('d-m-Y h:i:sa', strtotime($loginData[$v['bsn_id']]['lu_login_date_time'])) . '<br>' . $custData[$loginData[$v['bsn_id']]['lu_user_id']]['user_email']) : '';
-
-			// $setdata2[$k]['dpn_sales_next_meeting_date'] = $dpnData[$v['bsn_id']]['dpn_sales_next_meeting_date'];
-			// $setdata2[$k]['dpn_sales_next_meeting_time'] = $dpnData[$v['bsn_id']]['dpn_sales_next_meeting_time'];
-			// $setdata2[$k]['dpn_sales_next_meeting_location'] = $dpnData[$v['bsn_id']]['dpn_sales_next_meeting_location'];
-			// $setdata2[$k]['dpn_sales_next_meeting_zoom_link'] = $dpnData[$v['bsn_id']]['dpn_sales_next_meeting_zoom_link'];
-			// $setdata2[$k]['dpn_sales_next_meeting_zoom_id'] = $dpnData[$v['bsn_id']]['dpn_sales_next_meeting_zoom_id'];
+			$setdata2[$k]['last_logged_on'] = strtotime($v['bsn_planning_last_login_date']) > 0 ? date('d-m-Y h:i:sa', strtotime($v['bsn_planning_last_login_date'])) : '';
 		}
 
 		$filter_comp = $fwRequest->getParam('filter_comp', '');
@@ -236,7 +204,3 @@ if (!empty($userData)) {
 
 $fwViewData['current_date'] = date('Y-m-d');
 $fwViewData['title'] = "Sales Phase Logon";
-
-$sqlAppointmentType = "Select * from sales_phase_logon_appointment_type";
-$fwViewData['appointmentType'] = $fwDb->query($sqlAppointmentType);
-

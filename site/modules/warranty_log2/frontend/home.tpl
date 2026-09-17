@@ -550,7 +550,7 @@
 			});
 		});
 	}
-
+	
 	document.addEventListener('DOMContentLoaded', function () {
 
 		var scheduling = document.getElementById('search_by_scheduling');
@@ -649,7 +649,7 @@
 								{{$item_supp.co_company_name}}
 							</option>
 							{{/foreach}}
-						</datalist>
+						</datalist>						
 						<input type="text" list='alloc_supplier' name="alloc_supplier" style="width:200px" placeholder="Select Supplier"
 							value="{{$alloc_supplier}}" />
 						<br/>
@@ -813,7 +813,7 @@
 				<td>
 					<a class="custom_logview" href="{{$BASE_URL}}warranty_log2.view_log_detail/wa_id/{{$item.wa_id}}" target="_blank">Log View</a>
 					{{if $item.wa_attention_req eq 'Yes'}}
-						<img style="height:26px; width:26px; margin: 0 auto;display: block; padding-top: 4px;" src="{{$BASE_URL}}css/admin/images/attention_sign2.png" title="Urgent Attention is Required"/>
+						<img style="height:26px; width:26px; margin: 4px auto 0;display: block; border: 2px solid #000; border-radius: 20px;" src="{{$BASE_URL}}css/admin/images/attention_sign2.png" title="Urgent Attention is Required"/>
 					{{/if}}
 				</td>
 				<td style="background:{{$item.supplier_background_color}};">

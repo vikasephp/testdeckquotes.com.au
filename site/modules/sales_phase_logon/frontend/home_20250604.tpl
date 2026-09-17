@@ -57,31 +57,6 @@
 			});
 		});
 	}
-	
-	function add_appointment_type() {
-		var viewurl = "{{$BASE_URL}}sales_phase_logon.view_appointment_type" + "/random/" + Math.random();
-
-		$(document).ready(function () {
-
-			$.fancybox({
-
-				'width': '90%',
-				'height': '99%',
-				'autoScale': false,
-				'transitionIn': 'elastic',
-				'transitionOut': 'elastic',
-				'speedIn': 300,
-				'speedOut': 300,
-				'overlayShow': true,
-				'overlayColor': '#000',
-				'hideOnOverlayClick': false,
-				'hideOnContentClick': false,
-				'type': 'iframe',
-				'href': viewurl,
-				'scrolling': 'yes'
-			});
-		});
-	}
 
 	function close_win() {
 		$.fancybox.close();
@@ -117,9 +92,7 @@
 
 	<div style="float:left; text-align:left;">
 		&nbsp; &nbsp; <input type="button" name="proc_panel" value="Procedure Panel"
-			onclick="javascript:add_procedure();" /> 
-		&nbsp; &nbsp; <input type="button" name="appointment_type" value="Appointment Type Admin"
-			onclick="javascript:add_appointment_type();" /> <br />
+			onclick="javascript:add_procedure();" /> <br />
 		&nbsp; &nbsp;<input type="text" name="address" style="width:350px;" placeholder="Search for Business Name" />
 		<input type="submit" value="Search" name="search" /> &nbsp;<input type="submit" name="clear"
 			value="Clear Search" />
@@ -145,7 +118,6 @@
 					<th class="topmenu" align="center" valign="middle" width="3%">Mobile</th>
 					<th class="topmenu" align="center" valign="middle" width="3%">Email</th>
 					<th class="topmenu" align="center" valign="middle" width="3%">Last Logged On</th>
-					<th class="topmenu" align="center" valign="middle" width="3%">Next Meeting</th>
 					<th class="topmenu" align="center" valign="middle" width="3%">Hide</th>
 					<th class="topmenu" align="center" valign="middle" width="3%">Control Button<br />Sales Phase</th>
 
@@ -164,49 +136,11 @@
 					<td>{{$item.status}}</td>
 					<td>{{$item.pt_name}}</td>
 					<td>{{$item.bcust_fname}} &nbsp;{{$item.bcust_lname}}</td>
-					<td>
-						<a href="{{$item.link}}" target="blank">Link</a>
-					</td>
+					<td><a href="{{$item.link}}" target="blank">Link</a></td>
 
 					<td>{{$item.bcust_misc_moble}}</td>
 					<td>{{$item.bcust_misc_email1}}</td>
 					<td>{{$item.last_logged_on}}</td>
-					<td>
-						<select name="bsn_sales_next_meeting_where" onchange="updateRecord('{{ $item.bsn_id }}', 'bsn_sales_next_meeting_where', this.value)">
-							<option>Select</option>
-							<option value="Onsite" {{ if $item.bsn_sales_next_meeting_where == 'Onsite' }}selected="selected"{{ /if }}>Onsite</option>
-							<option value="Office" {{ if $item.bsn_sales_next_meeting_where == 'Office' }}selected="selected"{{ /if }}>Office</option>
-							<option value="Online" {{ if $item.bsn_sales_next_meeting_where == 'Online' }}selected="selected"{{ /if }}>Online</option>
-							<option value="Other" {{ if $item.bsn_sales_next_meeting_where == 'Other' }}selected="selected"{{ /if }}>Other</option>
-						</select>
-						<br>
-						<select name="bsn_splat_id" onchange="update_appointmentType('{{ $item.bsn_id }}', this.value)">
-						<option value="-1">Select</option>
-						{{foreach from=$appointmentType key="keyap" item="itemap"}}
-							<option value="{{$itemap.splat_id}}" {{if $itemap.splat_id eq $item.bsn_splat_id}}selected="selected"{{/if}}>{{$itemap.splat_option}}</option>
-						{{/foreach}}
-						</select>
-						<script>
-							function update_appointmentType(id, value) {
-								$.ajax({
-									type: "GET",
-									url: "{{$BASE_URL}}sales_phase_logon.update_appointmentType/bsn_id/" + id + "/value/" + value,
-									success: function (result) {
-									}
-								});
-							}
-						</script>
-						<br>
-						<input type="text" name="bsn_sales_next_meeting_date" placeholder="Date" class="w16em dateformat-d-ds-m-ds-Y dtpic" id="demo452_{{$item.bsn_id}}" onfocus="updateRecord('{{ $item.bsn_id }}', 'bsn_sales_next_meeting_date', this.value)" onchange="updateRecord('{{ $item.bsn_id }}', 'bsn_sales_next_meeting_date', this.value)" value="{{$item.bsn_sales_next_meeting_date}}">
-						<br>
-						<input type="text" name="bsn_sales_next_meeting_time" placeholder="Time" value="{{$item.bsn_sales_next_meeting_time}}" onkeyup="updateRecord('{{ $item.bsn_id }}', 'bsn_sales_next_meeting_time', this.value)">
-						<br>
-						<input type="text" name="bsn_sales_next_meeting_location" placeholder="Location" value="{{$item.bsn_sales_next_meeting_location}}" onkeyup="updateRecord('{{ $item.bsn_id }}', 'bsn_sales_next_meeting_location', this.value)">
-						<br>
-						<input type="text" name="bsn_sales_next_meeting_zoom_link" placeholder="Zoom Link" value="{{$item.bsn_sales_next_meeting_zoom_link}}" onkeyup="updateRecord('{{ $item.bsn_id }}', 'bsn_sales_next_meeting_zoom_link', this.value)">
-						<br>
-						<textarea name="bsn_sales_next_meeting_zoom_id" placeholder="Zoom ID & Password" onkeyup="updateRecord('{{ $item.bsn_id }}', 'bsn_sales_next_meeting_zoom_id', this.value)">{{$item.bsn_sales_next_meeting_zoom_id}}</textarea>
-					</td>
 					<td>
 						<form name="recmet3" method="post" action="">
 							<input type="hidden" name="hide[{{$item.bs_business_id}}]" value="0" />
@@ -310,7 +244,7 @@
 			{{/if}}
 	</tr>
 </table>
-{{/if}} <br>
+{{/if}} <br />
 <br />
 <table id="doclist-table" width="100%" bgcolor="#d3e8d6">
 	<thead>
@@ -321,31 +255,3 @@
 	</thead>
 </table>
 </div>
-
-<script>
-	function updateRecord(primaryID, column, value, updateRecord = false) {
-        const formData = {
-            primaryID: primaryID,
-            column: column,
-            value: value,
-            action: "updateNextMeeting"
-        };
-        $.ajax({
-            type: "POST",
-            url: "{{$BASE_URL}}{{ $BASEFOLDER }}.ajax_handler",
-            data: formData,
-            dataType: "json",
-            encode: true,
-            success: function (data) {
-                if (data.success == true) {
-                    if(updateRecord){
-                        $('#' + column + primaryID).text(value);
-                    }
-                }
-                else {
-                    alert('Some problem in updating the record');
-                }
-            }
-        })
-    }
-</script>

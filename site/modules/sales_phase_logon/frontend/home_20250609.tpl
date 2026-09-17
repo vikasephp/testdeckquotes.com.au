@@ -57,31 +57,6 @@
 			});
 		});
 	}
-	
-	function add_appointment_type() {
-		var viewurl = "{{$BASE_URL}}sales_phase_logon.view_appointment_type" + "/random/" + Math.random();
-
-		$(document).ready(function () {
-
-			$.fancybox({
-
-				'width': '90%',
-				'height': '99%',
-				'autoScale': false,
-				'transitionIn': 'elastic',
-				'transitionOut': 'elastic',
-				'speedIn': 300,
-				'speedOut': 300,
-				'overlayShow': true,
-				'overlayColor': '#000',
-				'hideOnOverlayClick': false,
-				'hideOnContentClick': false,
-				'type': 'iframe',
-				'href': viewurl,
-				'scrolling': 'yes'
-			});
-		});
-	}
 
 	function close_win() {
 		$.fancybox.close();
@@ -117,9 +92,7 @@
 
 	<div style="float:left; text-align:left;">
 		&nbsp; &nbsp; <input type="button" name="proc_panel" value="Procedure Panel"
-			onclick="javascript:add_procedure();" /> 
-		&nbsp; &nbsp; <input type="button" name="appointment_type" value="Appointment Type Admin"
-			onclick="javascript:add_appointment_type();" /> <br />
+			onclick="javascript:add_procedure();" /> <br />
 		&nbsp; &nbsp;<input type="text" name="address" style="width:350px;" placeholder="Search for Business Name" />
 		<input type="submit" value="Search" name="search" /> &nbsp;<input type="submit" name="clear"
 			value="Clear Search" />
@@ -164,9 +137,7 @@
 					<td>{{$item.status}}</td>
 					<td>{{$item.pt_name}}</td>
 					<td>{{$item.bcust_fname}} &nbsp;{{$item.bcust_lname}}</td>
-					<td>
-						<a href="{{$item.link}}" target="blank">Link</a>
-					</td>
+					<td><a href="{{$item.link}}" target="blank">Link</a></td>
 
 					<td>{{$item.bcust_misc_moble}}</td>
 					<td>{{$item.bcust_misc_email1}}</td>
@@ -180,24 +151,7 @@
 							<option value="Other" {{ if $item.bsn_sales_next_meeting_where == 'Other' }}selected="selected"{{ /if }}>Other</option>
 						</select>
 						<br>
-						<select name="bsn_splat_id" onchange="update_appointmentType('{{ $item.bsn_id }}', this.value)">
-						<option value="-1">Select</option>
-						{{foreach from=$appointmentType key="keyap" item="itemap"}}
-							<option value="{{$itemap.splat_id}}" {{if $itemap.splat_id eq $item.bsn_splat_id}}selected="selected"{{/if}}>{{$itemap.splat_option}}</option>
-						{{/foreach}}
-						</select>
-						<script>
-							function update_appointmentType(id, value) {
-								$.ajax({
-									type: "GET",
-									url: "{{$BASE_URL}}sales_phase_logon.update_appointmentType/bsn_id/" + id + "/value/" + value,
-									success: function (result) {
-									}
-								});
-							}
-						</script>
-						<br>
-						<input type="text" name="bsn_sales_next_meeting_date" placeholder="Date" class="w16em dateformat-d-ds-m-ds-Y dtpic" id="demo452_{{$item.bsn_id}}" onfocus="updateRecord('{{ $item.bsn_id }}', 'bsn_sales_next_meeting_date', this.value)" onchange="updateRecord('{{ $item.bsn_id }}', 'bsn_sales_next_meeting_date', this.value)" value="{{$item.bsn_sales_next_meeting_date}}">
+						<input type="text" name="bsn_sales_next_meeting_date" placeholder="Date" class="w16em dateformat-d-ds-m-ds-Y dtpic" id="demo452_{{$item.bsn_id}}" onfocus="updateRecord('{{ $item.bsn_id }}', 'bsn_sales_next_meeting_date', this.value)" value="{{$item.bsn_sales_next_meeting_date}}">
 						<br>
 						<input type="text" name="bsn_sales_next_meeting_time" placeholder="Time" value="{{$item.bsn_sales_next_meeting_time}}" onkeyup="updateRecord('{{ $item.bsn_id }}', 'bsn_sales_next_meeting_time', this.value)">
 						<br>
@@ -206,7 +160,41 @@
 						<input type="text" name="bsn_sales_next_meeting_zoom_link" placeholder="Zoom Link" value="{{$item.bsn_sales_next_meeting_zoom_link}}" onkeyup="updateRecord('{{ $item.bsn_id }}', 'bsn_sales_next_meeting_zoom_link', this.value)">
 						<br>
 						<textarea name="bsn_sales_next_meeting_zoom_id" placeholder="Zoom ID & Password" onkeyup="updateRecord('{{ $item.bsn_id }}', 'bsn_sales_next_meeting_zoom_id', this.value)">{{$item.bsn_sales_next_meeting_zoom_id}}</textarea>
-					</td>
+
+								<script>
+									function update_next_date(id, value) {
+										$.ajax({
+											type: "GET",
+											url: "{{$BASE_URL}}design_report.update_next/dpn_unique_id_nd/" + id + "/value/" + value,
+											success: function (result) {
+											}
+										});
+									}
+								</script>
+								
+								<script>
+									function update_next_time(id, value) {
+										$.ajax({
+											type: "GET",
+											url: "{{$BASE_URL}}design_report.update_next/dpn_unique_id_nt/" + id + "/value/" + value,
+											success: function (result) {
+											}
+										});
+									}
+								</script>
+								
+
+								<script>
+									function update_next_location(id, value) {
+										$.ajax({
+											type: "GET",
+											url: "{{$BASE_URL}}design_report.update_next/dpn_unique_id_nl/" + id + "/value/" + value,
+											success: function (result) {
+											}
+										});
+									}
+								</script>
+							</td>
 					<td>
 						<form name="recmet3" method="post" action="">
 							<input type="hidden" name="hide[{{$item.bs_business_id}}]" value="0" />
@@ -310,7 +298,7 @@
 			{{/if}}
 	</tr>
 </table>
-{{/if}} <br>
+{{/if}} <br />
 <br />
 <table id="doclist-table" width="100%" bgcolor="#d3e8d6">
 	<thead>

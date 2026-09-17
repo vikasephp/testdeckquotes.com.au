@@ -370,7 +370,9 @@ if ($search_by_scheduling) {
 
 
 // Responsible Staff search starts
+
 $res_staff = $fwRequest->getParam('search_by_rs', '');
+
 if ($res_staff):
 
 	$where .= " AND wa_resp_staff   LIKE '%" . $res_staff . "%'  ";
@@ -2557,8 +2559,6 @@ endif;
 if ($matsql) {
 	$userData = $fwDb->query($matsql);
 }
-
-//echo $matsql;
 
 $sql_open = "Select count(*) as open from warranty_log where wa_status = 'Open' ";
 $fwViewData['tot_open'] = $fwDb->queryOne($sql_open);

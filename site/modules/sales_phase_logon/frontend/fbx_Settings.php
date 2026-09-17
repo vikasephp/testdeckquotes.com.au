@@ -14,6 +14,7 @@ $MODULE_SINGULAR = 'Construction Pipeline Report';
 $MODULE_PLURAL = 'Construction Pipeline Reportn';
 $fwViewData['MODULE_SINGULAR'] = $MODULE_SINGULAR;
 $fwViewData['MODULE_PLURAL'] = $MODULE_PLURAL;
+$fwViewData['BASEFOLDER'] = 'sales_phase_logon';
 
 // module table and id
 $TABLE = 'street_sign';

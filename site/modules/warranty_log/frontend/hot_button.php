@@ -14,44 +14,31 @@ if(!empty($text_cust)) {
 	$mobile = str_replace(' ','',$detail['bcust_misc_moble']);
 	
 	if($mobile) {
-	  
+	  require_once(LIB_DIR . 'SmsClass.php');
 	  $sms = $fwRequest->getParam('message', '');
-	  
-	  $username = "manojsoniephp";
- 	  $password = "jaimatadi108";
-      
-	 // $message =  $detail['bcust_fname']. "   Thank you for your enquiry about Canberra Granny Flat Builders and Fixed Price Extensions.";
-	  $message =  $detail['bcust_fname'].' '. $sms; 
-	
-	  $type     = "1-way";
-	  $senderid = "CGFB"; 
-	  $to = $mobile;
-	 
-	  //$to = "919823868963";	
-	
-	  $url = "http://api.directsms.com.au/s3/http/send_message?" .
-			 "username=" . $username . "&" .
-			 "password=" . $password . "&" .
-			 "message="  . urlencode($message) . "&" .
-			 "type="     . $type . "&" .
-			 "senderid=" . urlencode($senderid) . "&" .
-			 "to="       . $to;
+	  $message = $detail['bcust_fname'].' '. $sms;
+	  $to = preg_replace('/\D/', '', $mobile);
 
-		  $output = file($url);
-		
-		  $result = explode(":", $output[0]);
-		
-		  if($result[0] == "id") 
-		  {
-			echo("Message sent\n");
-			$fwViewData['msg'] = "Text Message Has Been Successfully Sent";
-			
-		  }
-		  else
-		  {
-			echo("Error :- " . $result[1] . "\n");
-		  }	
-		
+	  $smsObj = new SmsClass($to, $message);
+	  $response = $smsObj->send();
+	  $smsObj->log($response, [
+		  'module_name' => 'warranty_log.hot_button',
+		  'table_name' => 'bus_customers',
+		  'column_name' => 'bcust_id',
+		  'column_id' => $bcust_id,
+		  'to' => [
+			  [
+				  'email' => $to,
+				  'name' => $detail['bcust_fname'],
+			  ]
+		  ],
+	  ]);
+
+	  if(!empty($response['success'])) {
+		  $fwViewData['msg'] = "Text Message Has Been Successfully Sent";
+	  } else {
+		  $fwViewData['msg'] = "SMS Error: " . $response['message'];
+	  }
 	}		
 }
 // Text Customer Ends
@@ -223,45 +210,33 @@ if(!empty($survey_remainder)) {
 	$mobile = str_replace(' ','',$custdata['bcust_misc_moble']);
 	
 	if($mobile) {
-	  
-	  $sms = $fwRequest->getParam('message', '');
-	  
-	  $username = "manojsoniephp";
- 	  $password = "jaimatadi108";
- 	
-	  $message =  $custdata['bcust_fname'] . "\nThank you for your enquiry about Canberra Granny Flat Builders and Fixed Price Extensions.\n"; 
-      $message .= "Please complete this survey so we can assist you:\n";
+	  require_once(LIB_DIR . 'SmsClass.php');
+	  $message = $custdata['bcust_fname'] . "\nThank you for your enquiry about Canberra Granny Flat Builders and Fixed Price Extensions.\n";
+	  $message .= "Please complete this survey so we can assist you:\n";
 	  $message .= "https://www.surveymonkey.com/r/DCTG97G\n";
 	  $message .= "CGFB and FPE Team";
-	
-	  $type     = "1-way";
-	  $senderid = "CGFB"; 
-	  $to = $mobile;
-	 
-	  //$to = "919823868963";	
-	
-	  $url = "http://api.directsms.com.au/s3/http/send_message?" .
-			 "username=" . $username . "&" .
-			 "password=" . $password . "&" .
-			 "message="  . urlencode($message) . "&" .
-			 "type="     . $type . "&" .
-			 "senderid=" . urlencode($senderid) . "&" .
-			 "to="       . $to;
+	  $to = preg_replace('/\D/', '', $mobile);
 
-		  $output = file($url);
-		  $result = explode(":", $output[0]);
-		
-		  if($result[0] == "id") 
-		  {
-			echo("Message sent\n");
-			$fwViewData['msg'] = "Survey Remainder Email and SMS Has Been Sent Successfully";
-			
-		  }
-		  else
-		  {
-			echo("Error :- " . $result[1] . "\n");
-		  }	
-		
+	  $smsObj = new SmsClass($to, $message);
+	  $response = $smsObj->send();
+	  $smsObj->log($response, [
+		  'module_name' => 'warranty_log.hot_button.survey',
+		  'table_name' => 'bus_customers',
+		  'column_name' => 'bcust_id',
+		  'column_id' => $bcust_id,
+		  'to' => [
+			  [
+				  'email' => $to,
+				  'name' => $custdata['bcust_fname'],
+			  ]
+		  ],
+	  ]);
+
+	  if(!empty($response['success'])) {
+		  $fwViewData['msg'] = "Survey Remainder Email and SMS Has Been Sent Successfully";
+	  } else {
+		  $fwViewData['msg'] = "Survey email sent. SMS Error: " . $response['message'];
+	  }
 	}			
 }
 

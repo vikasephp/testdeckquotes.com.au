@@ -1,0 +1,40 @@
+<?php
+    $postedData = $_POST;
+    $response = ['status' => false, 'errorList' => [], 'success' => true, 'action' => '', 'data' => []];
+    
+    if (!empty($postedData['action']) &&  $postedData['action'] == 'updateNextMeeting') {
+        $primaryID = $postedData['primaryID'];
+        $column = $postedData['column'];
+		$value = trim($postedData['value']);
+        if (!empty($primaryID)) {
+            $table = new Fw_Db_Table('business');
+			$update_data = [];
+			
+			if ($column == 'bsn_sales_next_meeting_date') {
+				if ($value === '' || $value === null) {
+					$update_data[$column] = null;
+				} else {
+					$update_data[$column] = date('Y-m-d', strtotime($value));
+				}
+			} else {
+				$update_data[$column] = $value;
+			}
+			
+            /* $update_data[$column] = $value;
+            if($update_data['bsn_sales_next_meeting_date']){
+                $update_data['bsn_sales_next_meeting_date'] = date('Y-m-d', strtotime($update_data['bsn_sales_next_meeting_date']));
+            } */
+
+            $table->setWhere('bsn_id = ' . $primaryID);
+            $result = $table->updateRow($update_data);
+
+            if ($result) {
+                $response = ['status' => true, 'errorList' => [], 'stage' => "if", 'success' => true, 'data' => $update_data];
+            } else {
+                $response = ['status' => false, 'errorList' => [], 'stage' => "else", 'success' => "", 'data' => []];
+            }
+        }
+    }
+    
+    echo json_encode($response);
+    exit;
