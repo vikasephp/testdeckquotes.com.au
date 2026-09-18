@@ -245,9 +245,6 @@
 	#fancybox-wrap {
 		z-index: 9999999;
 	}
-	#doclist-table th {
-		z-index: 1 !important;
-	}
 </style>
 
 <h3 class="page-title">{{$title}}</h3>
@@ -261,8 +258,6 @@
 		onclick="javascript:add_new('{{$BASE_URL}}presented_but_not_signed_report.add_status');" /> &nbsp;
 	<input type="button" name="edit_st" value="Edit Status Option"
 		onclick="javascript:add_new('{{$BASE_URL}}presented_but_not_signed_report.edit_status');" />&nbsp;
-	<input type="button" name="doc_name_admin" value="Document Name Admin"
-		onclick="javascript:add_new('{{$BASE_URL}}presented_but_not_signed_report.view_doc_admin');" />&nbsp;
 </div>
 <br />
 
@@ -279,7 +274,6 @@
 		<!--<input type="submit" value="Meeting Date" name="meetingdate" />-->
 		&nbsp;&nbsp; <span style="border:1px solid #0CF; padding:3px;"> 7 Days Proposal delivered : {{if $proposaldelivered_data_weekly}}{{$proposaldelivered_data_weekly.weekly_total}}{{/if}} </span>
 		&nbsp;&nbsp; <span style="border:1px solid #0CF; padding:3px;"> YTD Proposal delivered : {{if $proposaldelivered_data_ytd}}{{$proposaldelivered_data_ytd.ytd_total}}{{/if}} </span>
-		&nbsp;&nbsp; <span style="border:1px solid #0CF; padding:3px;"> Likely To Sign : {{if $likelyToSign_totalData}}{{$likelyToSign_totalData.total_likely_to_sign}}{{/if}} </span>
 		<br />
 	</div>
 
@@ -305,11 +299,10 @@
 				<tr>
 					<th class="topmenu" align="center" valign="middle" width="3%">SrNo</th>
 					<th class="topmenu" align="center" valign="middle" width="8%">Address</th>
-					<!--<th class="topmenu" align="center" valign="middle" width="2%">Link</th>-->
+					<th class="topmenu" align="center" valign="middle" width="2%">Link</th>
 					<th class="topmenu" align="center" valign="middle" width="3%">Proposal Checklist Number</th>
 					<th class="topmenu" align="center" valign="middle" width="5%">Letter Text</th>
 					<th class="topmenu" align="center" valign="middle" width="8%">Status</th>
-					<th class="topmenu" align="center" valign="middle" width="5%">Likely To Sign</th>
 					<th class="topmenu" align="center" valign="middle" width="8%">Where We Are At</th>
 					<th class="topmenu" align="center" valign="middle" width="5%">Proposal Alert Complete</th>
 					<th class="topmenu" align="center" valign="middle" width="5%">Face To Face Meeting</th>
@@ -323,9 +316,7 @@
         			<th class="topmenu" align="center" valign="middle" width="5%">Support Places Design On Website</th>-->
 					<th class="topmenu" align="center" valign="middle" width="5%">Special Conditions</th>
 					<th class="topmenu" align="center" valign="middle" width="5%">Recordings</th>
-					<th class="topmenu" align="center" valign="middle" width="5%">Hot Button</th>
 					<th class="topmenu" align="center" valign="middle" width="5%">Hide From Report</th>
-					<th class="topmenu" align="center" valign="middle" width="5%">Add to HIA SIGN Ups</th>
 				</tr>
 			</thead>
 			{{if $list}}
@@ -333,12 +324,12 @@
 				<form name="mlist" method="post">
 					{{assign var=countn value=1}}
 					{{foreach from=$list key="key" item="item"}}
-						<tr bgcolor="{{cycle values='#D3E8D6,WHITE' advance=true}}">
+						<tr bgcolor="{{cycle values=" #D3E8D6,WHITE" advance=true}}">
 							<td> {{$countn}} </td>
 							<td><strong>{{$item.bcust_fname}} &nbsp; {{$item.bcust_lname}}</strong> <br />
-								<a href="{{$item.link}}" target="_blank">{{$item.bsn_address}}</a>
+								{{$item.bsn_address}}
 							</td>
-							<!--<td><a href="{{$item.link}}" target="_blank">Link</a></td>-->
+							<td><a href="{{$item.link}}" target="_blank">Link</td>
 							<td>{{$item.dpn_unique_id}} </td>
 
 							<td>
@@ -376,24 +367,6 @@
 									}
 								</script>
 							</td>
-							
-							<td>
-								<form name="recmet" method="post" action="">
-									<input type="hidden" name="likely_to_sign[{{$item.dpn_unique_id}}]" value="0" />
-									<label class="switch">
-										<input class="switch-input" type="checkbox" name="likely_to_sign[{{$item.dpn_unique_id}}]"
-											value="1" onclick="this.form.submit();" {{if $item.dpn_likely_to_sign eq 1 }}
-											checked="checked" {{/if}} />
-										<span class="switch-label" data-on="Yes" data-off="No"></span>
-										<span class="switch-handle"></span> <br />
-									</label>
-								</form>
-								{{if $item.dpn_likely_to_sign eq 1 }}
-									{{$item.dpn_likely_to_sign_by}}
-									<br/>{{$item.dpn_likely_to_sign_at}}
-								{{/if}}
-							</td>
-							
 							<td>
 								<textarea rows="4" cols="40" class="tinymce2" id="pbnsr_where_we_are_at_{{ $item.dpn_unique_id }}" style="overflow-y: scroll;">{{ $item.changes }}</textarea>
 								<input type="button" value="Save" onclick="addWhereWeAreAt({{ $item.dpn_unique_id }}, {{ $item.bsn_id }})">
@@ -493,10 +466,6 @@
 									class="various">View Special Conditions</a></td>
 							<td><a href="{{$BASE_URL}}presented_but_not_signed_report.viewrecordings/bsn_id/{{$item.bsn_id}}"
 									class="various">View Recordings</a></td>
-									
-							<td>
-								<input type="button" name="doc_name_admin" value="Hot Button" onclick="javascript:add_new('{{$BASE_URL}}presented_but_not_signed_report.create_email_content/bsn_id/{{$item.bsn_id}}');" />
-							</td>
 
 
 							<td>
@@ -508,21 +477,6 @@
 											checked="checked" {{/if}} />
 										<span class="switch-label" data-on="Yes" data-off="No"></span>
 										<span class="switch-handle"></span> <br />
-									</label>
-								</form>
-							</td>
-
-							<td>
-								<form name="add_hia_signup" method="post" action="">
-									<input type="hidden" name="add_hia_signups[{{$item.bsn_id}}]" value="0">
-									<label class="switch">
-										<input class="switch-input" type="checkbox" 
-											name="add_hia_signups[{{$item.bsn_id}}]" 
-											value="1" 
-											onclick="this.form.submit();" 
-											{{if $item.hs_added > 0 }} checked="checked" {{/if}} />
-										<span class="switch-label" data-on="Yes" data-off="No"></span>
-										<span class="switch-handle"></span>
 									</label>
 								</form>
 							</td>
@@ -618,11 +572,9 @@
 
 <script>
 	function addWhereWeAreAt(pbnsr_checklist, pbnsr_bsn_id) {
-		//const id = '#pbnsr_where_we_are_at_' + pbnsr_checklist;
-		const id = '#pbnsr_where_we_are_at_' + String(pbnsr_checklist).padStart(4, '0');
+		const id = '#pbnsr_where_we_are_at_' + pbnsr_checklist;
 		const pbnsr_changes = $(id).val();
-		//if(pbnsr_changes == '') {}
-		if (!pbnsr_changes || pbnsr_changes.trim() === '') {
+		if(pbnsr_changes == '') {
 			alert('Please enter text');
 			return false;
 		}
