@@ -29,7 +29,7 @@
 <!-- / END -->
 <script type="text/javascript" src="{{$BASE_URL}}js/calendar/datepicker.js"></script>
 <script type="text/javascript" src="{{$BASE_URL}}css/default/load.js"></script>
-<script type="text/javascript" src="{{$BASE_URL}}js/gcons_ckeditor5_force.js?v=20250818c"></script>
+<script type="text/javascript" src="{{$BASE_URL}}js/gcons_ckeditor5_force.js?v=20260917d"></script>
 <link type="text/css" rel="stylesheet" href="{{$BASE_URL}}js/calendar/datepicker.css">
 <link rel="stylesheet" type="text/css" href="{{$BASE_URL}}js/tabview/tabcontent.css" />
 <script type="text/javascript" src="{{$BASE_URL}}js/jquery.min.js"></script>
@@ -1503,6 +1503,7 @@ nav ul li { background:#154f6c !important ;}
 						<ul>
 							<li style="width:150px;"><a href="{{$BASE_URL}}dual_occupancy_lead_report.home">Dual Occupancy Lead Report</a></li>
 							<li style="width:150px;"><a href="{{$BASE_URL}}dual_occupancy_canberra_q_and_a.home">Dual Occupancy Canberra Q and A</a></li>
+							<li style="width:150px;"><a href="{{$BASE_URL}}search_with_ai.home">Search With AI</a></li>
 						</ul>
 					</li>
 					

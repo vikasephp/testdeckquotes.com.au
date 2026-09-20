@@ -1182,3 +1182,9 @@ $Fusebox['circuits']['business_document'] = './site/modules/business_document/fr
 
 // Central Planning Clearing Center
 $Fusebox['circuits']['central_planning_clearing_center'] = './site/modules/central_planning_clearing_center/frontend';
+
+//Planning Data Model
+$Fusebox['circuits']['planning_data_model'] = './site/modules/planning_data_model/frontend';
+
+//Dual Occupancy Canberra Search With AI
+$Fusebox['circuits']['search_with_ai'] = './site/modules/search_with_ai/frontend';
