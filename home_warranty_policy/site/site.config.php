@@ -17,8 +17,8 @@ $DB_PASS = 'TMN)xgK#~0Py';*/
 
 $DB_TYPE = 'mysqli';
 $DB_HOST = 'localhost';
-$DB_NAME = 'testdeckquotes_livedb';
-$DB_USER = 'testdeckquotes_livedb';
+$DB_NAME = 'deckquotescom_livedb';
+$DB_USER = 'deckquotescom_livedb';
 $DB_PASS = '*5hB=^]3nbl8';
 $DB_CHARSET = 'utf8';
 

@@ -1,0 +1,32 @@
+[20-Jul-2013 16:35:18] PHP Warning:  imagesx(): supplied argument is not a valid Image resource in /home/turnkeyc/public_html/gcon/site/modules/common.init.php on line 2643
+[20-Jul-2013 16:35:18] PHP Warning:  Division by zero in /home/turnkeyc/public_html/gcon/site/modules/common.init.php on line 2657
+[20-Jul-2013 16:35:18] PHP Warning:  imagesy(): supplied argument is not a valid Image resource in /home/turnkeyc/public_html/gcon/site/modules/common.init.php on line 2647
+[20-Jul-2013 16:35:18] PHP Warning:  imagecreatetruecolor() [<a href='function.imagecreatetruecolor'>function.imagecreatetruecolor</a>]: Invalid image dimensions in /home/turnkeyc/public_html/gcon/site/modules/common.init.php on line 2669
+[20-Jul-2013 16:35:18] PHP Warning:  imagesx(): supplied argument is not a valid Image resource in /home/turnkeyc/public_html/gcon/site/modules/common.init.php on line 2643
+[20-Jul-2013 16:35:18] PHP Warning:  imagesy(): supplied argument is not a valid Image resource in /home/turnkeyc/public_html/gcon/site/modules/common.init.php on line 2647
+[20-Jul-2013 16:35:18] PHP Warning:  imagecopyresampled(): supplied argument is not a valid Image resource in /home/turnkeyc/public_html/gcon/site/modules/common.init.php on line 2670
+[20-Jul-2013 16:35:18] PHP Warning:  imagejpeg(): supplied argument is not a valid Image resource in /home/turnkeyc/public_html/gcon/site/modules/common.init.php on line 2616
+[20-Jul-2013 16:35:18] PHP Warning:  imagesx(): supplied argument is not a valid Image resource in /home/turnkeyc/public_html/gcon/site/modules/common.init.php on line 2643
+[20-Jul-2013 16:35:18] PHP Warning:  Division by zero in /home/turnkeyc/public_html/gcon/site/modules/common.init.php on line 2657
+[20-Jul-2013 16:35:18] PHP Warning:  imagesy(): supplied argument is not a valid Image resource in /home/turnkeyc/public_html/gcon/site/modules/common.init.php on line 2647
+[20-Jul-2013 16:35:18] PHP Warning:  imagecreatetruecolor() [<a href='function.imagecreatetruecolor'>function.imagecreatetruecolor</a>]: Invalid image dimensions in /home/turnkeyc/public_html/gcon/site/modules/common.init.php on line 2669
+[20-Jul-2013 16:35:18] PHP Warning:  imagesx(): supplied argument is not a valid Image resource in /home/turnkeyc/public_html/gcon/site/modules/common.init.php on line 2643
+[20-Jul-2013 16:35:18] PHP Warning:  imagesy(): supplied argument is not a valid Image resource in /home/turnkeyc/public_html/gcon/site/modules/common.init.php on line 2647
+[20-Jul-2013 16:35:18] PHP Warning:  imagecopyresampled(): supplied argument is not a valid Image resource in /home/turnkeyc/public_html/gcon/site/modules/common.init.php on line 2670
+[20-Jul-2013 16:35:18] PHP Warning:  imagejpeg(): supplied argument is not a valid Image resource in /home/turnkeyc/public_html/gcon/site/modules/common.init.php on line 2616
+[22-Jul-2013 10:43:12] PHP Warning:  imagesx(): supplied argument is not a valid Image resource in /home/turnkeyc/public_html/gcon/site/modules/common.init.php on line 2643
+[22-Jul-2013 10:43:12] PHP Warning:  Division by zero in /home/turnkeyc/public_html/gcon/site/modules/common.init.php on line 2657
+[22-Jul-2013 10:43:12] PHP Warning:  imagesy(): supplied argument is not a valid Image resource in /home/turnkeyc/public_html/gcon/site/modules/common.init.php on line 2647
+[22-Jul-2013 10:43:12] PHP Warning:  imagecreatetruecolor() [<a href='function.imagecreatetruecolor'>function.imagecreatetruecolor</a>]: Invalid image dimensions in /home/turnkeyc/public_html/gcon/site/modules/common.init.php on line 2669
+[22-Jul-2013 10:43:12] PHP Warning:  imagesx(): supplied argument is not a valid Image resource in /home/turnkeyc/public_html/gcon/site/modules/common.init.php on line 2643
+[22-Jul-2013 10:43:12] PHP Warning:  imagesy(): supplied argument is not a valid Image resource in /home/turnkeyc/public_html/gcon/site/modules/common.init.php on line 2647
+[22-Jul-2013 10:43:12] PHP Warning:  imagecopyresampled(): supplied argument is not a valid Image resource in /home/turnkeyc/public_html/gcon/site/modules/common.init.php on line 2670
+[22-Jul-2013 10:43:12] PHP Warning:  imagejpeg(): supplied argument is not a valid Image resource in /home/turnkeyc/public_html/gcon/site/modules/common.init.php on line 2616
+[22-Jul-2013 10:43:12] PHP Warning:  imagesx(): supplied argument is not a valid Image resource in /home/turnkeyc/public_html/gcon/site/modules/common.init.php on line 2643
+[22-Jul-2013 10:43:12] PHP Warning:  Division by zero in /home/turnkeyc/public_html/gcon/site/modules/common.init.php on line 2657
+[22-Jul-2013 10:43:12] PHP Warning:  imagesy(): supplied argument is not a valid Image resource in /home/turnkeyc/public_html/gcon/site/modules/common.init.php on line 2647
+[22-Jul-2013 10:43:12] PHP Warning:  imagecreatetruecolor() [<a href='function.imagecreatetruecolor'>function.imagecreatetruecolor</a>]: Invalid image dimensions in /home/turnkeyc/public_html/gcon/site/modules/common.init.php on line 2669
+[22-Jul-2013 10:43:12] PHP Warning:  imagesx(): supplied argument is not a valid Image resource in /home/turnkeyc/public_html/gcon/site/modules/common.init.php on line 2643
+[22-Jul-2013 10:43:12] PHP Warning:  imagesy(): supplied argument is not a valid Image resource in /home/turnkeyc/public_html/gcon/site/modules/common.init.php on line 2647
+[22-Jul-2013 10:43:12] PHP Warning:  imagecopyresampled(): supplied argument is not a valid Image resource in /home/turnkeyc/public_html/gcon/site/modules/common.init.php on line 2670
+[22-Jul-2013 10:43:12] PHP Warning:  imagejpeg(): supplied argument is not a valid Image resource in /home/turnkeyc/public_html/gcon/site/modules/common.init.php on line 2616

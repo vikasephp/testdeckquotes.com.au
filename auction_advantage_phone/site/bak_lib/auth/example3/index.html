@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>iCreativa User Authentication Suite: Example 3.</title>
+    <link href="../styles/styles.css" rel="stylesheet" type="text/css" />
+  </head>
+
+  <body>
+    <h1>iCreativa User Authentication Suite:<br />
+     Example 3.</h1>
+
+    <p>This is Example 3 of iCreativa User Authentication Suite. This example uses the
+    more flexible and complex RoleAuth class.</p>
+
+    <h2>Installing</h2>
+
+    <p>As always this <a href="../install.php">link</a> to the install.php script and
+    follow instructions.</p>
+
+    <h2>Details.</h2>
+
+    <p>In this example I want to introduce you to the concept of Roles for user
+    authentication managment. In the last example, where we used <code>GroupAuth</code>,
+    there where some problems of scalability. If we added just a new group to the system,
+    users in that group couldn&#39;t access protected pages of the site. This kind of
+    problem is fixed using <em>Roles</em> to check if the user can or can&#39;t access a
+    particular page or function of a page.</p>
+
+    <p>The problem and the solution arise from the fact that, even with out modifying the
+    source code, groups <strong>CAN</strong> change (new groups can be added, or some of
+    them can be deleted) but the functionality of a script <strong>WILL NOT</strong>.</p>
+
+    <p>When we define the actions of a script we give them descriptive names like
+    &#39;<code>createUsers</code>&#39;, &#39;<code>editUsersInfo</code>&#39;,
+    &#39;<code>deleteUsers</code>&#39;, etc... and we write functions that accomplish
+    those tasks. Well, users&#39; roles are equivalent to those actions. If a user can
+    &#39;<code>createUsers</code>&#39;, if he can &#39;<code>editUsersInfo</code>&#39;
+    and &#39;<code>deleteUsers</code>&#39; then he is a <strong>System
+    Administrator</strong>.</p>
+
+    <p>What this means, is that we&#39;ll have an &#39;<code>admins</code>&#39; group,
+    and every user that belongs to that group has those roles.</p>
+
+    <p>But some other groups may also have some of those roles. For example, people of
+    the department of <strong>Client Service</strong> will need to
+    &#39;<code>editUsersInfo</code>&#39; in order to change lost passwords.</p>
+
+    <p>In practice, we create &quot;<em>Roles</em>&quot; for each and every action a
+    script can take and assign some or all of those roles to the groups depending on what
+    the users in those groups can do. This way when we create new groups we can assign a
+    mixture of roles from other groups and inmediatly they have access to the areas the
+    are allowed to.</p>
+
+    <p>For example, what if we wanted to show to a new client that administration app
+    that we wrote for another client and we are all proud of. We could just create
+    another group: &quot;<code>guests</code>&quot;, for example, that will have
+    &quot;roles&quot; like &#39;<code>showUsersAdmin</code>&#39;,
+    &#39;<code>showDocumentsAdmin</code>&#39;, from the &quot;<code>admins</code>&quot;
+    group but wouldn&#39;t have &quot;roles&quot; like &#39;<code>createUsers</code>&#39;
+    or &#39;<code>editUsersInfo</code>&#39; so he can&#39;t modify the database.</p>
+
+    <p>This example includes a mostly uncomplete user managment application with three
+    groups created: &quot;members&quot;, &quot;admins&quot; &quot;guests&quot;. Each
+    group has diferent roles, hence they can do diferent things here.</p>
+
+    <p>Explore the code of <a href="admins.php">admins.php</a>; especially, in the
+    functions, how and where they require roles this way you&#39;ll get the hang of
+    it.</p>
+
+    <p>You can start the example following this <a href="main.php">link</a>.</p>
+  </body>
+</html>
+

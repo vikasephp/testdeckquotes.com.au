@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Class: GroupAuth</title>
+    <link href="../styles/styles.css" rel="stylesheet" type="text/css" />
+  </head>
+
+  <body>
+    <h1>Class: GroupAuth</h1>
+<pre>
+public    class GroupAuth extends <a href="Auth.html">Auth</a>
+</pre>
+
+    <p>Group-based user authentication component. This component implements user access by clasifyng users in groups, this way you canrequire that the user belongs to certain group to access the script. </p>
+
+    <p><code><a href="Auth.html">Auth</a><br>&nbsp;&nbsp; |<br>&nbsp;&nbsp;+-- GroupAuth<br></code></p>
+
+    <table border="0">
+
+
+
+
+      <tr valign="top">
+        <th>Author(s):</th>
+
+        <td>Julio César Carrascal Urquijo &lt;<a href="mailto:jcesar@phreaker.net">jcesar@phreaker.net</a>&gt;</td>
+      </tr>
+
+
+
+
+      <tr valign="top">
+        <th>Version:</th>
+
+        <td>2.4</td>
+      </tr>
+
+
+
+
+
+
+
+      <tr valign="top">
+        <th>Methods inherited from Auth</th>
+
+        <td><a href="Auth.html#function_auth">auth</a>, <a href="Auth.html#function_startsession">startsession</a>, <a href="Auth.html#function_forcelogin">forcelogin</a>, <a href="Auth.html#function_logout">logout</a>, <a href="Auth.html#function_refreshinfo">refreshinfo</a>, <a href="Auth.html#function__callback">_callback</a>, <a href="Auth.html#function__connect">_connect</a>, <a href="Auth.html#function__findbyusername">_findbyusername</a>, <a href="Auth.html#function__findbyid">_findbyid</a>, <a href="Auth.html#function__checksession">_checksession</a></td>
+      </tr>
+
+
+
+      <tr valign="top">
+        <th>Fields inherited from Auth</th>
+
+        <td><a href="Auth.html#variable_$user">$user</a>, <a href="Auth.html#variable_$isidentified">$isidentified</a>, <a href="Auth.html#variable_$cachelevel">$cachelevel</a>, <a href="Auth.html#variable_$dbdriver">$dbdriver</a>, <a href="Auth.html#variable_$hostname">$hostname</a>, <a href="Auth.html#variable_$username">$username</a>, <a href="Auth.html#variable_$password">$password</a>, <a href="Auth.html#variable_$database">$database</a>, <a href="Auth.html#variable_$_conn">$_conn</a>, <a href="Auth.html#variable_$_options">$_options</a></td>
+      </tr>
+
+
+    </table>
+
+
+    <h2>Public Method Summary</h2>
+
+    <dl>
+
+
+      <dt>void <a href="#function_GroupAuth()">GroupAuth([ string $options ])</a></dt>
+
+      <dd>Constructor.</dd>
+
+
+      <dt>void <a href="#function_requireGroups()">requireGroups()</a></dt>
+
+      <dd>Require that the user belongs to all groups passed as parameters.</dd>
+
+
+      <dt>void <a href="#function_requireAtLeast()">requireAtLeast()</a></dt>
+
+      <dd>Require that the user belongs to at least to one of this groups.</dd>
+
+    </dl>
+
+
+    <h2>Private Method Summary</h2>
+
+    <dl>
+
+
+      <dt>array <a href="#function__getGroups()">_getGroups(int $userId)</a></dt>
+
+      <dd>Search the groups a user belongs to.</dd>
+
+    </dl>
+
+
+
+
+
+
+
+
+
+
+
+    <h2>Public Method Details</h2>
+
+
+    <h3 id="function_GroupAuth()">GroupAuth</h3>
+<pre>
+public    void GroupAuth( [ string $options ] );
+</pre>
+
+    <p>Constructor. </p>
+
+    <p></p>
+
+    <table border="0">
+
+
+      <tr valign="top">
+        <td><strong>Parameters:</strong></td>
+      </tr>
+
+      <tr valign="top">
+        <td>
+          <table border="0">
+
+
+            <tr valign="top">
+              <td><code>string</code></td>
+
+              <td><code><strong>$options</strong></code></td>
+
+              <td><code>= >>null<<</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td>&#160;</td>
+
+              <td colspan="2">=&gt; val of options. </td>
+            </tr>
+
+          </table>
+        </td>
+      </tr>
+
+
+
+      <tr valign="top">
+        <td><strong>Returns:</strong> <code>void </code><br />
+         </td>
+      </tr>
+
+
+
+
+
+
+
+
+
+
+
+
+    </table>
+
+
+    <h3 id="function_requireGroups()">requireGroups</h3>
+<pre>
+public    void requireGroups(  );
+</pre>
+
+    <p>Require that the user belongs to all groups passed as parameters. Force the user to identify himself (If he hasn't do it before) andensures that he/she belongs to each specified group. You can pass all thegroups you need at once.</p>
+
+    <p></p>
+
+    <table border="0">
+
+
+
+      <tr valign="top">
+        <td><strong>Returns:</strong> <code>void </code><br />
+         </td>
+      </tr>
+
+
+
+
+
+
+
+
+
+
+
+      <tr valign="top">
+        <td><strong>See Also:</strong> <a href="#function_requireAtLeast()">requireAtLeast()</a></td>
+      </tr>
+
+
+
+    </table>
+
+
+    <h3 id="function_requireAtLeast()">requireAtLeast</h3>
+<pre>
+public    void requireAtLeast(  );
+</pre>
+
+    <p>Require that the user belongs to at least to one of this groups. Force the user to identify himself (If he hasn't do it before) andensures that he belongs &quot;at least&quot; to one of the specified groups. Youcan pass all the groups you need at once.</p>
+
+    <p></p>
+
+    <table border="0">
+
+
+
+      <tr valign="top">
+        <td><strong>Returns:</strong> <code>void </code><br />
+         </td>
+      </tr>
+
+
+
+
+
+
+
+
+
+
+
+      <tr valign="top">
+        <td><strong>See Also:</strong> <a href="#function_requireGroups()">requireGroups()</a></td>
+      </tr>
+
+
+
+    </table>
+
+
+
+    <h2>Private Method Details</h2>
+
+
+    <h3 id="function__getGroups()">_getGroups</h3>
+<pre>
+private    array _getGroups( int $userId );
+</pre>
+
+    <p>Search the groups a user belongs to. Returns an associative array for easy access.</p>
+
+    <p></p>
+
+    <table border="0">
+
+
+      <tr valign="top">
+        <td><strong>Parameters:</strong></td>
+      </tr>
+
+      <tr valign="top">
+        <td>
+          <table border="0">
+
+
+            <tr valign="top">
+              <td><code>int</code></td>
+
+              <td><code><strong>$userId</strong></code></td>
+
+              <td><code></code></td>
+            </tr>
+
+            <tr valign="top">
+              <td>&#160;</td>
+
+              <td colspan="2">the user. </td>
+            </tr>
+
+          </table>
+        </td>
+      </tr>
+
+
+
+      <tr valign="top">
+        <td><strong>Returns:</strong> <code>array </code><br />
+         group1 =&gt; true, group2 =&gt; true.</td>
+      </tr>
+
+
+
+
+
+
+
+
+
+
+
+
+    </table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>
+
