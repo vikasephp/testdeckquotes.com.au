@@ -1,7 +1,7 @@
 <?php
 /**
- * Prospect List API Endpoint (Secured with Token Auth)
- * Purpose: Handles authenticated POST requests to insert new prospects.
+ * Dual Occupancy Canberra Search With AI API Endpoint (Secured with Token Auth)
+ * Purpose: Handles authenticated POST requests to insert Search Query and Result.
 **/
 
 header("Content-Type: application/json; charset=UTF-8");
@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-define('API_ACCESS_TOKEN', 'apibtoICccyerjvjaud52RFSbPti7BxaBE2');
+define('API_ACCESS_TOKEN', 'apixbadc82b5ffcc3c64ec0b4ee11b708f2');
 
 $headers = apache_request_headers();
 $authHeader = isset($headers['Authorization']) ? trim($headers['Authorization']) : '';
@@ -46,36 +46,23 @@ if (empty($input)) {
     $input = $_POST; 
 }
 
-$pl_owner_name     = isset($input['pl_owner_name']) ? trim($input['pl_owner_name']) : '';
-$pl_email_address  = isset($input['pl_email_address']) ? trim($input['pl_email_address']) : '';
-$pl_contact_number = isset($input['pl_contact_number']) ? trim($input['pl_contact_number']) : '';
-$pl_message        = isset($input['pl_message']) ? trim($input['pl_message']) : '';
+$docs_question     = isset($input['docs_question']) ? trim($input['docs_question']) : '';
+$docs_answer  = isset($input['docs_answer']) ? trim($input['docs_answer']) : '';
+$docs_confidence = isset($input['docs_confidence']) ? trim($input['docs_confidence']) : '';
 
 
 $errors = [];
 
-if (empty($pl_owner_name)) {
-    $errors['pl_owner_name'] = "Name is required.";
+if (empty($docs_question)) {
+    $errors['docs_question'] = "Question is required.";
 }
 
-if (empty($pl_email_address)) {
-    $errors['pl_email_address'] = "Email address is required.";
-} elseif (!filter_var($pl_email_address, FILTER_VALIDATE_EMAIL)) {
-    $errors['pl_email_address'] = "Invalid email address format.";
+if (empty($docs_answer)) {
+    $errors['docs_answer'] = "Answer is required.";
 }
 
-if (empty($pl_contact_number)) {
-    $errors['pl_contact_number'] = "Contact number is required.";
-} else {
-    $phone_pattern = '/^\+?[0-9\s\-()]{7,15}$/';
-    
-    if (!preg_match($phone_pattern, $pl_contact_number)) {
-        $errors['pl_contact_number'] = "Invalid contact number format. Use digits, spaces, dashes, or +.";
-    }
-}
-
-if (empty($pl_message)) {
-    $errors['pl_message'] = "Message cannot be empty.";
+if (empty($docs_confidence)) {
+    $errors['docs_confidence'] = "Confidence is required.";
 }
 
 if (!empty($errors)) {
@@ -90,21 +77,19 @@ if (!empty($errors)) {
 
 try {
     $detail = [
-        'pl_owner_name'     => $pl_owner_name,
-        'pl_email_address'  => $pl_email_address,
-        'pl_contact_number' => $pl_contact_number,
-        'pl_message'        => $pl_message,
-		'pl_added_method'   => 'Short Stays Website'
+        'docs_question'     => $docs_question,
+        'docs_answer'  => $docs_answer,
+        'docs_confidence' => $docs_confidence
     ];
 
-    $tableTask = new Fw_Db_Table('prospect_list');               
+    $tableTask = new Fw_Db_Table('dual_occupancy_canberra_search');               
     $opr = $tableTask->insertRow($detail); 
     
     if ($opr) {
         http_response_code(201);
         echo json_encode([
             "status" => "success", 
-            "message" => "Prospect successfully created.",
+            "message" => "Dual Occupancy Canberra Search Query and Answer successfully inserted.",
             "data" => [
                 "result" => $opr 
             ]
