@@ -237,6 +237,17 @@ foreach($result as $row){
 	];
 }
 
+$query = 'SELECT ccen_bsn_id, MAX(ccen_id) AS latest_id, (SELECT ccen_notes FROM cou_component_escalation_notes WHERE ccen_bsn_id = CCEN.ccen_bsn_id ORDER BY ccen_id DESC LIMIT 1) AS ccen_notes,(SELECT ccen_created_by FROM cou_component_escalation_notes WHERE ccen_bsn_id = CCEN.ccen_bsn_id ORDER BY ccen_id DESC LIMIT 1) AS ccen_created_by, (SELECT ccen_created_at FROM cou_component_escalation_notes WHERE ccen_bsn_id = CCEN.ccen_bsn_id ORDER BY ccen_id DESC LIMIT 1) AS ccen_created_at FROM `cou_component_escalation_notes` AS CCEN GROUP BY ccen_bsn_id;';
+$result = $fwDb->query($query);
+$cou_component_escalation_notes_array = [];
+foreach($result as $row){
+	$cou_component_escalation_notes_array[$row['ccen_bsn_id']] = [
+		'note' => $row['ccen_notes'],
+		'user' => $users_array[$row['ccen_created_by']],
+		'date' => date('d-M-Y', strtotime($row['ccen_created_at'])),
+	];
+}
+
 $clear_search = $fwRequest->getParam('clear_search', '');
 if (!empty($clear_search)) {
 	unset($_SESSION['project_search']);
@@ -251,7 +262,7 @@ if (!empty($clear_search)) {
 }
 
 $sql = "SELECT  business_sellers.bs_business_id, business_sellers.bs_customers_id, bus_customers.bcust_fname, bus_customers.bcust_lname,
-        business.bsn_id, business.bsn_name, business.bsn_sub_status, business.bsn_status, business.bsn_address, business.bsn_cou_urgency, bus_customers.bcust_id,
+        business.bsn_id, business.bsn_name, business.bsn_sub_status, business.bsn_status, business.bsn_address, business.bsn_cou_urgency, business.bsn_cou_escalation_required, business.bsn_cou_escalation_user, business.bsn_cou_escalation_date, business.bsn_cou_escalation_yes_at, bus_customers.bcust_id,
 	    business_sellers.bs_cou_traffic_light, business_sellers.bs_cou_application, business_sellers.bs_cou_appl_user,
 	    business_sellers.bs_cou_appl_date, business_sellers.bs_cou_hide, business_sellers.bs_cou_sub_status, business.bsn_cd_block,
 	    business.bsn_cd_section , business_sellers.bs_cou_remove_warranty, business_sellers.bs_cou_notes, business_sellers.bs_cou_notes_user, 
@@ -717,6 +728,16 @@ if (!empty($userData)) {
 			$setdata2[$k]['cou_component_document_report_notes_note'] = $cou_component_document_report_notes_note;
 			$setdata2[$k]['cou_component_document_report_notes_user'] = $cou_component_document_report_notes_user;
 			$setdata2[$k]['cou_component_document_report_notes_date'] = $cou_component_document_report_notes_date;
+
+			$esc_notes_text = $esc_notes_user = $esc_notes_date = '';
+			if(isset($cou_component_escalation_notes_array[$v['bsn_id']])) {
+				$esc_notes_text = $cou_component_escalation_notes_array[$v['bsn_id']]['note'];
+				$esc_notes_user = $cou_component_escalation_notes_array[$v['bsn_id']]['user'];
+				$esc_notes_date = $cou_component_escalation_notes_array[$v['bsn_id']]['date'];
+			}
+			$setdata2[$k]['esc_notes_text'] = $esc_notes_text;
+			$setdata2[$k]['esc_notes_user'] = $esc_notes_user;
+			$setdata2[$k]['esc_notes_date'] = $esc_notes_date;
 		}
 
 		$filter_comp = $fwRequest->getParam('filter_comp', '');

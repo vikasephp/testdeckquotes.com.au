@@ -163,6 +163,15 @@
 			$('.other-column').show();
 		}
 	}
+	function update_escalation_flag(id, value) {
+		$.ajax({
+			type: "GET",
+			url: "{{$BASE_URL}}cou_component_escalation_report.home/update_escalation/1/bsn_id/" + id + "/value/" + value,
+			success: function () {
+				window.location.reload();
+			}
+		});
+	}
 </script>
 
 <style>
@@ -323,7 +332,9 @@
 						<th class="topmenu other-column" align="center" valign="middle" width="3%">Customer Has<br />Taken The Occupancy</th>
 						<th class="topmenu other-column" align="center" valign="middle" width="3%">Sub Status</th>
 				
+						<th class="topmenu" align="center" valign="middle" width="10%">Escalation Required</th>
 						<th class="topmenu other-column" align="center" valign="middle" width="10%" data-col="notes">Notes</th>
+						
 						<th class="topmenu other-column" align="center" valign="middle" width="3%" data-col="construction_alerts">Construction Alerts</th>
 						<th class="topmenu" align="center" valign="middle" width="3%">Customer Walkthrough</th>
 						<th class="topmenu" align="center" valign="middle" width="3%">Inspections Records</th>
@@ -802,6 +813,22 @@
 
 							</script>
 						</td>-->
+						<td {{if $item.bsn_cou_escalation_required eq 'Yes'}} style="background:#F00;" {{/if}}>
+							<select name="escalation_required" onchange="update_escalation_flag({{$item.bsn_id}}, this.value)">
+								<option value="Yes" {{if $item.bsn_cou_escalation_required eq 'Yes'}}selected="selected"{{/if}}>Yes</option>
+								<option value="No" {{if $item.bsn_cou_escalation_required neq 'Yes'}}selected="selected"{{/if}}>No</option>
+							</select>
+							<div>
+								{{$item.bsn_cou_escalation_user}}<br />
+								{{$item.bsn_cou_escalation_date}}
+							</div>
+							<div style="margin-top:8px;">
+								<a href="{{$BASE_URL}}cou_component_escalation_report.view_esc_notes/bsn_id/{{$item.bsn_id}}" class="various">Notes</a>
+								<p>{{$item.esc_notes_text}}</p>
+								<p style="font-weight: bold; margin-top: 4px;">{{$item.esc_notes_user}}</p>
+								<p style="font-weight: bold;">{{$item.esc_notes_date}}</p>
+							</div>
+						</td>
 						<td class="other-column" data-col="notes" style="min-width: 225px;">
 							<div style="display: flex; gap: 10px; flex-direction: column;">
 								<div>
@@ -840,6 +867,7 @@
 							</script> -->
 
 						</td>
+						
 						<td class="other-column" data-col="construction_alerts">
 							<a href="{{$BASE_URL}}cou_component_document_report.view_construction_alert/bsn_id/{{$item.bsn_id}}"
 								class="various">Construction Alert</a>
