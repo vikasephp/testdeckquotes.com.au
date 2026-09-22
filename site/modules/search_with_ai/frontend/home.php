@@ -1,7 +1,7 @@
 <?php
 $pagenum = $fwRequest->getparamget('pagenum', 0);
 
-$matsql = "SELECT $TABLE.* FROM $TABLE";
+$matsql = "SELECT $TABLE.* FROM $TABLE order by $TABLE.docs_id DESC";
 //echo $matsql;
 
 $resultData = $fwDb->query($matsql);

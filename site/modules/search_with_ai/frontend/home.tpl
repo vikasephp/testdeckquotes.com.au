@@ -96,6 +96,7 @@
                 <th class="topmenu" align="center" valign="middle">Question</th>
                 <th class="topmenu" align="center" valign="middle">Answer</th>
                 <th class="topmenu" align="center" valign="middle">Confidence</th>
+				<th class="topmenu" align="center" valign="middle">Docs Conversion Id</th>
                 <th class="topmenu" align="center" valign="middle">Created On</th>
             </tr>
         </thead>
@@ -107,6 +108,7 @@
 				<td>{{$item.docs_question}}</td>
 				<td>{{$item.docs_answer}}</td>
 				<td>{{$item.docs_confidence}}</td>
+				<td>{{$item.docs_conversion_id}}</td>
 				<td>{{$item.docs_created_at|date_format:"%d %b %Y"}}</td>
             </tr>
 			{{assign var="mem_count" value=$mem_count+1}}
