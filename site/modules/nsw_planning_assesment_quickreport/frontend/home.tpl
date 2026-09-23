@@ -517,7 +517,7 @@
 							</form>
 							{{if $item.bs_paqr_meeting_o eq 1}} Meeting Confirmed On
 							{{$item.bs_paqr_meeting_o_date}}<br />
-							<!-- By : {{$item.bs_paqr_meeting_o_user}} -->{{/if}}
+							By: {{$item.bs_paqr_meeting_o_user}}{{/if}}
 						</td>
 
 						<td style="text-align:center;">{{$item.status}}</td>

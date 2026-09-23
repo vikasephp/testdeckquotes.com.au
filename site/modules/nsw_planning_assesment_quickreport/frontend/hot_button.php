@@ -14,44 +14,28 @@ if(!empty($text_cust)) {
 	$mobile = str_replace(' ','',$detail['bcust_misc_moble']);
 	
 	if($mobile) {
-	  
+	  require_once(LIB_DIR . 'SmsClass.php');
 	  $sms = $fwRequest->getParam('message', '');
-	  
-	  $username = "manojsoniephp";
- 	  $password = "jaimatadi108";
       
 	 // $message =  $detail['bcust_fname']. "   Thank you for your enquiry about Canberra Granny Flat Builders and Fixed Price Extensions.";
 	  $message =  $detail['bcust_fname'].' '. $sms; 
 	
-	  $type     = "1-way";
-	  $senderid = "CGFB"; 
 	  $to = $mobile;
 	 
 	  //$to = "919823868963";	
-	
-	  $url = "http://api.directsms.com.au/s3/http/send_message?" .
-			 "username=" . $username . "&" .
-			 "password=" . $password . "&" .
-			 "message="  . urlencode($message) . "&" .
-			 "type="     . $type . "&" .
-			 "senderid=" . urlencode($senderid) . "&" .
-			 "to="       . $to;
 
-		  $output = file($url);
-		
-		  $result = explode(":", $output[0]);
-		
-		  if($result[0] == "id") 
-		  {
-			echo("Message sent\n");
-			$fwViewData['msg'] = "Text Message Has Been Successfully Sent";
-			
-		  }
-		  else
-		  {
-			echo("Error :- " . $result[1] . "\n");
-		  }	
-		
+	  $smsObj = new SmsClass($to, $message);
+	  $response = $smsObj->send();
+
+	  if(!empty($response['success'])) 
+	  {
+		echo("Message sent\n");
+		$fwViewData['msg'] = "Text Message Has Been Successfully Sent";
+	  }
+	  else
+	  {
+		echo("Error :- " . $response['message'] . "\n");
+	  }
 	}		
 }
 // Text Customer Ends
@@ -223,44 +207,29 @@ if(!empty($survey_remainder)) {
 	$mobile = str_replace(' ','',$custdata['bcust_misc_moble']);
 	
 	if($mobile) {
-	  
+	  require_once(LIB_DIR . 'SmsClass.php');
 	  $sms = $fwRequest->getParam('message', '');
-	  
-	  $username = "manojsoniephp";
- 	  $password = "jaimatadi108";
  	
 	  $message =  $custdata['bcust_fname'] . "\nThank you for your enquiry about Canberra Granny Flat Builders and Fixed Price Extensions.\n"; 
       $message .= "Please complete this survey so we can assist you:\n";
 	  $message .= "https://www.surveymonkey.com/r/DCTG97G\n";
 	  $message .= "CGFB and FPE Team";
-	
-	  $type     = "1-way";
-	  $senderid = "CGFB"; 
+
 	  $to = $mobile;
 	 
 	  //$to = "919823868963";	
-	
-	  $url = "http://api.directsms.com.au/s3/http/send_message?" .
-			 "username=" . $username . "&" .
-			 "password=" . $password . "&" .
-			 "message="  . urlencode($message) . "&" .
-			 "type="     . $type . "&" .
-			 "senderid=" . urlencode($senderid) . "&" .
-			 "to="       . $to;
 
-		  $output = file($url);
-		  $result = explode(":", $output[0]);
-		
-		  if($result[0] == "id") 
-		  {
-			echo("Message sent\n");
-			$fwViewData['msg'] = "Survey Remainder Email and SMS Has Been Sent Successfully";
-			
-		  }
-		  else
-		  {
-			echo("Error :- " . $result[1] . "\n");
-		  }	
-		
+	  $smsObj = new SmsClass($to, $message);
+	  $response = $smsObj->send();
+
+	  if(!empty($response['success'])) 
+	  {
+		echo("Message sent\n");
+		$fwViewData['msg'] = "Survey Remainder Email and SMS Has Been Sent Successfully";
+	  }
+	  else
+	  {
+		echo("Error :- " . $response['message'] . "\n");
+	  }
 	}			
 }

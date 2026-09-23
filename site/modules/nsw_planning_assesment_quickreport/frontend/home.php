@@ -16,6 +16,10 @@ if (!empty($submitmoveto)) {
 		$tablebusiness->setWhere('bsn_id = ' . $mtk);
 		$this_id = $tablebusiness->updateRow($moveDetail);
 	}
+	
+	$redirectUrl = $_SERVER['REQUEST_URI'];
+    header("Location: $redirectUrl");
+    exit; 
 }
 
 
