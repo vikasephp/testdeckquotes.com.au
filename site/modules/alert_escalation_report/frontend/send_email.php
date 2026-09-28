@@ -30,15 +30,20 @@ $query = 'SELECT
         COUNT(CASE 
             WHEN STR_TO_DATE(car_escalation_date, "%d-%m-%Y") < DATE_SUB(CURDATE(), INTERVAL 30 DAY) 
             THEN 1 
-        END) AS logs_older_than_30_days
+        END) AS logs_older_than_30_days,
+		COUNT(CASE
+            WHEN car_esc_reason IS NULL OR TRIM(car_esc_reason) = ""
+            THEN 1
+        END) AS log_with_no_reason
     FROM
         construction_alert_report 
     WHERE
-        car_add_to_ae = 1';
+        car_add_to_ae = 1 and car_status <> "Closed" ';
 $result = $fwDb->queryOne($query);
 $total_escalation_logs = !empty($result['total_logs']) ? $result['total_logs'] : 0;
 $over_30_days_count = !empty($result['logs_older_than_30_days']) ? $result['logs_older_than_30_days'] : 0;
 $logs_last_7_days = !empty($result['logs_last_7_days']) ? $result['logs_last_7_days'] : 0;
+$log_with_no_reason = !empty($result['log_with_no_reason']) ? $result['log_with_no_reason'] : 0;
 
 $current_date = date('d-m-Y');
 
@@ -49,6 +54,7 @@ $email_content .= '<p style="margin-bottom: 15px;">Alert Escalation Report: <a h
 $email_content .= '<p style="margin-bottom: 15px;"><strong>Summary as of '.$current_date.':</strong></p>';
 $email_content .= '<ul style="margin-bottom: 15px;">';
     $email_content .= ('<li>Total escalated logs: ' . $total_escalation_logs . '</li>');
+	$email_content .= ('<li>Escalated alerts with no response: ' . $log_with_no_reason . '</li>');
 	$email_content .= ('<li>Logs added within the last seven days: ' . $logs_last_7_days. '</li>');
     $email_content .= ('<li>Logs open for more than 30 days: ' . $over_30_days_count . '</li>');
 $email_content .= '</ul>';
