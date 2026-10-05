@@ -84,6 +84,7 @@ $sql = "Select business.bsn_id, business.bsn_address, business.bsn_status, busin
         business.bsn_esmr_service_mark, business.bsn_esmr_hide, business.bsn_esmr_person_resp from business
         where ( business.bsn_status like '%|2|%'  OR business.bsn_status like '%|3|%' ) AND " .$where   ;  
 
+
 if($sql){$userData = $fwDb->query($sql);}
 
 if(!empty($userData))
