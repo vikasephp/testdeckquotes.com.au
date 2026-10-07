@@ -37,21 +37,20 @@ if (!empty($submit)) {
 		
 		$message = '<html> <body>';
 		$message .= '<p>Dear '.$customerSalu.',</p>';
-		$message .= '<p>We would like to let you know that an updated draft of your "Latest Merged Plans – Customer Designer" for Checklist '.$checklistNumber.' has been received.</p>';
-		$message .= '<p>Your Customer Designer is currently reviewing the revisions as part of our internal quality assurance process to verify they align with your scope and meet all relevant requirements and compliance. As part of this process, there may be minor adjustments identified before the plans are presented to you.</p>';
-		$message .= '<p>A copy of the current draft has been uploaded to the Planning Approvals Canberra portal for your reference. It is available in "<strong>Your Latest Merged Plans</strong>" section.</p>';
-		$message .= '<p>Your designer will be in touch with you shortly to discuss any updates or next steps.</p>';
+		$message .= '<p>We are pleased to inform you that a new version of "Latest Merged Plans - Customer Designer" for Checklist '.$checklistNumber.' have been uploaded to the Planning Approvals Canberra portal.</p>';
+		$message .= '<p>Our team is reviewing the latest revision and changes may be required to meet your scope better or ensure compliance.</p>';
+		$message .= '<p>In the meantime, you can now view the latest draft plans. Kindly Check "<strong>Your Latest Merged Plans</strong>" section.</p>';
 		$message .= '<p>Please find below the access details:</p>';
 		$message .= '<p>Portal Link: <a href="https://planningapprovalscanberra.com.au/login"  target="_blank">https://planningapprovalscanberra.com.au/login</a> </p>';
 		$message .= '<p>Email/Username: '.$customerEmail.'</p>';
 		$message .= '<p>Number/Password: '.$customerNumber.'</p>';
-		$message .= "<p>To stay up to date with your project\'s progress, simply visit <a href='https://planningapprovalscanberra.com.au/login' target='_blank'>https://planningapprovalscanberra.com.au/login</a> and log in using the credentials above.</p>";
+		$message .= "<p>To stay up to date with your project's progress, simply visit <a href='https://planningapprovalscanberra.com.au/login' target='_blank'>https://planningapprovalscanberra.com.au/login</a> and log in using the credentials above.</p>";
 		$message .= "<p>We hope this information is helpful. If you have any questions or need further assistance, please don't hesitate to reach out.</p>";
 		$message .= '<p>Thank you</p>';
 		
 		$message .= '<p><span style="font-family:calibri"><span style="font-size:12pt"><span style="color:#3db3e5">CGFB Designs Team</span><br />
 					<span style="color:#3db3e5">Phone: 1300 979 658&nbsp;<span style="color:#edaa02">|</span>&nbsp;Fax: 1300 979 657</span><br />
-					<span style="color:#3db3e5">Postal: Unit 11/160 Lysaght Street, Mitchell ACT 2911</span><br />
+					<span style="color:#3db3e5">Postal: GPO Box 2265 Canberra City 2602</span><br />
 					<span style="color:#3db3e5">ACT Building Lic: 2012767</span></span></span></p>
 					<p><img src='.BASE_URL.'images/cgfb_sign_footer.png /></p>
 					';
