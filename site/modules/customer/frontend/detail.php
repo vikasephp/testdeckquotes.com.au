@@ -20,9 +20,9 @@ $submit = $fwRequest->getParam('subAddDetail', '');
 $fwViewData['buyer_enquiry'] = (int)$fwRequest->getParam('be_id', 0);	
 
 $servername = "localhost";
-$username = "testdeckquotes_livedb";
+$username = "deckquotescom_livedb";
 $password = "*5hB=^]3nbl8";
-$dbname = "testdeckquotes_livedb";
+$dbname = "deckquotescom_livedb";
 $mysqli = new mysqli($servername, $username, $password, $dbname);
 
 		
