@@ -1189,7 +1189,7 @@ if ($requset) {
 			$emailObj->message = $email_body;
 			$emailObj->addFrom($from, $fromname);
 			$emailObj->attachments = $attachmentsend;
-			//$emailObj->addTo($to, $toname);
+			$emailObj->addTo($to, $toname);
 			
 			//$to = 'supportmanager@cgfb.com.au';
 			//$to = 'manojs@ephpsolutions.com';

@@ -255,27 +255,42 @@ function auto_email_auto_text($taskid)
    
     if($comp == 1 && $sendsms == 1)
    {
+   
+	    $username = "manojsoniephp";
+ 	    $password = "jaimatadi108";
+	
 	 // Set the attributes of the message to send
 	 //$message  = "Hello From Manoj";
 	  $message = $message_body;
+	  $type     = "1-way";
 	  //$senderid = "ephpmanoj";
+	  $senderid = "CGFB";
 	  //$to       = "61400446605";
 	  //$to       = "919823868963";
 	
 	  $to = $mobile;
+	
+	  $url = "http://api.directsms.com.au/s3/http/send_message?" .
+		 "username=" . $username . "&" .
+		 "password=" . $password . "&" .
+		 "message="  . urlencode($message) . "&" .
+		 "type="     . $type . "&" .
+		 "senderid=" . urlencode($senderid) . "&" .
+		 "to="       . $to;
 
-	  require_once(LIB_DIR . 'SmsClass.php');
-	  $smsObj = new SmsClass($to, $message);
-	  $response = $smsObj->send();
+  // Send the request
+  $output = file($url);
 
-	  if(!empty($response['success'])) 
-	  {
-	    echo("Message sent\n");
-	  }
-	  else
-	  {
-	    echo("Error :- " . $response['message'] . "\n");
-	  }
+  $result = explode(":", $output[0]);
+
+  if($result[0] == "id") 
+  {
+    echo("Message sent\n");
+  }
+  else
+  {
+    echo("Error :- " . $result[1] . "\n");
+  }
 exit;	
 	   
    }
