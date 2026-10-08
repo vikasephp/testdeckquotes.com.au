@@ -32,14 +32,35 @@
             fwrite($txt, $file_raw_data);
             fclose($txt);
             
-            header('Content-Description: File Transfer');
-            header('Content-Disposition: attachment; filename='.basename($_SERVER['DOCUMENT_ROOT'].'/download_files/'.$file));
+            $disposition = 'attachment';
+            $contentType = isset($file_data->headers['type']) ? $file_data->headers['type'] : '';
+            if (isset($postedData['view']) && $postedData['view'] === 'inline') {
+                $disposition = 'inline';
+                $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+                $types = array(
+                    'jpg' => 'image/jpeg',
+                    'jpeg' => 'image/jpeg',
+                    'png' => 'image/png',
+                    'gif' => 'image/gif',
+                    'webp' => 'image/webp',
+                    'bmp' => 'image/bmp',
+                    'pdf' => 'application/pdf',
+                );
+                if (isset($types[$ext])) {
+                    $contentType = $types[$ext];
+                }
+            }
+            if ($disposition === 'inline') {
+                header('Content-Disposition: inline; filename="'.basename($file).'"');
+            } else {
+                header('Content-Description: File Transfer');
+                header('Content-Disposition: attachment; filename="'.basename($file).'"');
+            }
             header('Expires: 0');
             header('Cache-Control: must-revalidate');
             header('Pragma: public');
             header('Content-Length: ' . filesize($_SERVER['DOCUMENT_ROOT'].'/download_files/'.$file));
-           
-            header("Content-Type: ".$file_data->headers['type']); 
+            header('Content-Type: '.$contentType); 
             readfile($_SERVER['DOCUMENT_ROOT'].'/download_files/'.$file); exit();
         	 
             } catch (ErrorException $ex) {

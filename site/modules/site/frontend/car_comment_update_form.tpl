@@ -1,4 +1,4 @@
-<script type="text/javascript" language="javascript" src="{{$BASE_URL}}js/form_validator/gen_validatorv31.js"></script>
+﻿<script type="text/javascript" language="javascript" src="{{$BASE_URL}}js/form_validator/gen_validatorv31.js"></script>
 <script type="text/javascript" src="{{$BASE_URL}}css/default/load.js"></script>
 <script type="text/javascript" src="{{$BASE_URL}}js/calendar/datepicker.js"></script>
 <link type="text/css" rel="stylesheet" href="{{$BASE_URL}}js/calendar/datepicker.css">
@@ -20,6 +20,22 @@
 		background: #06C !important;
 		font-size: 18px;
 	}
+	.car-phone .gcons-document-outline {
+		display: none !important;
+	}
+	.car-phone .gcons-ck-with-outline {
+		display: block !important;
+	}
+	.car-phone .gcons-ck-editor-col,
+	.car-phone .ck.ck-editor {
+		width: 100% !important;
+		max-width: 100% !important;
+	}
+	.car-phone .ck.ck-editor__top,
+	.car-phone .ck.ck-toolbar {
+		display: flex !important;
+		flex-wrap: wrap;
+	}
 </style>
 
 <div align="center" style="min-height:350px;">
@@ -32,6 +48,10 @@
 			{{if $opr}}
 			<tr>
 				<th colspan="2" style="color:#0C6; font-size:14px;">Comment has been added successfully</th>
+			</tr>{{/if}}
+			{{if $form_error}}
+			<tr>
+				<th colspan="2" style="color:#FF0000; font-size:14px;">{{$form_error}}</th>
 			</tr>{{/if}}
 
 			<tr>
@@ -119,15 +139,20 @@
 
 			<tr>
 				<th>Commernt From Supplier</th>
-				<td><textarea name="car[car_comment]" rows="10" id="editor" cols="100" /> </textarea> </td>
+				<td>
+					<textarea name="car[car_comment]" rows="10" id="editor" cols="100"></textarea>
+				</td>
 			</tr>
 
 			<tr>
 				<th>Alert Resolved</th>
 				<td>
-					<input type="radio" name="car[cu_alert_resolved]" value="1" /> Yes
-					&nbsp; &nbsp;
-					<input type="radio" name="car[cu_alert_resolved]" value="0" /> No
+					<label style="display:inline-block; padding:12px 18px; font-size:18px;">
+						<input type="radio" name="car[cu_alert_resolved]" value="1" /> Yes
+					</label>
+					<label style="display:inline-block; padding:12px 18px; font-size:18px;">
+						<input type="radio" name="car[cu_alert_resolved]" value="0" /> No
+					</label>
 				</td>
 			</tr>
 
@@ -151,10 +176,169 @@
 		frmvalidator.EnableMsgsTogether();
 		//frmvalidator.addValidation("car[car_comment]","minlen=10", "Please specify comment (Minimum 15 Character required).");
 		frmvalidator.addValidation("car[car_which_suplier]", "req", "Please specify supplier name.");
+		frmvalidator.addValidation("car[cu_alert_resolved]", "selone_radio", "Please select Alert Resolved.");
 		//frmvalidator.addValidation("contact[cl_contact_name]","req", "Please specify contact name.");
 	</script>
 </div>
 
+
 <script>
+	var phoneComment = /iPhone|iPad|iPod|Android|Mobile/i.test(navigator.userAgent || '');
+	if (!phoneComment && navigator.maxTouchPoints > 1 && window.matchMedia && window.matchMedia('(max-width: 1024px)').matches) {
+		phoneComment = true;
+	}
+	if (phoneComment && document.documentElement) {
+		document.documentElement.className += ' car-phone';
+	}
 	initSample();
+
+	var savedComment = '';
+
+	function commentText(html) {
+		return String(html || '').replace(/<[^>]+>/g, ' ').replace(/&nbsp;|\u00a0/gi, ' ').replace(/\s+/g, ' ').trim();
+	}
+
+	function readEditorComment() {
+		var nodes = document.querySelectorAll('.ck-editor__editable, .ck-source-editing-area textarea');
+		var best = '';
+		var bestLen = 0;
+		var i;
+		var node;
+		var text;
+		var html;
+		var placeholder;
+		for (i = 0; i < nodes.length; i++) {
+			node = nodes[i];
+			if (node.closest && node.closest('.ck-toolbar')) {
+				continue;
+			}
+			text = String(node.textContent || node.value || '').replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim();
+			placeholder = String(node.getAttribute('data-placeholder') || '').replace(/\s+/g, ' ').trim();
+			if (!text || text === placeholder || text.length <= bestLen) {
+				continue;
+			}
+			bestLen = text.length;
+			html = node.tagName === 'TEXTAREA' ? node.value : node.innerHTML;
+			best = html || '';
+		}
+		var editor = window.GCONS_CKEditor5 && window.GCONS_CKEditor5.editors && window.GCONS_CKEditor5.editors.editor;
+		if (editor && typeof editor.getData === 'function') {
+			try {
+				html = editor.getData() || '';
+				if (commentText(html).length > commentText(best).length) {
+					best = html;
+				}
+			} catch (err) {}
+		}
+		if (commentText(best)) {
+			savedComment = best;
+		}
+		return savedComment;
+	}
+
+	function watchEditor() {
+		var editor = window.GCONS_CKEditor5 && window.GCONS_CKEditor5.editors && window.GCONS_CKEditor5.editors.editor;
+		var nodes = document.querySelectorAll('.ck-editor__editable');
+		var i;
+		for (i = 0; i < nodes.length; i++) {
+			if (nodes[i]._carWatch) {
+				continue;
+			}
+			nodes[i]._carWatch = true;
+			nodes[i].addEventListener('input', readEditorComment, true);
+			if (window.MutationObserver) {
+				new MutationObserver(readEditorComment).observe(nodes[i], {
+					subtree: true,
+					childList: true,
+					characterData: true
+				});
+			}
+		}
+		if (editor && !editor._carWatch && typeof editor.updateSourceElement === 'function') {
+			editor._carWatch = true;
+			editor.updateSourceElement = function () {
+				var html = readEditorComment();
+				var textarea = document.getElementById('editor');
+				if (textarea && commentText(html)) {
+					textarea.value = html;
+				}
+			};
+		}
+	}
+
+	setInterval(watchEditor, 500);
+	document.addEventListener('input', readEditorComment, true);
+	document.addEventListener('keyup', readEditorComment, true);
+	document.addEventListener('compositionend', readEditorComment, true);
+	document.addEventListener('focusout', readEditorComment, true);
+	setInterval(readEditorComment, 400);
+
+	var carForm = document.forms.detail;
+
+	if (carForm && phoneComment) {
+		var carButton = carForm.querySelector('[name="subAddDetail"]');
+		if (carButton) {
+			carButton.addEventListener('touchstart', readEditorComment, true);
+			carButton.addEventListener('pointerdown', readEditorComment, true);
+		}
+		carForm.addEventListener('submit', function (event) {
+			event.preventDefault();
+			event.stopPropagation();
+			if (carForm.getAttribute('data-car-posting') === '1') {
+				return;
+			}
+			readEditorComment();
+			try {
+				if (typeof carForm.onsubmit === 'function' && carForm.onsubmit() === false) {
+					return;
+				}
+			} catch (errValidate) {}
+			var typedBox = document.getElementById('editor');
+			var typedValue = typedBox ? typedBox.value : '';
+			var comment = savedComment || '';
+			if (commentText(typedValue).length > commentText(comment).length) {
+				comment = typedValue;
+			}
+			var data = new FormData();
+			var fields = carForm.elements;
+			var index;
+			var field;
+			carForm.setAttribute('data-car-posting', '1');
+			for (index = 0; index < fields.length; index++) {
+				field = fields[index];
+				if (!field.name || field.disabled || field.type === 'submit' || field.type === 'button') {
+					continue;
+				}
+				if (field.type === 'file') {
+					if (field.files && field.files[0]) {
+						data.append(field.name, field.files[0], field.files[0].name);
+					}
+					continue;
+				}
+				if ((field.type === 'radio' || field.type === 'checkbox') && !field.checked) {
+					continue;
+				}
+				data.append(field.name, field.value);
+			}
+			data.set('car[car_comment]', comment);
+			data.set('subAddDetail', 'Submit  the  Update  Form');
+			var xhr = new XMLHttpRequest();
+			xhr.open('POST', carForm.action || window.location.href, true);
+			xhr.onload = function () {
+				carForm.removeAttribute('data-car-posting');
+				if (xhr.status >= 200 && xhr.status < 400 && xhr.responseText) {
+					document.open();
+					document.write(xhr.responseText);
+					document.close();
+					return;
+				}
+				alert('Could not save the update. Please try again.');
+			};
+			xhr.onerror = function () {
+				carForm.removeAttribute('data-car-posting');
+				alert('Could not save the update. Please try again.');
+			};
+			xhr.send(data);
+		}, true);
+	}
 </script>

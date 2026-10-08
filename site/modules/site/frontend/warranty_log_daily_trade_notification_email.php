@@ -124,12 +124,15 @@ foreach ($suppliers as $supplier => $data) {
 	$emailObj->message = $message;
 	
 	foreach ($contacts as $contact) {
+		//Real Customer Emails
 		/* $emailObj->addTo(
 			$contact['cs_primary_email'],
 			trim($contact['cs_first_name'] . ' ' . $contact['cs_surname'])
 		); */
 	}
+	
 	//$emailObj->addTo($customerEmail, $customerName);
+	//Below two are Testing Customer
 	$emailObj->addTo('rahul@ephpsolutions.com', 'Rahul');
 	//$emailObj->addTo('arun@ephpsolutions.com', 'Tester');
 	$emailObj->attachments = [];

@@ -108,8 +108,9 @@ foreach ($suppliers as $supplier => $data) {
             continue;
         }
 
+		//Real Customer Number
         //$to = preg_replace('/\D/', '', $contact['cs_mobile']);
-		$to = "61485982524";
+		$to = "61485982524"; //Testing Number
  
         if (strpos($to, '04') === 0) {
             $to = '61' . substr($to, 1);

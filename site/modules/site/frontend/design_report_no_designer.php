@@ -7,12 +7,10 @@
 $query = "Select document_proposal_name.dpn_bsn_id, document_proposal_name.dpn_unique_id, business.bsn_address from document_proposal_name Left join business on business.bsn_id = document_proposal_name.dpn_bsn_id where document_proposal_name.dpn_dr_hide = 0 and (document_proposal_name.dpn_customer_designer = '' or document_proposal_name.dpn_customer_designer is null) ";
 $data = $fwDb->query($query);
 
-$username = "manojsoniephp";
-$password = "jaimatadi108";
-
 //echo "<pre>"; print_r($data); exit('checking');
 
 if (!empty($data)) {
+	require_once(LIB_DIR . 'SmsClass.php');
 	
 	$projects = [];
 	foreach ($data as $row) {
@@ -34,21 +32,12 @@ if (!empty($data)) {
 
 		$message = "Hi Jason, a new design agreement has been signed for a project [{$checklistNumbers}, {$project['address']}], but no designer has been assigned yet. Please review the Designs Active Report and allocate a designer at the earliest. Appreciate your prompt attention.";
 		
-		$type = "1-way";
-		$senderid = "CGFB";
 		//$to = "61485982524";
 		$to = "61403386374";
 
 		// Send SMS
-		$url = "http://api.directsms.com.au/s3/http/send_message?" .
-			   "username=" . urlencode($username) . "&" .
-			   "password=" . urlencode($password) . "&" .
-			   "message=" . urlencode($message) . "&" .
-			   "type=" . urlencode($type) . "&" .
-			   "senderid=" . urlencode($senderid) . "&" .
-			   "to=" . urlencode($to);
-
-		$output = file($url);
+		$smsObj = new SmsClass($to, $message);
+		$output = $smsObj->send();
 
 		print_r($output);
 	}
