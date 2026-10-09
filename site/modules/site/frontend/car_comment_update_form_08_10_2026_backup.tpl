@@ -277,33 +277,22 @@ function validateCarForm() {
         errors.push('Please select Alert Resolved.');
     }
 
-    /*
-     * COMMENT VALIDATION
-     *
-     * Desktop:
-     *   CKEditor is present -> read CKEditor.
-     *
-     * Mobile:
-     *   CKEditor is not present -> read the normal textarea.
-     */
-
+        // Comment validation
     var comment = '';
+
+    // Desktop: CKEditor
     var editor = window.GCONS_CKEditor5 &&
                  window.GCONS_CKEditor5.editors &&
                  window.GCONS_CKEditor5.editors.editor;
 
-    // Desktop - CKEditor
     if (editor && typeof editor.getData === 'function') {
-
         try {
             comment = editor.getData() || '';
-        } catch (err) {
-            comment = '';
-        }
+        } catch (err) {}
+    }
 
-    } else {
-
-        // Mobile - normal textarea
+    // Mobile: normal textarea
+    if (!comment) {
         var textarea = document.getElementById('editor');
 
         if (textarea) {
@@ -322,6 +311,7 @@ function validateCarForm() {
         errors.push('Please specify comment.');
     }
 
+
     // One alert only
     if (errors.length > 0) {
         alert(errors.join('\n'));
@@ -331,7 +321,6 @@ function validateCarForm() {
     return true;
 }
 </script>
-
 
 
 <script>

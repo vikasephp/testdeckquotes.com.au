@@ -19,9 +19,16 @@ $emailtemp = $emailtemplate->getRow();
 $title = $emailtemp['et_subject'];
 $body = $emailtemp['et_body'];
 
+require_once(LIB_DIR . 'CloudEphpClass.php');
+$docCloud = new CloudEphpClass('business.home');
 foreach($Data as  $val):
 unset($attach);
-$attach[] = BASE_URL."files/document_check_list_files/".$val['doc_file_name'];
+$attach = array();
+// $attach[] = BASE_URL."files/document_check_list_files/".$val['doc_file_name'];
+$saved = ($val['doc_file_name'] !== '') ? $docCloud->download($val['doc_file_name'], false) : false;
+if ($saved) {
+	$attach[] = $saved;
+}
 $att = serialize($attach);
 $body = str_replace("{{projectname}}", $val['bsn_name'], $body);
 $body = str_replace("{{date}}", (date('m/d/Y', strtotime($val['bt_completed_date']))), $body);

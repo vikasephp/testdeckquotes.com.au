@@ -1,5 +1,22 @@
 <?php
- 
+
+function warranty_comment_copy_to_s3($localPath, $fileName)
+{
+	if (!is_file($localPath) || !defined('ACCESS_KEY') || !defined('SECRET_KEY') || !defined('BUCKET_NAME') || BUCKET_NAME === '') {
+		return false;
+	}
+	$s3File = $_SERVER['DOCUMENT_ROOT'].'/file_upload/server/s3/S3.php';
+	if (!is_file($s3File)) {
+		return false;
+	}
+	include_once $s3File;
+	if (!class_exists('S3')) {
+		return false;
+	}
+	$s3 = new S3(ACCESS_KEY, SECRET_KEY);
+	return (bool) $s3->putObjectFile($localPath, BUCKET_NAME, 'files/uploads/'.$fileName, S3::ACL_PRIVATE);
+}
+
 $table = new Fw_Db_Table("warranty_log");
 $tableSU = new Fw_Db_Table("warranty_supplier_update");
 $submit = $fwRequest->getParam('subAddDetail', '');
@@ -37,8 +54,8 @@ if(!empty($submit))
 				$docfile_1 = preg_replace('/[^A-Z0-9._]/i', '_', $docfile_1);
 				$src = $_FILES['supp_attach']['tmp_name'];
 				$destination = BASE_DIR.'files/uploads/'.$docfile_1;
-				
-	
+
+					/*
 					if(!move_uploaded_file($src, $destination))
 							{
 								//echo "Possible file upload attack";
@@ -47,8 +64,12 @@ if(!empty($submit))
 							{
 								$sudetail['ws_attachment'] = $docfile_1;
 								chmod($destination, 0664);
-								
 							}
+					*/
+
+					if (is_uploaded_file($src) && warranty_comment_copy_to_s3($src, $docfile_1)) {
+						$sudetail['ws_attachment'] = $docfile_1;
+					}
 													
 		}
 	
@@ -64,8 +85,8 @@ if(!empty($submit))
 				$docfile_2 = preg_replace('/[^A-Z0-9._]/i', '_', $docfile_2);
 				$src = $_FILES['supp_attach_2']['tmp_name'];
 				$destination = BASE_DIR.'files/uploads/'.$docfile_2;
-				
-	
+
+					/*
 					if(!move_uploaded_file($src, $destination))
 							{
 								//echo "Possible file upload attack";
@@ -74,8 +95,12 @@ if(!empty($submit))
 							{
 								$sudetail['ws_attachment_2'] = $docfile_2;
 								chmod($destination, 0664);
-								
 							}
+					*/
+
+					if (is_uploaded_file($src) && warranty_comment_copy_to_s3($src, $docfile_2)) {
+						$sudetail['ws_attachment_2'] = $docfile_2;
+					}
 													
 		}
 		
@@ -90,8 +115,8 @@ if(!empty($submit))
 				$docfile_3 = preg_replace('/[^A-Z0-9._]/i', '_', $docfile_3);
 				$src = $_FILES['supp_attach_3']['tmp_name'];
 				$destination = BASE_DIR.'files/uploads/'.$docfile_3;
-				
-	
+
+					/*
 					if(!move_uploaded_file($src, $destination))
 							{
 								//echo "Possible file upload attack";
@@ -100,8 +125,12 @@ if(!empty($submit))
 							{
 								$sudetail['ws_attachment_3'] = $docfile_3;
 								chmod($destination, 0664);
-								
 							}
+					*/
+
+					if (is_uploaded_file($src) && warranty_comment_copy_to_s3($src, $docfile_3)) {
+						$sudetail['ws_attachment_3'] = $docfile_3;
+					}
 													
 		}
 		
@@ -117,8 +146,8 @@ if(!empty($submit))
 				$docfile_4 = preg_replace('/[^A-Z0-9._]/i', '_', $docfile_4);
 				$src = $_FILES['supp_attach_4']['tmp_name'];
 				$destination = BASE_DIR.'files/uploads/'.$docfile_4;
-				
-	
+
+					/*
 					if(!move_uploaded_file($src, $destination))
 							{
 								//echo "Possible file upload attack";
@@ -127,8 +156,12 @@ if(!empty($submit))
 							{
 								$sudetail['ws_attachment_4'] = $docfile_4;
 								chmod($destination, 0664);
-								
 							}
+					*/
+
+					if (is_uploaded_file($src) && warranty_comment_copy_to_s3($src, $docfile_4)) {
+						$sudetail['ws_attachment_4'] = $docfile_4;
+					}
 													
 		}
 		
@@ -143,8 +176,8 @@ if(!empty($submit))
 				$docfile_5 = preg_replace('/[^A-Z0-9._]/i', '_', $docfile_5);
 				$src = $_FILES['supp_attach_5']['tmp_name'];
 				$destination = BASE_DIR.'files/uploads/'.$docfile_5;
-				
-	
+
+					/*
 					if(!move_uploaded_file($src, $destination))
 							{
 								//echo "Possible file upload attack";
@@ -153,8 +186,12 @@ if(!empty($submit))
 							{
 								$sudetail['ws_attachment_5'] = $docfile_5;
 								chmod($destination, 0664);
-								
 							}
+					*/
+
+					if (is_uploaded_file($src) && warranty_comment_copy_to_s3($src, $docfile_5)) {
+						$sudetail['ws_attachment_5'] = $docfile_5;
+					}
 													
 		}
 		

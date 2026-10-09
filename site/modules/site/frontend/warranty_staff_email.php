@@ -100,7 +100,7 @@ foreach($Data_1 as $k1=>$v1)
 				  $notes .= '<td>'.$vn['wn_date'].'</td>'; 
 				  $notes .= '<td>';
 				  if(!empty($vn['wn_attachment'])) {
-				 	 $notes .= '<a href="'.BASE_URL."files/uploads/".$vn['wn_attachment'].'">Link</a>'; 
+				 	 $notes .= '<a href="'.BASE_URL.'site.download_content_car?file_name='.rawurlencode($vn['wn_attachment']).'&module_name=site.warranty_staff_email&view=inline" target="_blank">Link</a>'; 
 				  }
 				  $notes .= '</td>';
 				  $notes .= '</tr>';   

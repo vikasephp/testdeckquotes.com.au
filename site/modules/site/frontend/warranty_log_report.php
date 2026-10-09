@@ -52,7 +52,7 @@ $message .= "<tr><td>SrNo</td><td>Project</td><td>Contact Info</td><td>Type</td>
 				  $notes .= '<td>'.$vn['wn_date'].'</td>'; 
 				  $notes .= '<td>';
 				  if(!empty($vn['wn_attachment'])) {
-				 	 $notes .= '<a href="'.BASE_URL."files/uploads/".$vn['wn_attachment'].'">Link</a>'; 
+				 	 $notes .= '<a href="'.BASE_URL.'site.download_content_car?file_name='.rawurlencode($vn['wn_attachment']).'&module_name=site.warranty_log_report&view=inline" target="_blank">Link</a>'; 
 				  }
 				  $notes .= '</td>';
 				  $notes .= '</tr>';   

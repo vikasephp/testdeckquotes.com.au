@@ -122,7 +122,7 @@ foreach($data as $k=>$v)
 			  
 			  if($vs['wn_attachment']) {
 				 
-				  $attach = '<a href="'.BASE_URL.'/files/uploads/'.$vs['wn_attachment'].'">Link2</a>';
+				  $attach = '<a href="'.BASE_URL.'/site.download_content_car?file_name='.rawurlencode($vs['wn_attachment']).'&module_name=site.warranty_trade_email&view=inline" target="_blank">Link2</a>';
 				  $surow .= '<td>'.$attach.'</td>';
 			  } else {
 				   $surow .= '<td></td>';
@@ -144,7 +144,7 @@ foreach($data as $k=>$v)
 			  
 			  if($vs['ws_attachment']) {
 				  if($vs['ws_wr'] == 0) {
-					   $attach = '<a href="'.BASE_URL.'/files/uploads/'.$vs['ws_attachment'].'">Link2</a>';
+					   $attach = '<a href="'.BASE_URL.'/site.download_content_car?file_name='.rawurlencode($vs['ws_attachment']).'&module_name=site.warranty_trade_email&view=inline" target="_blank">Link2</a>';
 				  } else {
 					   $attach = '<a href="https://www.warrantyreport.com.au/public/global_files/uploads/warranty_issue_comments_files/'.$vs['ws_attachment'].'">Link2</a>';
 				  }

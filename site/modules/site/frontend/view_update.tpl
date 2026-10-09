@@ -72,7 +72,7 @@ var viewurl = url;
 <td>{{$item.ws_supplier_name}}</td>
 <td>{{$item.ws_update_text}}</td>
 <td style="text-align:center;">{{if $item.ws_date ne '0000-00-00 00:00:00'}} {{$item.ws_date}}{{/if}}</td>
-<td style="text-align:center;">{{if $item.ws_attachment}} <a href="{{$BASE_URL}}files/uploads/{{$item.ws_attachment}}">Download</a>{{/if}}</td>
+<td style="text-align:center;">{{if $item.ws_attachment}} <a href="/site.download_content_car?file_name={{$item.ws_attachment|escape:'url'}}&module_name=site.warranty_comment_update_form&view=inline" target="_blank">Download</a>{{/if}}</td>
 
 </tr>
 

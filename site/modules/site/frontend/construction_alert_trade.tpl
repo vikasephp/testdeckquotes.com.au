@@ -167,31 +167,31 @@
         <td>
         {{if $item.car_image1}}
         <div > 
-        Photo 1 :  <a href="https://deckquotes.com.au/files/uploads/{{$item.car_image1}}" target="_blank">Download</a>
+        Photo 1 :  <a href="/site.download_content_car?file_name={{$item.car_image1|escape:'url'}}&module_name=site.construction_alert_trade&view=inline" target="_blank">Download</a>
         </div>
         {{/if}}
         
         {{if $item.car_image2}}
         <div> 
-        Photo 2 :  <a href="https://deckquotes.com.au/files/uploads/{{$item.car_image2}}" target="_blank">Download</a>
+        Photo 2 :  <a href="/site.download_content_car?file_name={{$item.car_image2|escape:'url'}}&module_name=site.construction_alert_trade&view=inline" target="_blank">Download</a>
         </div>
         {{/if}}
         
         {{if $item.car_image3}}
         <div> 
-        Photo 3 :  <a href="https://deckquotes.com.au/files/uploads/{{$item.car_image3}}" target="_blank">Download</a>
+        Photo 3 :  <a href="/site.download_content_car?file_name={{$item.car_image3|escape:'url'}}&module_name=site.construction_alert_trade&view=inline" target="_blank">Download</a>
         </div>
         {{/if}}
         
         {{if $item.car_image4}}
         <div > 
-        Photo 4 :  <a href="https://deckquotes.com.au/files/uploads/{{$item.car_image4}}" target="_blank">Download</a>
+        Photo 4 :  <a href="/site.download_content_car?file_name={{$item.car_image4|escape:'url'}}&module_name=site.construction_alert_trade&view=inline" target="_blank">Download</a>
         </div>
         {{/if}}
         
         {{if $item.car_image5}}
         <div> 
-        Photo 5 :  <a href="https://deckquotes.com.au/files/uploads/{{$item.car_image5}}" target="_blank">Download</a>
+        Photo 5 :  <a href="/site.download_content_car?file_name={{$item.car_image5|escape:'url'}}&module_name=site.construction_alert_trade&view=inline" target="_blank">Download</a>
         </div>
         {{/if}}
         </td>
@@ -200,7 +200,7 @@
  		<tr>
         <td>Video Files</td>
         <td>{{if $item.car_video}}
-             <a href="https://deckquotes.com.au/files/uploads/{{$item.car_video}}" target="_blank">Download</a>
+             <a href="/site.download_content_car?file_name={{$item.car_video|escape:'url'}}&module_name=site.construction_alert_trade&view=inline" target="_blank">Download</a>
           {{/if}}</td>
         </tr>
 

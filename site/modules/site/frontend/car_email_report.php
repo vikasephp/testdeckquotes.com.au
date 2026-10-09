@@ -53,27 +53,27 @@ foreach ($Data_1 as $k1 => $v1) {
 
 		foreach ($datafinal as $k3 => $v3) {
 			if ($v3['car_image1']) {
-				$link1 = ($v3['car_image1_newdesign'] ? '<a href="' . showUrl($v3['car_image1']) . '">Link1</a><br>' : '<a href="' . BASE_URL . "files/uploads/" . $v3['car_image1'] . '">Link1</a><br>');
+				$link1 = ($v3['car_image1_newdesign'] ? '<a href="' . showUrl($v3['car_image1']) . '">Link1</a><br>' : '<a href="' . BASE_URL . 'site.download_content_car?file_name=' . rawurlencode($v3['car_image1']) . '&module_name=site.car_email_report&view=inline" target="_blank">Link1</a><br>');
 			} else {
 				$link1 = '';
 			}
 			if ($v3['car_image2']) {
-				$link1 = ($v3['car_image2_newdesign'] ? '<a href="' . showUrl($v3['car_image2']) . '">Link2</a><br>' : '<a href="' . BASE_URL . "files/uploads/" . $v3['car_image2'] . '">Link2</a><br>');
+				$link1 = ($v3['car_image2_newdesign'] ? '<a href="' . showUrl($v3['car_image2']) . '">Link2</a><br>' : '<a href="' . BASE_URL . 'site.download_content_car?file_name=' . rawurlencode($v3['car_image2']) . '&module_name=site.car_email_report&view=inline" target="_blank">Link2</a><br>');
 			} else {
 				$link2 = '';
 			}
 			if ($v3['car_image3']) {
-				$link1 = ($v3['car_image3_newdesign'] ? '<a href="' . showUrl($v3['car_image3']) . '">Link3</a><br>' : '<a href="' . BASE_URL . "files/uploads/" . $v3['car_image3'] . '">Link3</a><br>');
+				$link1 = ($v3['car_image3_newdesign'] ? '<a href="' . showUrl($v3['car_image3']) . '">Link3</a><br>' : '<a href="' . BASE_URL . 'site.download_content_car?file_name=' . rawurlencode($v3['car_image3']) . '&module_name=site.car_email_report&view=inline" target="_blank">Link3</a><br>');
 			} else {
 				$link3 = '';
 			}
 			if ($v3['car_image4']) {
-				$link1 = ($v3['car_image4_newdesign'] ? '<a href="' . showUrl($v3['car_image4']) . '">Link4</a><br>' : '<a href="' . BASE_URL . "files/uploads/" . $v3['car_image4'] . '">Link4</a><br>');
+				$link1 = ($v3['car_image4_newdesign'] ? '<a href="' . showUrl($v3['car_image4']) . '">Link4</a><br>' : '<a href="' . BASE_URL . 'site.download_content_car?file_name=' . rawurlencode($v3['car_image4']) . '&module_name=site.car_email_report&view=inline" target="_blank">Link4</a><br>');
 			} else {
 				$link4 = '';
 			}
 			if ($v3['car_image5']) {
-				$link1 = ($v3['car_image5_newdesign'] ? '<a href="' . showUrl($v3['car_image5']) . '">Link5</a><br>' : '<a href="' . BASE_URL . "files/uploads/" . $v3['car_image5'] . '">Link5</a><br>');
+				$link1 = ($v3['car_image5_newdesign'] ? '<a href="' . showUrl($v3['car_image5']) . '">Link5</a><br>' : '<a href="' . BASE_URL . 'site.download_content_car?file_name=' . rawurlencode($v3['car_image5']) . '&module_name=site.car_email_report&view=inline" target="_blank">Link5</a><br>');
 			} else {
 				$link5 = '';
 			}

@@ -101,22 +101,22 @@ foreach ($Data_1 as $k1 => $v1) {
 
 			$link = '';
 			if ($v2['car_image1']) {
-				$link .= ($v2['car_image1_newdesign'] ? '<a href="' . showUrl($v2['car_image1']) . '">Link to Attachment1</a><br>' : '<a href="' . BASE_URL . "files/uploads/" . $v2['car_image1'] . '">Link to Attachment1</a><br>');
+				$link .= ($v2['car_image1_newdesign'] ? '<a href="' . showUrl($v2['car_image1']) . '">Link to Attachment1</a><br>' : '<a href="' . BASE_URL . 'site.download_content_car?file_name=' . rawurlencode($v2['car_image1']) . '&module_name=site.supplier_email&view=inline" target="_blank">Link to Attachment1</a><br>');
 			}
 			if ($v2['car_image2']) {
-				$link .= ($v2['car_image2_newdesign'] ? '<a href="' . showUrl($v2['car_image2']) . '">Link to Attachment2</a><br>' : '<a href="' . BASE_URL . "files/uploads/" . $v2['car_image2'] . '">Link to Attachment2</a><br>');
+				$link .= ($v2['car_image2_newdesign'] ? '<a href="' . showUrl($v2['car_image2']) . '">Link to Attachment2</a><br>' : '<a href="' . BASE_URL . 'site.download_content_car?file_name=' . rawurlencode($v2['car_image2']) . '&module_name=site.supplier_email&view=inline" target="_blank">Link to Attachment2</a><br>');
 			}
 
 			if ($v2['car_image3']) {
-				$link .= ($v2['car_image3_newdesign'] ? '<a href="' . showUrl($v2['car_image3']) . '">Link to Attachment3</a><br>' : '<a href="' . BASE_URL . "files/uploads/" . $v2['car_image3'] . '">Link to Attachment3</a><br>');
+				$link .= ($v2['car_image3_newdesign'] ? '<a href="' . showUrl($v2['car_image3']) . '">Link to Attachment3</a><br>' : '<a href="' . BASE_URL . 'site.download_content_car?file_name=' . rawurlencode($v2['car_image3']) . '&module_name=site.supplier_email&view=inline" target="_blank">Link to Attachment3</a><br>');
 			}
 
 			if ($v2['car_image4']) {
-				$link .= ($v2['car_image4_newdesign'] ? '<a href="' . showUrl($v2['car_image4']) . '">Link to Attachment4</a><br>' : '<a href="' . BASE_URL . "files/uploads/" . $v2['car_image4'] . '">Link to Attachment4</a><br>');
+				$link .= ($v2['car_image4_newdesign'] ? '<a href="' . showUrl($v2['car_image4']) . '">Link to Attachment4</a><br>' : '<a href="' . BASE_URL . 'site.download_content_car?file_name=' . rawurlencode($v2['car_image4']) . '&module_name=site.supplier_email&view=inline" target="_blank">Link to Attachment4</a><br>');
 			}
 
 			if ($v2['car_image5']) {
-				$link .= ($v2['car_image5_newdesign'] ? '<a href="' . showUrl($v2['car_image5']) . '">Link to Attachment5</a><br>' : '<a href="' . BASE_URL . "files/uploads/" . $v2['car_image5'] . '">Link to Attachment5</a><br>');
+				$link .= ($v2['car_image5_newdesign'] ? '<a href="' . showUrl($v2['car_image5']) . '">Link to Attachment5</a><br>' : '<a href="' . BASE_URL . 'site.download_content_car?file_name=' . rawurlencode($v2['car_image5']) . '&module_name=site.supplier_email&view=inline" target="_blank">Link to Attachment5</a><br>');
 			}
 			if ($link) {
 				$html .= '<tr><td>Attachments</td><td>' . $link . '</td></tr>';
