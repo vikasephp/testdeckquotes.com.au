@@ -111,6 +111,9 @@ function close_win()
 </script>
 <h3 class="page-title">{{$title}}</h3><br />
 <h3 class="page-title">{{$report}}</h3><br />
+{{if $show eq 4}}
+<p style="clear:both; text-align:center; margin:0 0 12px 0; color:#475569;">All hidden jobs (Floor System, Pre-Sheet and Final). Restore keeps QA and inspection data. Choose the stage the job returns to.</p>
+{{/if}}
 
 
 <form name="mshort" action="{{$BASE_URL}}{{$XFA.home}}" method="post">
@@ -119,7 +122,8 @@ function close_win()
 <input type="button" name="proc_panel" value="Procedure Panel" onclick="javascript:add_procedure();" /> 
 <input type="Submit" name="floorsystem" value="Floor System" /> 
 <input type="submit" name="presheet" value="Pre Sheet"  /> 
-<input type="submit" name="final" value="Final"  /> 
+<input type="submit" name="final" value="Final"  />
+<!--<input type="submit" name="showhidden" value="Show Hidden" /> -->
 
 
  <br/>
@@ -165,8 +169,9 @@ function close_win()
   {{elseif $show eq 2}}
   	{{include file=$pre_sheet}}
   {{elseif $show eq 3}}
-  	{{include file=$final}}  
-                
+  	{{include file=$final}}
+  {{elseif $show eq 4}}
+  	{{include file=$cse_hidden_tpl}}
   {{/if}}      
   
     

@@ -89,7 +89,7 @@ function add_new(url)
 							{{ if $item.car_image1_newdesign }}
 								Photo 1 : <a href="/certifier_structural_engineer.download_content?file_name={{$item.car_image1}}&module_name={{ $BASEFOLDER }}.home" target="_blank"><img data-src="/{{ $BASEFOLDER }}.download_content?file_name={{$item.car_image1}}&module_name={{ $BASEFOLDER }}.home" class="lazy">Download</a>
 							{{ else }}
-								Photo 1 : <a href="{{$BASE_URL}}files/uploads/{{$item.car_image1}}" target="_blank"><img data-src="{{$BASE_URL}}files/uploads/{{$item.car_image1}}" class="lazy">Download</a>
+								Photo 1 : <a href="/site.download_content_car?file_name={{$item.car_image1|escape:'url'}}&module_name=certifier_structural_engineer.presheet_inspection_certifier&view=inline" target="_blank"><img data-src="/site.download_content_car?file_name={{$item.car_image1|escape:'url'}}&module_name=certifier_structural_engineer.presheet_inspection_certifier&view=inline" class="lazy">Download</a>
 							{{ /if }}
 						</div>
 					{{/if}}
@@ -98,7 +98,7 @@ function add_new(url)
 							{{ if $item.car_image2_newdesign }}
 								Photo 2 : <a href="/certifier_structural_engineer.download_content?file_name={{$item.car_image2}}&module_name={{ $BASEFOLDER }}.home" target="_blank"><img data-src="/{{ $BASEFOLDER }}.download_content?file_name={{$item.car_image2}}&module_name={{ $BASEFOLDER }}.home" class="lazy">Download</a>
 							{{ else }}
-								Photo 2 : <a href="{{$BASE_URL}}files/uploads/{{$item.car_image2}}" target="_blank"><img data-src="{{$BASE_URL}}files/uploads/{{$item.car_image2}}" class="lazy">Download</a>
+								Photo 2 : <a href="/site.download_content_car?file_name={{$item.car_image2|escape:'url'}}&module_name=certifier_structural_engineer.presheet_inspection_certifier&view=inline" target="_blank"><img data-src="/site.download_content_car?file_name={{$item.car_image2|escape:'url'}}&module_name=certifier_structural_engineer.presheet_inspection_certifier&view=inline" class="lazy">Download</a>
 							{{ /if }}
 						</div>
 					{{/if}}
@@ -107,7 +107,7 @@ function add_new(url)
 							{{ if $item.car_image3_newdesign }}
 								Photo 3 : <a href="/certifier_structural_engineer.download_content?file_name={{$item.car_image3}}&module_name={{ $BASEFOLDER }}.home" target="_blank"><img data-src="/{{ $BASEFOLDER }}.download_content?file_name={{$item.car_image3}}&module_name={{ $BASEFOLDER }}.home" class="lazy">Download</a>
 							{{ else }}
-								Photo 3 : <a href="{{$BASE_URL}}files/uploads/{{$item.car_image3}}" target="_blank"><img data-src="{{$BASE_URL}}files/uploads/{{$item.car_image3}}" class="lazy">Download</a>
+								Photo 3 : <a href="/site.download_content_car?file_name={{$item.car_image3|escape:'url'}}&module_name=certifier_structural_engineer.presheet_inspection_certifier&view=inline" target="_blank"><img data-src="/site.download_content_car?file_name={{$item.car_image3|escape:'url'}}&module_name=certifier_structural_engineer.presheet_inspection_certifier&view=inline" class="lazy">Download</a>
 							{{ /if }}
 						</div>
 					{{/if}}
@@ -116,7 +116,7 @@ function add_new(url)
 							{{ if $item.car_image4_newdesign }}
 								Photo 4 : <a href="/certifier_structural_engineer.download_content?file_name={{$item.car_image4}}&module_name={{ $BASEFOLDER }}.home" target="_blank"><img data-src="/{{ $BASEFOLDER }}.download_content?file_name={{$item.car_image4}}&module_name={{ $BASEFOLDER }}.home" class="lazy">Download</a>
 							{{ else }}
-								Photo 4 : <a href="{{$BASE_URL}}files/uploads/{{$item.car_image4}}" target="_blank"><img data-src="{{$BASE_URL}}files/uploads/{{$item.car_image4}}" class="lazy">Download</a>
+								Photo 4 : <a href="/site.download_content_car?file_name={{$item.car_image4|escape:'url'}}&module_name=certifier_structural_engineer.presheet_inspection_certifier&view=inline" target="_blank"><img data-src="/site.download_content_car?file_name={{$item.car_image4|escape:'url'}}&module_name=certifier_structural_engineer.presheet_inspection_certifier&view=inline" class="lazy">Download</a>
 							{{ /if }}
 						</div>
 					{{/if}}
@@ -125,7 +125,7 @@ function add_new(url)
 							{{ if $item.car_image5_newdesign }}
 								Photo 5 : <a href="/certifier_structural_engineer.download_content?file_name={{$item.car_image5}}&module_name={{ $BASEFOLDER }}.home" target="_blank"><img data-src="/{{ $BASEFOLDER }}.download_content?file_name={{$item.car_image5}}&module_name={{ $BASEFOLDER }}.home" class="lazy">Download</a>
 							{{ else }}
-								Photo 5 : <a href="{{$BASE_URL}}files/uploads/{{$item.car_image5}}" target="_blank"><img data-src="{{$BASE_URL}}files/uploads/{{$item.car_image5}}" class="lazy">Download</a>
+								Photo 5 : <a href="/site.download_content_car?file_name={{$item.car_image5|escape:'url'}}&module_name=certifier_structural_engineer.presheet_inspection_certifier&view=inline" target="_blank"><img data-src="/site.download_content_car?file_name={{$item.car_image5|escape:'url'}}&module_name=certifier_structural_engineer.presheet_inspection_certifier&view=inline" class="lazy">Download</a>
 							{{ /if }}
 						</div>
 					{{/if}}

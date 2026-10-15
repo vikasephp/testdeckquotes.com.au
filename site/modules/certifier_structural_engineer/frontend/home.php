@@ -64,14 +64,8 @@ $fwViewData['report'] =  "Floor System";
 $wherehide =  " and  cse_hide = 0";
 $whereH = '';
 
-// Certifier Show Hidden: show rows hidden on THIS report (cse_hide = 1)
-$showhidden = $fwRequest->getParam('showhidden', '');
-if(!empty($showhidden)) {
-	$_SESSION['cse_show_hidden'] = 1;
-	$wherehide = " and  cse_hide = 1";
-}
-
-// CIPR Hide always stays hidden on Certifier, even after Show Hidden
+// CIPR Hide: hide the job on Certifier only when CIPR would also hide it
+// (no linked customer with hide = 0). One hidden customer must not hide the whole job.
 $whereCiprHide = " AND cse_project NOT IN (
 	SELECT DISTINCT business.bsn_name
 	FROM business_sellers
@@ -80,6 +74,15 @@ $whereCiprHide = " AND cse_project NOT IN (
 	WHERE bus_customers.bcust_cip_hide = 1
 	AND business.bsn_name IS NOT NULL
 	AND business.bsn_name != ''
+	AND business.bsn_name NOT IN (
+		SELECT DISTINCT b2.bsn_name
+		FROM business_sellers bs2
+		Inner Join bus_customers c2 ON bs2.bs_customers_id = c2.bcust_id
+		Inner Join business b2 ON bs2.bs_business_id = b2.bsn_id
+		WHERE c2.bcust_cip_hide = 0
+		AND b2.bsn_name IS NOT NULL
+		AND b2.bsn_name != ''
+	)
 )";
 
 
@@ -136,6 +139,41 @@ if($final) {
 	$_SESSION['show'] = 3;
 	$_SESSION['where'] = " where cse_stage = 3" ;
 	$_SESSION['report'] =  "Final";
+}
+
+$showhidden = $fwRequest->getParam('showhidden', '');
+if (!empty($showhidden)) {
+	$_SESSION['show'] = 4;
+	$_SESSION['where'] = " where cse_hide = 1";
+	$_SESSION['report'] = "Hidden Projects";
+	$_SESSION['cse_show_hidden'] = 1;
+	$fwViewData['show'] = 4;
+	$fwViewData['report'] = "Hidden Projects";
+	$where = " where cse_hide = 1";
+	$wherehide = "";
+}
+
+$restore_hidden = $fwRequest->getParam('restore_hidden', '');
+if (!empty($restore_hidden)) {
+	$restoreId = (int)$fwRequest->getParam('restore_cse_id', 0);
+	$restoreStage = (int)$fwRequest->getParam('restore_stage', 0);
+	if ($restoreId > 0 && ($restoreStage === 1 || $restoreStage === 2 || $restoreStage === 3)) {
+		$table->setWhere("cse_id = " . $restoreId);
+		if ($table->rowExists()) {
+			$table->updateRow(array(
+				'cse_hide' => 0,
+				'cse_stage' => $restoreStage,
+			));
+		}
+	}
+	$_SESSION['show'] = 4;
+	$_SESSION['where'] = " where cse_hide = 1";
+	$_SESSION['report'] = "Hidden Projects";
+	$_SESSION['cse_show_hidden'] = 1;
+	$fwViewData['show'] = 4;
+	$fwViewData['report'] = "Hidden Projects";
+	$where = " where cse_hide = 1";
+	$wherehide = "";
 }
 
 
@@ -290,20 +328,30 @@ if($clear) {
 	$fwViewData['search_qa'] = '';
 	unset($whereand);
 	$whereand = '';
-	unset($_SESSION['cse_show_hidden']);
+	if (!empty($_SESSION['cse_show_hidden']) || (isset($_SESSION['show']) && (int)$_SESSION['show'] === 4)) {
+		unset($_SESSION['cse_show_hidden']);
+		unset($_SESSION['show']);
+		unset($_SESSION['where']);
+		unset($_SESSION['report']);
+		$fwViewData['show'] = 1;
+		$fwViewData['report'] = "Floor System";
+		$where = " where cse_stage = 1";
+	}
 	$wherehide = " and  cse_hide = 0";
 }
 
-if (!empty($_SESSION['cse_show_hidden'])) {
-	$wherehide = " and  cse_hide = 1";
+if (!empty($_SESSION['cse_show_hidden']) || (isset($fwViewData['show']) && (int)$fwViewData['show'] === 4)) {
+	$fwViewData['show'] = 4;
+	$fwViewData['report'] = "Hidden Projects";
+	$where = " where cse_hide = 1";
+	$wherehide = "";
 }
 
  if(isset($_SESSION['where'])) { $where = $_SESSION['where']; }
  
 
 $hidden = $fwRequest->getParam('hidden', '');
-if(!empty($hidden)) {
-	//$where = " WHERE cse_stage = 3 OR cse_stage = 4";
+if (!empty($hidden) && empty($_SESSION['cse_show_hidden']) && (int)$fwViewData['show'] !== 4) {
 	$whereH = "  OR cse_stage = 4";
 }
 
@@ -664,3 +712,4 @@ $fwViewData['title'] = $MODULE_PLURAL;
 
 $sql_pro = "select distinct cs_project from construction_scheduler_report";
 $fwViewData['project_data'] = $fwDb->query($sql_pro);
+$fwViewData['cse_hidden_tpl'] = 'file:' . str_replace('\\', '/', getcwd()) . '/cse_hidden.tpl';
