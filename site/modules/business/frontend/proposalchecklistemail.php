@@ -27,7 +27,23 @@ if($send_email)
 			
 	if($send_data['buyers'])
 		{
-			if($send_data['attachments']){$attachment = serialize($send_data['attachments']);}
+			if($send_data['attachments']){
+				require_once(LIB_DIR . 'CloudEphpClass.php');
+				$docCloud = new CloudEphpClass('business.home');
+				foreach ($send_data['attachments'] as $attachKey => $attachUrl) {
+					$marker = 'files/document_check_list_files/';
+					$pos = strpos($attachUrl, $marker);
+					if ($pos === false) {
+						continue;
+					}
+					$name = basename(strtok(substr($attachUrl, $pos + strlen($marker)), '?'));
+					$saved = ($name !== '' && $name !== '.' && $name !== '..') ? $docCloud->download($name, false) : false;
+					if ($saved) {
+						$send_data['attachments'][$attachKey] = $saved;
+					}
+				}
+				$attachment = serialize($send_data['attachments']);
+			}
 			
 			
 				$count=0;
@@ -71,15 +87,18 @@ $fwViewData['sendcount'] = 	$count;
 						$docfile = $datetime.preg_replace('/[^A-Z0-9._]/i', '_', $docfile);
 						$src = $_FILES['eattach']['tmp_name'][$i];
 					
-						$destination = BASE_DIR.FILE_PATH. 'files/document_check_list_files/'.$docfile;			
-						
-							if (!move_uploaded_file($src, $destination))
-							{
-								//echo "Possible file upload attack";
-								}
-								else
-								{
-								chmod($destination, 0664);
+						// $destination = BASE_DIR.FILE_PATH. 'files/document_check_list_files/'.$docfile;
+						// if (!move_uploaded_file($src, $destination))
+						// {
+						// 	//echo "Possible file upload attack";
+						// }
+						// else
+						// {
+						// chmod($destination, 0664);
+						require_once(LIB_DIR . 'CloudEphpClass.php');
+						$docCloud = new CloudEphpClass('business.home');
+						if ($docfile !== '' && is_uploaded_file($src) && $docCloud->upload($docfile, $src))
+						{
 								
 								if($_SESSION['eattach']['file_name'])
 									{

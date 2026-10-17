@@ -26,7 +26,7 @@
     {{foreach from=$subtaskdata_lp key="keylp" item="itemlp"}}
     
     {{if $item.bts_bsst_id eq $itemlp.bstlp_bsst_id }}
-     <a href="{{$BASE_URL}}/files/template_documents_hub/{{$itemlp.bstlp_doc_name}}" style="color:#06C;">{{$itemlp.bstlp_doc_name}}</a> &nbsp; &nbsp; &nbsp;
+     <a href="/business.download_content?file_name={{$itemlp.bstlp_doc_name|escape:'url'}}&module_name=templatedoc.home" style="color:#06C;">{{$itemlp.bstlp_doc_name}}</a> &nbsp; &nbsp; &nbsp;
     {{/if}}
     
     {{/foreach}}

@@ -45,7 +45,7 @@ function attach2()
         <tr><th>Attachment: </th><td>
           <div id="emailattachment">
           		{{foreach from=$checklistbusdocs item="item" key="key"}}
-                <div><input type="checkbox" name="{{$TABLE}}[attachments][]" value="{{$BASE_URL}}{{$FILE_PATH}}files/document_check_list_files/{{$item.doc_file_name}}" checked="checked" />&nbsp;<a href="javascript:parent.window.open('{{$BASE_URL}}{{$FILE_PATH}}files/document_check_list_files/{{$item.doc_file_name}}','mywindow');">{{$item.admin_doc_name}}</a></div>
+                <div><input type="checkbox" name="{{$TABLE}}[attachments][]" value="{{$BASE_URL}}{{$FILE_PATH}}files/document_check_list_files/{{$item.doc_file_name}}" checked="checked" />&nbsp;<a href="javascript:parent.window.open('/business.download_content?file_name={{$item.doc_file_name|escape:'url'}}&module_name=business.home','mywindow');">{{$item.admin_doc_name}}</a></div>
                 {{/foreach}} 
                 {{foreach from=$busdocs item="item" key="key"}}
                 <div><input type="checkbox" name="{{$TABLE}}[attachments][]" value="{{$BASE_URL}}{{$FILE_PATH}}files/business_documents/{{$item.bd_doc_name}}" checked="checked" />

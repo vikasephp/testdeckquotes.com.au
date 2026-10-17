@@ -107,6 +107,91 @@ $XFA['site_progress_report_home'] = $Fusebox['circuit'] . '.site_progress_report
 $XFA['user_logon_home'] = $Fusebox['circuit'] . '.user_logon_home';
 $XFA['phone_log_frame'] = $Fusebox['circuit'] . '.phone_log_frame';
 
+if (!function_exists('productpage_unique_name')) {
+function productpage_unique_name($originalName)
+{
+	static $seq = 0;
+	$seq++;
+
+	$originalName = preg_replace('/[^A-Z0-9._-]/i', '_', (string) $originalName);
+	$originalName = trim((string) $originalName, '._-');
+	$extension = strtolower((string) pathinfo($originalName, PATHINFO_EXTENSION));
+	$base = (string) pathinfo($originalName, PATHINFO_FILENAME);
+	if ($base === '' || $base === '.' || $base === '..') {
+		$base = 'file';
+	}
+	$name = $base . '_' . date('d_m_Y_H_i_s') . '_' . $seq . mt_rand(100, 999);
+	if ($extension !== '') {
+		$name .= '.' . $extension;
+	}
+	return $name;
+}
+}
+
+if (!function_exists('productpage_upload_to_bucket')) {
+function productpage_upload_to_bucket($originalName, $tmpName)
+{
+	if (!defined('ACCESS_KEY') || !defined('SECRET_KEY') || !defined('BUCKET_NAME') || !is_uploaded_file($tmpName)) {
+		return false;
+	}
+	$savedName = productpage_unique_name($originalName);
+	include_once $_SERVER['DOCUMENT_ROOT'] . '/file_upload/server/s3/S3.php';
+	$s3 = new S3(ACCESS_KEY, SECRET_KEY);
+	if ($s3->putObjectFile($tmpName, BUCKET_NAME, 'files/project_item/' . $savedName, S3::ACL_PRIVATE)) {
+		return $savedName;
+	}
+	return false;
+}
+}
+
+if (!function_exists('productpage_image_url')) {
+function productpage_image_url($filename)
+{
+	$filename = basename((string) $filename);
+	if ($filename === '' || $filename === '.' || $filename === '..') {
+		return '#';
+	}
+	$localRel = (defined('FILE_PATH') ? FILE_PATH : '') . 'files/project_item_images/' . $filename;
+	if (is_file(BASE_DIR . $localRel)) {
+		return htmlspecialchars(BASE_URL . (defined('FILE_PATH') ? FILE_PATH : '') . 'files/project_item_images/' . rawurlencode($filename), ENT_QUOTES, 'UTF-8');
+	}
+	if (!defined('ACCESS_KEY') || !defined('SECRET_KEY') || !defined('BUCKET_NAME')) {
+		return '#';
+	}
+
+	$region = 'ap-southeast-2';
+	$bucket = BUCKET_NAME;
+	$key = 'files/project_item/' . $filename;
+	$now = gmdate('Ymd\THis\Z');
+	$date = gmdate('Ymd');
+	$host = $bucket . '.s3.' . $region . '.amazonaws.com';
+	$encodedKey = str_replace('%2F', '/', rawurlencode($key));
+	$credentialScope = $date . '/' . $region . '/s3/aws4_request';
+	$query = array(
+		'X-Amz-Algorithm' => 'AWS4-HMAC-SHA256',
+		'X-Amz-Credential' => ACCESS_KEY . '/' . $credentialScope,
+		'X-Amz-Date' => $now,
+		'X-Amz-Expires' => '3600',
+		'X-Amz-SignedHeaders' => 'host',
+	);
+	ksort($query);
+	$pairs = array();
+	foreach ($query as $name => $value) {
+		$pairs[] = rawurlencode($name) . '=' . rawurlencode($value);
+	}
+	$canonicalQuery = implode('&', $pairs);
+	$canonicalRequest = "GET\n/" . $encodedKey . "\n" . $canonicalQuery . "\nhost:" . $host . "\n\nhost\nUNSIGNED-PAYLOAD";
+	$stringToSign = "AWS4-HMAC-SHA256\n" . $now . "\n" . $credentialScope . "\n" . hash('sha256', $canonicalRequest);
+	$kDate = hash_hmac('sha256', $date, 'AWS4' . SECRET_KEY, true);
+	$kRegion = hash_hmac('sha256', $region, $kDate, true);
+	$kService = hash_hmac('sha256', 's3', $kRegion, true);
+	$kSigning = hash_hmac('sha256', 'aws4_request', $kService, true);
+	$signature = hash_hmac('sha256', $stringToSign, $kSigning);
+
+	return htmlspecialchars('https://' . $host . '/' . $encodedKey . '?' . $canonicalQuery . '&X-Amz-Signature=' . $signature, ENT_QUOTES, 'UTF-8');
+}
+}
+
 
 function send_auto_business_report($bsn_id, $filename)
 			{

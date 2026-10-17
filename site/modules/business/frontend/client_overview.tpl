@@ -23,17 +23,17 @@
         <tr>
             <th>Client</th>
             <td>
-                <input type="text" name="client_overview[co_client]" value="{{ $client_overview_data.co_client }}" readonly>
+                <input type="text" value="{{ $client_overview_data.co_client }}" readonly>
             </td>
             <th>Client Address</th>
             <td>
-                <input type="text" name="client_overview[co_client_address]" value="{{ $client_overview_data.co_client_address }}">
+                <input type="text" name="client_overview[co_client_address]" value="{{ if $client_overview_data.client_address eq 1 }}{{ $client_overview_data.project_address }}{{else}}{{ $client_overview_data.co_client_address }}{{/if}}" {{ if $client_overview_data.client_address eq 1 }}readonly{{/if}}>
             </td>
         </tr>
         <tr>
             <th>Project Address</th>
             <td>
-                <input type="text" name="client_overview[co_project_address]" value="{{ $client_overview_data.co_project_address }}">
+                <input type="text" value="{{ $client_overview_data.project_address }}" readonly>
             </td>
             <th>Property Type</th>
             <td>
@@ -43,17 +43,17 @@
         <tr>
             <th>Block Number</th>
             <td>
-                <input type="text" name="client_overview[co_block_number]" value="{{ $client_overview_data.co_block_number }}">
+                <input type="text" value="{{ $client_overview_data.block_number }}" readonly>
             </td>
             <th>Section Number</th>
             <td>
-                <input type="text" name="client_overview[co_section_number]" value="{{ $client_overview_data.co_section_number }}">
+                <input type="text" value="{{ $client_overview_data.section_number }}" readonly>
             </td>
         </tr>
         <tr>
             <th>Lot / DP</th>
             <td>
-                <input type="text" name="client_overview[co_lot_dp]" value="{{ $client_overview_data.co_lot_dp }}">
+                <input type="text" value="{{ $client_overview_data.lot_dp }}" readonly>
             </td>
             <th>Applicable Planning Controls</th>
             <td>
@@ -63,7 +63,7 @@
         <tr>
             <th>Suburb/Division</th>
             <td>
-                <input type="text" name="client_overview[co_suburb]" value="{{ $client_overview_data.co_suburb }}">
+                <input type="text" value="{{ $client_overview_data.suburb_division }}" readonly>
             </td>
             <th>Land Use Zone</th>
             <td>
@@ -73,7 +73,7 @@
         <tr>
             <th>Housing Code</th>
             <td>
-                <input type="text" name="client_overview[co_housing_code]" value="{{ $client_overview_data.co_housing_code }}" readonly>
+                <input type="text" name="client_overview[co_housing_code]" value="{{if $client_overview_data.co_housing_code == '' || $client_overview_data.co_housing_code == 'NULL'}} TBC {{else}}{{ $client_overview_data.co_housing_code }} {{/if}}" >
             </td>
             <th>ACTMapi Link</th>
             <td>
@@ -103,7 +103,7 @@
         <tr>
             <th>When the block was approved</th>
             <td>
-                <input type="text" name="client_overview[co_when_block_approved]" value="{{ $client_overview_data.co_when_block_approved }}" readonly>
+                <input type="text" name="client_overview[co_when_block_approved]" value="{{if $client_overview_data.co_when_block_approved == '' || $client_overview_data.co_when_block_approved == 'NULL'}} TBC {{else}}{{ $client_overview_data.co_when_block_approved }} {{/if}}">
             </td>
             <th>Block Type</th>
             <td>

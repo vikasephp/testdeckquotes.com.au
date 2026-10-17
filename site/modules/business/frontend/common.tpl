@@ -5938,7 +5938,7 @@
 
 					{{if $item.bt_task_id eq $item_p.btp_bst_id}}
 					<div> <a
-							href="{{$BASE_URL}}{{$FILE_PATH}}files/template_documents_hub/{{$item_p.btp_doc}}?dummy={{$ran}}">{{$item_p.btp_doc_longtext}}</a>
+							href="/business.download_content?file_name={{$item_p.btp_doc|escape:'url'}}&module_name=templatedoc.home">{{$item_p.btp_doc_longtext}}</a>
 					</div><br />
 					{{/if}}
 
@@ -6151,7 +6151,7 @@
 
 						{{if $item.bt_task_id eq $item_p.btp_bst_id}}
 						<div> <a
-								href="{{$BASE_URL}}{{$FILE_PATH}}files/template_documents_hub/{{$item_p.btp_doc}}?dummy={{$ran}}">{{$item_p.btp_doc_longtext}}</a>
+								href="/business.download_content?file_name={{$item_p.btp_doc|escape:'url'}}&module_name=templatedoc.home">{{$item_p.btp_doc_longtext}}</a>
 						</div><br>
 						{{/if}}
 

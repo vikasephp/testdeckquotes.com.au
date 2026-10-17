@@ -119,20 +119,11 @@ if ($pi_id > 0 && !empty($submit)) {
 		if (!productpage_is_allowed_image($tmpName, $origName)) {
 			$fwViewData['error'] = 'Please upload a valid image (jpg, jpeg, png, gif, webp).';
 		} else {
-			if (!is_dir($imageDirAbs)) {
-				@mkdir($imageDirAbs, 0777, true);
-			}
+			$finalName = productpage_upload_to_bucket($origName, $tmpName);
 
-			$safeName = productpage_sanitize_image_name($origName);
-			$ext = strtolower(pathinfo($safeName, PATHINFO_EXTENSION));
-			$base = pathinfo($safeName, PATHINFO_FILENAME);
-			$finalName = $pi_id . '_' . date('Ymd_His') . '_' . $base . '.' . $ext;
-			$destination = $imageDirAbs . $finalName;
-
-			if (!move_uploaded_file($tmpName, $destination)) {
+			if (!$finalName) {
 				$fwViewData['error'] = 'Image upload failed. Please try again.';
 			} else {
-				@chmod($destination, 0664);
 				if ($currentImage !== '' && $currentImage !== $finalName) {
 					$oldPath = $imageDirAbs . $currentImage;
 					if (is_file($oldPath)) {

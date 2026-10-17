@@ -130,8 +130,8 @@
 						</td>
 						<td style="text-align:center;">
 							{{if $row.pi_image}}
-							<a href="{{$BASE_URL}}{{$FILE_PATH}}files/project_item_images/{{$row.pi_image}}" target="_blank" title="View image">
-								<img src="{{$BASE_URL}}{{$FILE_PATH}}files/project_item_images/{{$row.pi_image}}" alt="" style="max-width:50px; max-height:40px; border:1px solid #ccc;" />
+							<a href="{{$row.pi_image|@productpage_image_url}}" target="_blank" title="View image">
+								<img src="{{$row.pi_image|@productpage_image_url}}" alt="" style="max-width:50px; max-height:40px; border:1px solid #ccc;" />
 							</a>
 							{{else}}
 							-

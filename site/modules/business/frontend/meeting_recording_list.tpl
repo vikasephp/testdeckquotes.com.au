@@ -23,7 +23,7 @@
                 </div>
             </th>
 			<td>{{$item.rm_date}}</td>
-            <td><a href = "{{$BASE_URL}}files/recorded_meetings/{{$item.rm_original_file}}" target="_blank">{{$item.rm_meeting_file}}</td>
+            <td><a href = "/business.download_content_rm?file_name={{$item.rm_original_file|escape:'url'}}&amp;module_name=business.home" target="_blank">{{$item.rm_meeting_file}}</td>
             <td>{{$item.rm_owner}}</td>
         <!-- <td><a href="javascript:parent.modelview_mr('{{$item.rm_id}}');" title="Quick View"> View Detail </a></td>-->
          <td>{{$item.rm_detail}} </td>

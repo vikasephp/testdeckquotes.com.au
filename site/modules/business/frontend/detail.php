@@ -1,5 +1,25 @@
 <?php
 
+function email_attachment_save_s3($tmpPath, $fileName)
+{
+	$fileName = trim((string) $fileName);
+	if ($fileName === '' || !is_uploaded_file($tmpPath)) {
+		return false;
+	}
+	if (!defined('ACCESS_KEY') || !defined('SECRET_KEY') || !defined('BUCKET_NAME') || BUCKET_NAME === '') {
+		return false;
+	}
+	$s3File = $_SERVER['DOCUMENT_ROOT'].'/file_upload/server/s3/S3.php';
+	if (!is_file($s3File)) {
+		return false;
+	}
+	include_once $s3File;
+	if (!class_exists('S3')) {
+		return false;
+	}
+	$s3 = new S3(ACCESS_KEY, SECRET_KEY);
+	return (bool) $s3->putObjectFile($tmpPath, BUCKET_NAME, 'files/email_attachment/'.$fileName, S3::ACL_PRIVATE);
+}
 
 $bsn_id = (int)$fwRequest->getParam('bsn_id', '');
 $params = $fwRequest->getParams();
@@ -505,13 +525,26 @@ else {
 		$detail = $fwRequest->getParam('emailData', array());
 		$eml_id = $detail['eml_id'];
 
+		$emailAttachmentLocal = array();
+
 		if (!empty($_FILES['docs1']['name'])) {
 
 			$file_name1 = $_FILES['docs1']['name'];
 			$src1 = $_FILES['docs1']['tmp_name'];
 			$destination1 = BASE_DIR . 'files/email_attachment/' . $file_name1;
+			/*
 			move_uploaded_file($src1, $destination1);
 			$attach1 =  BASE_URL . FILE_PATH . "files/email_attachment/" . $file_name1;
+			*/
+			if (email_attachment_save_s3($src1, $file_name1)) {
+				if (!is_dir(BASE_DIR . 'files/email_attachment/')) {
+					mkdir(BASE_DIR . 'files/email_attachment/', 0777, TRUE);
+				}
+				if (copy($src1, $destination1)) {
+					$attach1 =  BASE_URL . FILE_PATH . "files/email_attachment/" . $file_name1;
+					$emailAttachmentLocal[] = $destination1;
+				}
+			}
 		}
 
 
@@ -519,22 +552,44 @@ else {
 			$file_name2 = $_FILES['docs2']['name'];
 			$src2 = $_FILES['docs2']['tmp_name'];
 			$destination2 = BASE_DIR . 'files/email_attachment/' . $file_name2;
+			/*
 			if (!is_dir(BASE_DIR . 'files/email_attachment/')) {
 				mkdir(BASE_DIR . 'files/email_attachment/', 0777, TRUE);
 			}
 			move_uploaded_file($src2, $destination2);
 			$attach2 =  BASE_URL . FILE_PATH . "files/email_attachment/" . $file_name2;
+			*/
+			if (email_attachment_save_s3($src2, $file_name2)) {
+				if (!is_dir(BASE_DIR . 'files/email_attachment/')) {
+					mkdir(BASE_DIR . 'files/email_attachment/', 0777, TRUE);
+				}
+				if (copy($src2, $destination2)) {
+					$attach2 =  BASE_URL . FILE_PATH . "files/email_attachment/" . $file_name2;
+					$emailAttachmentLocal[] = $destination2;
+				}
+			}
 		}
 
 		if ($_FILES['docs3']['name']) {
 			$file_name3 = $_FILES['docs3']['name'];
 			$src3 = $_FILES['docs3']['tmp_name'];
 			$destination3 = BASE_DIR . 'files/email_attachment/' . $file_name3;
+			/*
 			if (!is_dir(BASE_DIR . 'files/email_attachment/')) {
 				mkdir(BASE_DIR . 'files/email_attachment/', 0777, TRUE);
 			}
 			move_uploaded_file($src3, $destination3);
 			$attach3 =  BASE_URL . FILE_PATH . "files/email_attachment/" . $file_name3;
+			*/
+			if (email_attachment_save_s3($src3, $file_name3)) {
+				if (!is_dir(BASE_DIR . 'files/email_attachment/')) {
+					mkdir(BASE_DIR . 'files/email_attachment/', 0777, TRUE);
+				}
+				if (copy($src3, $destination3)) {
+					$attach3 =  BASE_URL . FILE_PATH . "files/email_attachment/" . $file_name3;
+					$emailAttachmentLocal[] = $destination3;
+				}
+			}
 		}
 
 
@@ -557,10 +612,16 @@ else {
 				if ($v) {
 					$data = explode("|", $v);
 
-					$finalatta = BASE_URL . FILE_PATH . "files/document_check_list_files/" . $data[0];
-
-					$fdata[] = $finalatta;
-					$doclogattach[] = $data[1];
+					$finalatta = '';
+					if ($data[0] !== '') {
+						require_once(LIB_DIR . 'CloudEphpClass.php');
+						$docCloud = new CloudEphpClass('business.detail');
+						$finalatta = $docCloud->download($data[0], false);
+					}
+					if ($finalatta) {
+						$fdata[] = $finalatta;
+						$doclogattach[] = $data[1];
+					}
 				}
 			}
 		}
@@ -569,9 +630,14 @@ else {
 		if (!empty($detail['template_docs'])) {
 			foreach ($detail['template_docs'] as $k1 => $v1) {
 				if ($v1) {
-					$docsattach = BASE_URL . FILE_PATH . "files/template_documents_hub/" . $v1;
-					$fdata[] = $docsattach;
-					$templogattach[] = $v1;
+					require_once(LIB_DIR . 'CloudEphpClass.php');
+					$hubCloud = new CloudEphpClass('templatedoc.home');
+					// $docsattach = BASE_URL . FILE_PATH . "files/template_documents_hub/" . $v1;
+					$docsattach = $hubCloud->download(trim($v1), false);
+					if ($docsattach) {
+						$fdata[] = $docsattach;
+						$templogattach[] = $v1;
+					}
 				}
 			}
 		}
@@ -623,6 +689,13 @@ else {
 				$email_log_Table->insertRow($logDetail);
 				//db($logDetail);
 				//exit;
+			}
+		}
+		if (!empty($emailAttachmentLocal)) {
+			foreach ($emailAttachmentLocal as $localFile) {
+				if (is_file($localFile)) {
+					unlink($localFile);
+				}
 			}
 		}
 	}

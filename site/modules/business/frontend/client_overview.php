@@ -11,7 +11,7 @@ foreach ($result as $row) {
 	$clientArr[$row['user_id']] = $row['user_name'];
 }
 // db($clientArr);
-$query = "SELECT business.bsn_id, business.bsn_address, business.bsn_cd_block, business.bsn_cd_section, business.bsn_suburb, business_sellers.bs_business_id, business_sellers.bs_customers_id, bus_customers.bcust_id, bus_customers.bcust_fname, bus_customers.bcust_lname FROM  business INNER JOIN business_sellers ON business.bsn_id = business_sellers.bs_business_id INNER JOIN bus_customers ON bus_customers.bcust_id = business_sellers.bs_customers_id WHERE business.bsn_id = " . $bsn_id;
+$query = "SELECT business.bsn_id, business.bsn_address, business.bsn_cd_block, business.bsn_cd_section, business.bsn_suburb, business.bsn_lot_dp, business.bsn_address_same, business_sellers.bs_business_id, business_sellers.bs_customers_id, bus_customers.bcust_id, bus_customers.bcust_fname, bus_customers.bcust_lname FROM  business INNER JOIN business_sellers ON business.bsn_id = business_sellers.bs_business_id INNER JOIN bus_customers ON bus_customers.bcust_id = business_sellers.bs_customers_id WHERE business.bsn_id = " . $bsn_id;
 $seller_data = $fwDb->queryOne($query);
 // db($seller_data);
 $client_overview_data = [
@@ -62,6 +62,24 @@ if($table_client_overview->rowExists()) {
 	}
 	if($client_overview_data['co_created_by']) {
 		$client_overview_data['co_created_by'] = $clientArr[$client_overview_data['co_created_by']] . ' ' . date('d-M-Y', strtotime($client_overview_data['updated_at']));
+	}
+	if(!empty($seller_data) && isset($seller_data['bsn_address'])){
+		$client_overview_data['project_address'] = $seller_data['bsn_address'];
+	}
+	if(!empty($seller_data) && isset($seller_data['bsn_cd_block'])){
+		$client_overview_data['block_number'] = $seller_data['bsn_cd_block'];
+	}
+	if(!empty($seller_data) && isset($seller_data['bsn_cd_section'])){
+		$client_overview_data['section_number'] = $seller_data['bsn_cd_section'];
+	}
+	if(!empty($seller_data) && isset($seller_data['bsn_suburb'])){
+		$client_overview_data['suburb_division'] = $seller_data['bsn_suburb'];
+	}
+	if(!empty($seller_data) && isset($seller_data['bsn_lot_dp'])){
+		$client_overview_data['lot_dp'] = $seller_data['bsn_lot_dp'];
+	}
+	if(!empty($seller_data) && isset($seller_data['bsn_address_same'])){
+		$client_overview_data['client_address'] = $seller_data['bsn_address_same'];
 	}
 }
 $fwViewData['client_overview_data'] = $client_overview_data;

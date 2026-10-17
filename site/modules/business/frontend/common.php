@@ -859,7 +859,7 @@ if ($requset) {
 							$bt_task_id_arr[] = $allt['bt_task_id'];
 						}
 
-						$total_sub_task_sql = "SELECT bts_task_id, COUNT(*) AS tot_task FROM business_tasks_sub WHERE bts_bsn_id = " . $bus_id . " AND bts_task_id IN (" . implode(',', $bt_task_id_arr) . ") GROUP BY bts_task_id";
+						$total_sub_task_sql = "SELECT bts_task_id, COUNT(DISTINCT IF(bts_bsst_id > 0, CONCAT('s', bts_bsst_id), CONCAT('r', bts_id))) AS tot_task FROM business_tasks_sub WHERE bts_bsn_id = " . $bus_id . " AND bts_task_id IN (" . implode(',', $bt_task_id_arr) . ") GROUP BY bts_task_id";
 						$total_sub_task_res = $fwDb->query($total_sub_task_sql);
 
 						$total_sub_task_arr = array();
@@ -871,7 +871,7 @@ if ($requset) {
 						// $execution_time = ($end_time - $start_time);
 						// echo "<br><br>total_sub_task_sql Script Execution Time = " . $execution_time . " sec";
 
-						$comp_task_sql = "SELECT bts_task_id, COUNT(*) AS tot_task FROM business_tasks_sub WHERE bts_bsn_id = " . $bus_id . " AND bts_task_id IN (" . implode(',', $bt_task_id_arr) . ") AND bts_complete = 1 GROUP BY bts_task_id";
+						$comp_task_sql = "SELECT bts_task_id, COUNT(DISTINCT IF(bts_bsst_id > 0, CONCAT('s', bts_bsst_id), CONCAT('r', bts_id))) AS tot_task FROM business_tasks_sub WHERE bts_bsn_id = " . $bus_id . " AND bts_task_id IN (" . implode(',', $bt_task_id_arr) . ") AND bts_complete = 1 GROUP BY bts_task_id";
 						$comp_task_res = $fwDb->query($comp_task_sql);
 
 						$comp_task_arr = array();
@@ -5133,9 +5133,14 @@ if ($requset) {
 
 				$checkdocs = $fwDb->query($sql_bus_docs);
 				if (count($checkdocs) > 0) {
+					require_once(LIB_DIR . 'CloudEphpClass.php');
+					$docCloud = new CloudEphpClass('business.home');
 					foreach ($checkdocs as $key => $val) {
 						if ($val['doc_file_name']) {
-							$docsname .= " &#62;&#62; <a href='" . BASE_URL . FILE_PATH . "files/document_check_list_files/" . $val['doc_file_name'] . "' title='" . BASE_URL . FILE_PATH . "files/document_check_list_files/" . $val['doc_file_name'] . "'>" . $val['doc_file_name'] . "</a>";
+							$docUrl = $docCloud->download($val['doc_file_name'], false);
+							if ($docUrl) {
+								$docsname .= " &#62;&#62; <a href='" . $docUrl . "' title='" . $docUrl . "'>" . $val['doc_file_name'] . "</a>";
+							}
 						}
 					}
 				}

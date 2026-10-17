@@ -3015,7 +3015,7 @@ setTimeout('iframe5("businessenquiers", "{{$buyer_enquiry}}");', 2500);
     {{foreach from=$allTasksProc item=item_p key=key_p}}
     
     {{if $item.bt_task_id eq $item_p.btp_bst_id}}
-    <div> <a href="{{$BASE_URL}}{{$FILE_PATH}}files/template_documents_hub/{{$item_p.btp_doc}}?dummy={{$ran}}">{{$item_p.btp_doc_longtext}}</a> </div><br />
+    <div> <a href="/business.download_content?file_name={{$item_p.btp_doc|escape:'url'}}&module_name=templatedoc.home">{{$item_p.btp_doc_longtext}}</a> </div><br />
     {{/if}}
     
     {{/foreach}}

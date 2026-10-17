@@ -1,4 +1,37 @@
 <?php
+if (!function_exists('compose_attachment_upload_to_bucket')) {
+function compose_attachment_upload_to_bucket($originalName, $tmpName)
+{
+	static $seq = 0;
+
+	if (!defined('ACCESS_KEY') || !defined('SECRET_KEY') || !defined('BUCKET_NAME') || !is_uploaded_file($tmpName)) {
+		return false;
+	}
+	$originalName = preg_replace('/[^A-Z0-9._-]/i', '_', (string) $originalName);
+	$originalName = trim((string) $originalName, '._-');
+	$extension = strtolower((string) pathinfo($originalName, PATHINFO_EXTENSION));
+	if (in_array($extension, array('php', 'phtml', 'phar', 'php3', 'php4', 'php5', 'php7', 'exe', 'bat', 'cmd', 'sh', 'js', 'htm', 'html', 'svg'), true)) {
+		return false;
+	}
+	$base = (string) pathinfo($originalName, PATHINFO_FILENAME);
+	if ($base === '' || $base === '.' || $base === '..') {
+		$base = 'file';
+	}
+	$seq++;
+	$savedName = $base . '_' . date('d_m_Y_H_i_s') . '_' . $seq . mt_rand(100, 999);
+	if ($extension !== '') {
+		$savedName .= '.' . $extension;
+	}
+
+	include_once $_SERVER['DOCUMENT_ROOT'] . '/file_upload/server/s3/S3.php';
+	$s3 = new S3(ACCESS_KEY, SECRET_KEY);
+	if ($s3->putObjectFile($tmpName, BUCKET_NAME, 'files/template_files/' . $savedName, S3::ACL_PRIVATE)) {
+		return $savedName;
+	}
+	return false;
+}
+}
+
 $fwMainView = 'file:' . getcwd() . '/email_attachment.tpl';
 $request = $fwRequest->getParamget('a_req', '');
 if($request)
@@ -40,21 +73,16 @@ if($attachment)
 	{
 	if($_FILES['attachment']['error'] == 0)
 					{
-						$docfile = $_FILES['attachment']['name'];
 						$file_type = $_FILES['attachment']['type'];
-						
-						//$datetime = trim(date('d_m_Y_H_i_'),'0');
-						$docfile = $datetime.preg_replace('/[^A-Z0-9._]/i', '_', $docfile);
 						$src = $_FILES['attachment']['tmp_name'];
-						$destination = BASE_DIR.FILE_PATH. 'files/template_files/'.$docfile;
+						$docfile = compose_attachment_upload_to_bucket($_FILES['attachment']['name'], $src);
 									
-							if (!move_uploaded_file($src, $destination))
+							if (!$docfile)
 							{
-								echo "Possible file upload attack";
+								echo "File could not be uploaded.";
 								}
 								else
 								{
-								chmod($destination, 0664);
 								if($_SESSION['attach']['file_name'])
 									{
 										$olddata = unserialize($_SESSION['attach']['file_name']);

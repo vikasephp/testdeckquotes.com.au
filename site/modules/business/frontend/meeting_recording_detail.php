@@ -1,4 +1,22 @@
 <?php 
+function meeting_recording_detail_copy_to_s3($localPath, $fileName)
+{
+	$fileName = trim((string) $fileName);
+	if ($fileName === '' || !is_file($localPath) || !defined('ACCESS_KEY') || !defined('SECRET_KEY') || !defined('BUCKET_NAME') || BUCKET_NAME === '') {
+		return false;
+	}
+	$s3File = $_SERVER['DOCUMENT_ROOT'].'/file_upload/server/s3/S3.php';
+	if (!is_file($s3File)) {
+		return false;
+	}
+	include_once $s3File;
+	if (!class_exists('S3')) {
+		return false;
+	}
+	$s3 = new S3(ACCESS_KEY, SECRET_KEY);
+	return (bool) $s3->putObjectFile($localPath, BUCKET_NAME, 'files/recorded_meetings/'.$fileName, S3::ACL_PRIVATE);
+}
+
 $fwMainView = 'file:' . getcwd() . '/meeting_recording_detail.tpl';
 $recorded_meeting = new Fw_Db_Table('recorded_meeting');
 $submit = $fwRequest->getParam('subAddDetail', '');
@@ -71,19 +89,19 @@ if($submit)
 			 $tmp = $_FILES['file']['tmp_name'];
 			 
 			 
-			 $destination = BASE_DIR.'files/recorded_meetings/'.$filename;
+			 // $destination = BASE_DIR.'files/recorded_meetings/'.$filename;
 				
 			 $fwViewData['msg'] = "Please wait file is uploading";
 				
-					if(!move_uploaded_file($tmp, $destination))
-							{
-								//echo "Possible file upload attack";
-							}
-					else
-							{
-								//$detail['sb_document'] = $docfile_p;
-								chmod($destination, 0664);
-							}	
+					// if(!move_uploaded_file($tmp, $destination))
+					// 		{
+					// 			//echo "Possible file upload attack";
+					// 		}
+					// else
+					// 		{
+					// 			//$detail['sb_document'] = $docfile_p;
+					// 			chmod($destination, 0664);
+					// 		}	
 			 
 //			 $d = '/public_html/files/recorded_meetings/'.$filename;
 //			 ftp_put($conn_id, $d, $tmp, FTP_ASCII);
@@ -95,7 +113,7 @@ if($submit)
 			 $newname1 = $addrData['bsn_address']. ' - '.$detail['rm_date'];
 			 $newname2 = str_replace(" ","_",$newname1);
 		
-			 if(!empty($filename)) {
+			 if ($filename !== '' && is_uploaded_file($tmp) && meeting_recording_detail_copy_to_s3($tmp, $filename)) {
 			 $detail['rm_original_file'] = $filename;
 			 $detail['rm_meeting_file'] = $newname1;
 			 }

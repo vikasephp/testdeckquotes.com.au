@@ -125,8 +125,8 @@
                     <input type="file" name="pi_image" accept="image/jpeg,image/png,image/gif,image/webp" />
                     {{if $detail.pi_image}}
                     <div class="productpage-image-preview">
-                        <a href="{{$image_url_base}}{{$detail.pi_image}}" target="_blank" title="Open image">
-                            <img src="{{$image_url_base}}{{$detail.pi_image}}" alt="Product image" />
+                        <a href="{{$detail.pi_image|@productpage_image_url}}" target="_blank" title="Open image">
+                            <img src="{{$detail.pi_image|@productpage_image_url}}" alt="Product image" />
                         </a>
                         <div class="productpage-image-meta">{{$detail.pi_image}}</div>
                         <label style="display:inline-block; margin-top:6px;">
