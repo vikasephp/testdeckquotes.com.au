@@ -226,6 +226,11 @@ nav ul li { background:#154f6c !important ;}
 }
 </style>
 </head><body scroll="no">
+{{if isset($_SESSION.user) && $_SESSION.user.user_id > 0}}
+<div style="background:#ffe066;border-bottom:1px solid #e0b800;color:#222;padding:10px 14px;font-size:13px;line-height:1.45;text-align:left;width:100%;box-sizing:border-box;">
+CGFB staff now work in Decklara. Please sign in at <a href="https://www.decklara.in" target="_blank" style="color:#0645AD;font-weight:bold;">https://www.decklara.in</a> with your usual username and password; this system stays open only for what Decklara does not do yet (the automated messages, Print Merge and the old documents). Customers and suppliers: nothing changes for you, please carry on here. Anything not working: <a href="https://problems.cgfb.com.au" target="_blank" style="color:#0645AD;font-weight:bold;">https://problems.cgfb.com.au</a>
+</div>
+{{/if}}
 <div id="screenoverlay" style="visibility:hidden;"></div>
 <!--StartHTML-->
 <div id="wrapper">

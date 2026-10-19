@@ -18,11 +18,11 @@ class EmailClass
     public function __construct()
     {
         $this->mail = new PHPMailer(true);
-        $this->from = array(); // array with index email and name
-        $this->replyTo = array(); // array with index email and name
-        $this->to = array(); // array of arrays with index email and name
-        $this->cc = array(); // array of arrays with index email and name
-        $this->bcc = array(); // array of arrays with index email and name
+        $this->from = []; // array with index email and name
+        $this->replyTo = []; // array with index email and name
+        $this->to = []; // array of arrays with index email and name
+        $this->cc = []; // array of arrays with index email and name
+        $this->bcc = []; // array of arrays with index email and name
 
         // Adding default bcc
         $bcc_name = 'CGFB';
@@ -47,13 +47,11 @@ class EmailClass
         ];
         try {
 			
-			/*To fail the email sending*/
 			/* $forceFail = true;
-
 			if ($forceFail) {
 				throw new Exception("Forced email failure (testing)");
 			} */
-		
+			
             $this->mail->IsSMTP();
 
             $this->mail->SMTPDebug  = 1;                     // enables SMTP debug information (for testing)
@@ -83,6 +81,8 @@ class EmailClass
 
             if ($this->message) {
                 $this->message = stripslashes($this->message);
+                // CKEditor 5 tables use CSS classes / <figure>; mail clients need inline borders
+                $this->message = $this->makeEmailSafeHtml($this->message);
             }
             $newpathattach = [];
             if (!empty($this->attachments)) {
@@ -168,6 +168,91 @@ class EmailClass
                 'email' => $email
             ];
         }
+    }
+
+    /**
+     * Make CKEditor / editor HTML safe for Gmail/Outlook (tables especially).
+     */
+    public function makeEmailSafeHtml($html)
+    {
+        if ($html === null || $html === '') {
+            return $html;
+        }
+
+        // Unwrap CK5 <figure class="table">...</figure> → keep inner <table>
+        $html = preg_replace(
+            '/<figure[^>]*\bclass\s*=\s*(["\'])[^"\']*\btable\b[^"\']*\1[^>]*>(.*?)<\/figure>/is',
+            '$2',
+            $html
+        );
+        $html = preg_replace(
+            '/<figure[^>]*\bclass\s*=\s*table\b[^>]*>(.*?)<\/figure>/is',
+            '$1',
+            $html
+        );
+
+        // Ensure <table> has email-visible borders
+        $html = preg_replace_callback(
+            '/<table(\s[^>]*)?>/i',
+            function ($m) {
+                $attrs = isset($m[1]) ? $m[1] : '';
+                if (stripos($attrs, 'border=') === false) {
+                    $attrs .= ' border="1"';
+                }
+                if (stripos($attrs, 'cellpadding=') === false) {
+                    $attrs .= ' cellpadding="4"';
+                }
+                if (stripos($attrs, 'cellspacing=') === false) {
+                    $attrs .= ' cellspacing="0"';
+                }
+                if (stripos($attrs, 'style=') === false) {
+                    $attrs .= ' style="border-collapse:collapse;width:100%;border:1px solid #000;"';
+                } elseif (stripos($attrs, 'border-collapse') === false || stripos($attrs, 'border:') === false) {
+                    $attrs = preg_replace_callback(
+                        '/style\s*=\s*(["\'])(.*?)\1/i',
+                        function ($sm) {
+                            $style = rtrim($sm[2], ';');
+                            if (stripos($style, 'border-collapse') === false) {
+                                $style .= ';border-collapse:collapse';
+                            }
+                            if (stripos($style, 'border:') === false && stripos($style, 'border-width') === false) {
+                                $style .= ';border:1px solid #000';
+                            }
+                            return 'style=' . $sm[1] . $style . ';' . $sm[1];
+                        },
+                        $attrs
+                    );
+                }
+                return '<table' . $attrs . '>';
+            },
+            $html
+        );
+
+        // Ensure cells have visible borders (Outlook often needs this)
+        $html = preg_replace_callback(
+            '/<(td|th)(\s[^>]*)?>/i',
+            function ($m) {
+                $tag = $m[1];
+                $attrs = isset($m[2]) ? $m[2] : '';
+                $cellStyle = 'border:1px solid #000;padding:4px;';
+                if (stripos($attrs, 'style=') === false) {
+                    $attrs .= ' style="' . $cellStyle . '"';
+                } elseif (stripos($attrs, 'border:') === false && stripos($attrs, 'border-width') === false) {
+                    $attrs = preg_replace_callback(
+                        '/style\s*=\s*(["\'])(.*?)\1/i',
+                        function ($sm) use ($cellStyle) {
+                            $style = rtrim($sm[2], ';') . ';' . $cellStyle;
+                            return 'style=' . $sm[1] . $style . $sm[1];
+                        },
+                        $attrs
+                    );
+                }
+                return '<' . $tag . $attrs . '>';
+            },
+            $html
+        );
+
+        return $html;
     }
 
     public function addFrom($email, $name)

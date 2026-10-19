@@ -56,7 +56,13 @@ class CloudEphpClass
 
     public function getLocationByModule(string $module)
     {
-        if(in_array($module, ['lateletter_report.home'])) {
+        if (in_array($module, ['ckeditor_images.home'])) {
+            return 'files/ckeditor_images/';
+        }
+        if (in_array($module, ['properties_sale_reports.buyer_report_cover_image'])) {
+            return 'files/buyer_report_cover_image/';
+        }
+        if (in_array($module, ['lateletter_report.home'])) {
             return 'files/progress_payment_doc/';
         }
         if (in_array($module, ['site.design_plan'])) {
@@ -76,6 +82,12 @@ class CloudEphpClass
         }
         if (in_array($module, ['site.email_log.template_attachment'])) {
             return 'files/templates_document_hub/';
+        }
+        if (in_array($module, ['templatedoc.home'])) {
+            return 'files/template_documents_hub/';
+        }
+        if (in_array($module, ['people_management.home'])) {
+            return 'files/user_docs/';
         }
         if (in_array($module, ['30_days_rec_report.home', 'design_report.home_active', 'designer_tracker.home', 'site.latest_client_letter'])) {
             return 'files/uploads/';
@@ -137,7 +149,7 @@ class CloudEphpClass
         if (in_array($module, ['proposal_documents.home'])) {
             return 'files/proposal_documents/';
         }
-        if(in_array($module, ['construction_invoice_disputes.home'])) {
+        if (in_array($module, ['construction_invoice_disputes.home'])) {
             return 'files/construction_invoice_disputes/';
         }
         if (in_array($module, ['design_timeline.home'])) {
@@ -152,32 +164,44 @@ class CloudEphpClass
         if (in_array($module, ['planning_approval_common_questions.home'])) {
             return 'files/planning_approval_common_questions/';
         }
-        if(in_array($module, ['warranty_log.home', 'site.warranty_issue', 'warranty_log_clearing_center.home'])) {
+        if (in_array($module, ['warranty_log.home', 'site.warranty_issue', 'warranty_log_clearing_center.home'])) {
             return 'files/warranty_log/';
         }
         if (in_array($module, ['inspection_warranty_log.acknowledgement_statement'])) {
             return 'files/warranty_log/acknowledgement_statements/';
         }
-        if(in_array($module, ['warranty_log.notes'])) {
+        if (in_array($module, ['warranty_log.notes'])) {
             return 'files/warranty_log/notes/';
         }
         if (in_array($module, ['warranty_log.inspection'])) {
             return 'files/warranty_log/inspections/';
         }
-		if (in_array($module, ['inclusions_calculation_report.home'])) {
+        if (in_array($module, ['inclusions_calculation_report.home'])) {
             return 'files/inclusions_calculation_report/';
         }
-		if (in_array($module, ['delivery_schedule_report.feedback'])) {
+        if (in_array($module, ['delivery_schedule_report.feedback'])) {
             return 'files/delivery_schedule_report_feedback/';
         }
-		if (in_array($module, ['insurance_manager.home'])) {
+        if (in_array($module, ['insurance_manager.home'])) {
             return 'files/insurance_manager/';
         }
-		if (in_array($module, ['planning_knowledge_library.home'])) {
+        if (in_array($module, ['planning_knowledge_library.home'])) {
             return 'files/planning_knowledge_library/';
         }
-		if (in_array($module, ['planning_legislation_register.home'])) {
+        if (in_array($module, ['planning_legislation_register.home'])) {
             return 'files/planning_legislation_register/';
+        }
+        if (in_array($module, ['dual_occupancy_canberra_q_and_a.home'])) {
+            return 'files/dual_occupancy_qa/';
+        }
+        if (in_array($module, ['planning_definations_database.home'])) {
+            return 'files/planning_definations_database/';
+        }
+        if (in_array($module, ['central_planning_clearing_center.home'])) {
+            return 'files/document_check_list_files/';
+        }
+		if (in_array($module, ['alert_escalation_report.home.home'])) {
+            return 'files/alert_escalation_photos/';
         }
         return 'files/uploads/';
     }
@@ -206,7 +230,7 @@ class CloudEphpClass
             include_once $filetoinclude;
             $s3 = new S3($cloudKeys['ACCESS_KEY'], $cloudKeys['SECRET_KEY']);
             $file_data = $s3->getObject($cloudKeys['BUCKET_NAME'], urlencode($location . $file), $saveTo = false);
-            	// echo "<pre>";print_r($file_data);   echo "Content-Type: ".$file_data->headers['type'];
+            // echo "<pre>";print_r($file_data);   echo "Content-Type: ".$file_data->headers['type'];
             $file_raw_data = $file_data->body;
             $fileWithPath = $_SERVER['DOCUMENT_ROOT'] . '/download_files/' . $file;
             $txt = fopen($fileWithPath, "w") or die("Unable to open file!");
@@ -287,7 +311,7 @@ class CloudEphpClass
             $date = date("Y-m-d H:i:s");
 
             $path = getcwd();
-            $rem = $path . '/' .  basename($filename);
+            $rem = ($path . '/' .  basename($filename));
             if (move_uploaded_file($tmpname, $rem)) {
                 $flag = false;
                 if ($s3->putObjectFile($rem, $cloudKeys['BUCKET_NAME'], $location . $filename, S3::ACL_PRIVATE)) {
