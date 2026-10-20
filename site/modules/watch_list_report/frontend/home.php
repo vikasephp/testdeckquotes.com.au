@@ -15,42 +15,11 @@ if($sortby_ranking)
 
 
 $where = " Where business.bsn_watch_list = 1 ";
-
 if(!empty($searchaddr)) {
 	$searchkey2 = $fwRequest->getParam('searchkey', '');
 }
 
-// Doc Sent Start
-//$docsign_sent = $fwRequest->getParam('docsign_sent', '');
-//
-//if(!empty($docsign_sent))
-//{
-//	
-//	$keydc = array_keys($docsign_sent);
-//	$kydc = $keydc[0];
-//	$signDetail2['bsn_wlr_docsign_sent'] = $docsign_sent[$kydc];
-//	$signDetail2['bsn_wlr_docsign_user'] = date('d-m-Y');
-//	$signDetail2['bsn_wlr_docsign_date'] = $_SESSION['user']['user_name'];
-//    $tablebusiness->setWhere("bsn_id =". $kydc);
-//	$data = $tablebusiness->updateRow($signDetail2);
-//	unset($docsign);
-//}
-// Doc Sent Ends
 
-// Sunday Appoint to be booked
-//$sundayappt = $fwRequest->getParam('sundayappt', '');
-//
-//if(!empty($sundayappt))
-//{
-//	$keyla = array_keys($sundayappt);
-//	$kyla = $keyla[0];
-//	$signDetail['bsn_wlr_sunday_appt'] = $sundayappt[$kyla];
-//	$signDetail['bsn_wlr_sunappt_user'] = date('d-m-Y');
-//	$signDetail['bsn_wlr_sunappt_date'] = $_SESSION['user']['user_name'];
-//    $tablebusiness->setWhere("bsn_id =". $kyla);
-//	$data = $tablebusiness->updateRow($signDetail);
-//}
-// Sunday Appoint to be booked
 
 
 // Sunday  booked
@@ -145,18 +114,17 @@ elseif($_SESSION['searchkey2'] ):
 	
 	$fwViewData['searchkey2']=$_SESSION['searchkey2'];
 endif;
-
+   
 $show_hidden = $fwRequest->getParam('show_hidden', '');
 if($show_hidden):
-$where .= " And business.bsn_watch_list_report_hidden = 1";
-	
+
+	$where .= " And business.bsn_watch_list_report_hidden = 1";
 	$_SESSION['show_hidden'] = $show_hidden;
 	$fwViewData['show_hidden']=$_SESSION['show_hidden'];
 
 elseif($_SESSION['show_hidden'] ):
 
 	$where .= " And business.bsn_watch_list_report_hidden = 1";
-	
 	$fwViewData['show_hidden']=$_SESSION['show_hidden'];
 
 else :
@@ -179,7 +147,6 @@ if ($hide) {
 	}
 }
    
-   
 if(empty($pagenum))
 	{
 	unset($_SESSION['last_tdsql']);
@@ -188,15 +155,17 @@ if(empty($pagenum))
 
 $sql = "SELECT  business_sellers.bs_business_id, business_sellers.bs_customers_id, bus_customers.bcust_fname, bus_customers.bcust_lname,
         bus_customers.bcust_misc_email1,bus_customers.bcust_misc_email2,bus_customers.bcust_misc_moble,bus_customers.bcust_misc_business,
-	bus_customers.bcust_misc_home,business.bsn_advert_text,  business.bsn_id, business.bsn_name, business.bsn_rating,
-	business.bsn_sub_status, business.bsn_status_sys_date, business.bsn_address , business.bsn_rating, business.bsn_watch_list,
-	business_sellers.bs_wlr_latest_css, business_sellers.bs_wlr_latest_css_user, business_sellers.bs_wlr_par_couriered,
-	business_sellers.bs_wlr_par_cour_date, business.bsn_wlr_docsign_sent, business.bsn_wlr_docsign_user, business.bsn_wlr_docsign_date, business.bsn_wlr_sunbook, business.bsn_addto_rer, business.bsn_addto_rer_user, business.bsn_addto_rer_date, business.bsn_watch_list_report_hidden, business.bsn_wlr_sunbook_user, business.bsn_wlr_sunbook_date, business_sellers.bs_wlr_par_cour_user,business.bsn_wlr_type
-	from business_sellers 		
-	Inner Join bus_customers ON business_sellers.bs_customers_id = bus_customers.bcust_id 
-	Inner Join business ON business_sellers.bs_business_id = business.bsn_id " . $where. " ".$ord;
+		bus_customers.bcust_misc_home,business.bsn_advert_text,  business.bsn_id, business.bsn_name, business.bsn_rating,
+		business.bsn_sub_status, business.bsn_status_sys_date, business.bsn_address , business.bsn_rating, business.bsn_watch_list,
+		business_sellers.bs_wlr_latest_css, business_sellers.bs_wlr_latest_css_user, business_sellers.bs_wlr_par_couriered,
+		business_sellers.bs_wlr_par_cour_date, business.bsn_wlr_docsign_sent, business.bsn_wlr_docsign_user, business.bsn_wlr_docsign_date, business.bsn_wlr_sunbook, 
+		business.bsn_addto_rer, business.bsn_addto_rer_user, business.bsn_addto_rer_date, business.bsn_watch_list_report_hidden, business.bsn_wlr_sunbook_user, 
+		business.bsn_wlr_sunbook_date, business_sellers.bs_wlr_par_cour_user,business.bsn_wlr_type
+		from business_sellers 		
+		Inner Join bus_customers ON business_sellers.bs_customers_id = bus_customers.bcust_id 
+		Inner Join business ON business_sellers.bs_business_id = business.bsn_id " . $where. " ".$ord;
 	
-	//echo $sql;
+
 
 if($sql){$userData = $fwDb->query($sql);}
 
@@ -259,7 +228,7 @@ if($sql2)
  }
 }
 
-
+if(!empty($userData)){
 foreach($setdata2 as $k => $v)
 {
 
@@ -333,6 +302,7 @@ foreach($setdata2 as $k => $v)
 		//$setdata2[$k]['bsn_wlr_type'] = $v['bsn_wlr_type'];
 		
 		
+}
 }
  $fwViewData['list'] =  $setdata2;
 

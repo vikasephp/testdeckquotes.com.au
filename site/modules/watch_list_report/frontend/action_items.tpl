@@ -28,12 +28,13 @@ setTimeout('parent.close_win();', 500);
 		</div>
 	</div>
 	<input type="hidden" name="pm[wlai_bsn_id]" value="{{$detail.wlai_bsn_id}}" id="dh_id"/>
-    <table id="list-table" width="90%" cellpadding="0" cellspacing="0" height="350" style="border:1px solid #CCC;">
+    <table id="list-table" width="97%" cellpadding="0" cellspacing="0" height="350" style="border:1px solid #CCC;">
 		<tr>
-			<th width="35%">Action Name</th>
-			<th width="35%">Status</th>
-			<th width="35%">Who</th>
-			<th width="20%">Action</th>
+			<th width="25%">Action Name</th>
+			<th width="20%">Status</th>
+			<th width="30%">Questions</th>
+			<th width="25%">Who</th>
+			<th width="25%">Action</th>
 		</tr>
 		{{if $wlai}}
 			{{foreach from=$wlai key="key" item="item"}}
@@ -46,6 +47,7 @@ setTimeout('parent.close_win();', 500);
 						{{if $item.wlai_action_status_date}}<br/>{{$item.wlai_action_status_date}}{{/if}}
 					{{/if}}
 				</td>
+				<td>{{$item.wlai_questions}}</td>
 				<td>
 					<input type="text" value="{{$item.wlai_who}}" onkeyup="updateRecord('{{ $item.wlai_id }}', 'wlai_who', this.value)">
 				</td>

@@ -41,17 +41,20 @@
         $html = '';
         $html .= '<p>Please find below the list of action items that remain incomplete.</p>';
         $html .= '<p>Review and take the necessary steps to address them at your earliest convenience.</p>';
+		$html .= '<p>Project Name: ' . $bsn_name . '</p>';
 
         $html .= '<table border="1" cellpadding="10" cellspacing="0" style="border-collapse: collapse">';
         $html .= '<tr>';
         $html .= '<th>Action Name</th>';
         $html .= '<th>Status</th>';
+		$html .= '<th>Questions</th>';
         $html .= '<th>Who</th>';
         $html .= '</tr>';
         foreach($watch_list_action_items as $row) {
             $html .= '<tr>';
             $html .= '<td>' . $row['wlai_action_name'] . '</td>';
             $html .= '<td>' . $row['wlai_action_status'] . '</td>';
+			$html .= '<td>' . $row['wlai_questions'] . '</td>';
             $html .= '<td>' . $row['wlai_who'] . '</td>';
             $html .= '</tr>';
         }

@@ -29,6 +29,12 @@
 				</td>
 			</tr>
 			<tr>
+				<th>Questions</th>
+				<td>
+					<textarea name="task[wlai_questions]" rows="5" style="width:700px">{{$detail.wlai_questions}}</textarea>
+				</td>
+			</tr>
+			<tr>
 				<th>Status</th>
 				<td>
 					<select name="task[wlai_action_status]">
